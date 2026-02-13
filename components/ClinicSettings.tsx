@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useCalculator } from '../context/CalculatorContext';
-import { 
+import {
     Save,
     Clock,
-    Plus, 
-    Trash2, 
+    Plus,
+    Trash2,
     Copy,
     Info
 } from 'lucide-react';
@@ -14,26 +14,26 @@ import ConfirmationModal from './ConfirmationModal';
 import { ClinicSettingsData, OverheadItem, StaffMember, Asset } from '../types';
 
 // --- Helper Component for List Items (Overhead & Assets) ---
-const ListItem: React.FC<{ 
+const ListItem: React.FC<{
     onRemove: () => void;
     children: React.ReactNode;
-}> = ({ 
-    onRemove, 
-    children 
+}> = ({
+    onRemove,
+    children
 }) => (
-    <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-blue-300 transition-colors mb-3">
-        <div className="flex-grow grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-            {children}
+        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-blue-300 transition-colors mb-3">
+            <div className="flex-grow grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                {children}
+            </div>
+            <button
+                onClick={onRemove}
+                className="text-slate-300 hover:text-red-500 p-3 rounded-lg hover:bg-red-50 transition-colors mt-0.5"
+                title="Remove Item"
+            >
+                <Trash2 className="w-5 h-5" />
+            </button>
         </div>
-        <button 
-            onClick={onRemove}
-            className="text-slate-300 hover:text-red-500 p-3 rounded-lg hover:bg-red-50 transition-colors mt-0.5"
-            title="Remove Item"
-        >
-            <Trash2 className="w-5 h-5" />
-        </button>
-    </div>
-);
+    );
 
 const ClinicSettings: React.FC = () => {
     const { state, updateSection, saveSection, showToast } = useCalculator();
@@ -101,8 +101,8 @@ const ClinicSettings: React.FC = () => {
                 return false;
             }
             if ((member.workingDays || 0) > 7 || (member.workingHours || 0) > 24) {
-                 showToast("Invalid staff schedule detected.");
-                 return false;
+                showToast("Invalid staff schedule detected.");
+                return false;
             }
         }
         return true;
@@ -123,7 +123,7 @@ const ClinicSettings: React.FC = () => {
     };
 
     // --- Handlers ---
-    
+
     // 1. Operating Parameters
     const handleSaveParams = () => {
         if (validateParams()) {
@@ -143,18 +143,18 @@ const ClinicSettings: React.FC = () => {
     };
     const handleSaveOverhead = () => {
         if (validateOverhead()) {
-             setConfirmModal({ isOpen: true, section: 'overhead' });
+            setConfirmModal({ isOpen: true, section: 'overhead' });
         }
     };
 
     // 3. Staff Handlers
     const addStaff = () => {
-        setLocalStaffMembers(prev => [...prev, { 
-            id: Date.now().toString(), 
-            name: '', 
-            role: '', 
-            salary: 0, 
-            benefits: 0, 
+        setLocalStaffMembers(prev => [...prev, {
+            id: Date.now().toString(),
+            name: '',
+            role: '',
+            salary: 0,
+            benefits: 0,
             bonus: 0,
             workingDays: localSettings.workingDaysPerWeek,
             workingHours: localSettings.hoursPerDay
@@ -163,11 +163,11 @@ const ClinicSettings: React.FC = () => {
     const duplicateStaff = (id: string) => {
         const member = localStaffMembers.find(m => m.id === id);
         if (member) {
-             const index = localStaffMembers.findIndex(m => m.id === id);
-             const copy = { ...member, id: Date.now().toString(), name: `${member.name} (Copy)` };
-             const newList = [...localStaffMembers];
-             newList.splice(index + 1, 0, copy);
-             setLocalStaffMembers(newList);
+            const index = localStaffMembers.findIndex(m => m.id === id);
+            const copy = { ...member, id: Date.now().toString(), name: `${member.name} (Copy)` };
+            const newList = [...localStaffMembers];
+            newList.splice(index + 1, 0, copy);
+            setLocalStaffMembers(newList);
         }
     };
     const updateStaff = (id: string, field: string, value: any) => {
@@ -226,11 +226,11 @@ const ClinicSettings: React.FC = () => {
             </div>
 
             {/* Section 1: Operating Parameters */}
-            <CollapsibleSection 
-                title="1. Operating Parameters" 
-                total={0} 
-                defaultOpen={true} 
-                subtitle="Core clinic settings" 
+            <CollapsibleSection
+                title="1. Operating Parameters"
+                total={0}
+                defaultOpen={true}
+                subtitle="Core clinic settings"
                 colorClass="text-slate-600"
                 hideTotal={true}
             >
@@ -238,48 +238,48 @@ const ClinicSettings: React.FC = () => {
                     {/* Column A: Clinic Identity */}
                     <div className="space-y-4">
                         <div className="border-b border-slate-100 pb-2 mb-2">
-                             <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Clinic Identity</h4>
+                            <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Clinic Identity</h4>
                         </div>
-                        <StyledInput 
+                        <StyledInput
                             label="Clinic Name"
                             type="text"
                             value={localSettings.clinicName}
-                            onChange={(v) => setLocalSettings(prev => ({...prev, clinicName: v}))}
+                            onChange={(v) => setLocalSettings(prev => ({ ...prev, clinicName: v }))}
                             placeholder="My Dental Clinic"
                             className="mb-0"
                         />
-                         <div className="w-full md:w-1/2">
-                            <StyledInput 
+                        <div className="w-full md:w-1/2">
+                            <StyledInput
                                 label="Currency Symbol"
                                 type="text"
                                 value={localSettings.currencySymbol}
-                                onChange={(v) => setLocalSettings(prev => ({...prev, currencySymbol: v}))}
+                                onChange={(v) => setLocalSettings(prev => ({ ...prev, currencySymbol: v }))}
                                 placeholder="RM"
                                 className="mb-0"
                             />
-                         </div>
+                        </div>
                     </div>
 
                     {/* Column B: Operational Schedule */}
                     <div className="space-y-4">
                         <div className="border-b border-slate-100 pb-2 mb-2">
-                             <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Operational Schedule</h4>
+                            <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Operational Schedule</h4>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <StyledInput 
-                                label="Days per Week" 
-                                value={localSettings.workingDaysPerWeek} 
-                                onChange={(v) => setLocalSettings(prev => ({...prev, workingDaysPerWeek: v}))} 
+                            <StyledInput
+                                label="Days per Week"
+                                value={localSettings.workingDaysPerWeek}
+                                onChange={(v) => setLocalSettings(prev => ({ ...prev, workingDaysPerWeek: v }))}
                                 type="number"
                                 min={0} max={7}
                                 onKeyDown={preventNegative}
                                 placeholder="5.5"
                                 className="mb-0"
                             />
-                            <StyledInput 
-                                label="Hours per Day" 
-                                value={localSettings.hoursPerDay} 
-                                onChange={(v) => setLocalSettings(prev => ({...prev, hoursPerDay: v}))} 
+                            <StyledInput
+                                label="Hours per Day"
+                                value={localSettings.hoursPerDay}
+                                onChange={(v) => setLocalSettings(prev => ({ ...prev, hoursPerDay: v }))}
                                 type="number"
                                 min={0} max={24}
                                 onKeyDown={preventNegative}
@@ -292,7 +292,7 @@ const ClinicSettings: React.FC = () => {
 
                 {/* Capacity Engine Result Bar */}
                 <div className="bg-blue-50 rounded-xl border border-blue-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
-                     <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4">
                         <div className="bg-blue-600 p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
@@ -300,13 +300,13 @@ const ClinicSettings: React.FC = () => {
                             <p className="text-blue-900 font-bold text-base">Calculated Monthly Capacity</p>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
                                 <p className="text-blue-600 text-xs">Used for hourly rate calculations.</p>
-                                
+
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
                                     <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-100/50 px-2 py-0.5 rounded-md hover:bg-blue-100 transition-colors border border-blue-200 cursor-help">
                                         <Info className="w-3 h-3" /> Why 4.33 wks?
                                     </button>
-                                    
+
                                     {/* Tooltip Content */}
                                     <div className="absolute left-0 bottom-full mb-2 w-72 p-4 bg-slate-800 text-slate-100 text-xs rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                                         <div className="flex items-start gap-3 mb-2">
@@ -326,17 +326,17 @@ const ClinicSettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                     </div>
-                     <div className="text-right">
+                    </div>
+                    <div className="text-right">
                         <p className="text-3xl font-bold text-blue-800">
                             ≈ {monthlyCapacityHours.toFixed(1)} <span className="text-sm font-medium text-blue-600">hrs/mo</span>
                         </p>
-                     </div>
+                    </div>
                 </div>
 
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
-                    <button 
-                        onClick={handleSaveParams} 
+                    <button
+                        onClick={handleSaveParams}
                         className="flex items-center space-x-2 bg-slate-700 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
@@ -351,8 +351,8 @@ const ClinicSettings: React.FC = () => {
                     {localOverheadItems.map((item) => (
                         <ListItem key={item.id} onRemove={() => removeOverhead(item.id)}>
                             <div className="md:col-span-8">
-                                <StyledInput 
-                                    type="text" 
+                                <StyledInput
+                                    type="text"
                                     placeholder="Item Name (e.g. Rent)"
                                     value={item.name}
                                     onChange={(v) => updateOverhead(item.id, 'name', v)}
@@ -360,8 +360,8 @@ const ClinicSettings: React.FC = () => {
                                 />
                             </div>
                             <div className="md:col-span-4">
-                                <StyledInput 
-                                    type="currency" 
+                                <StyledInput
+                                    type="currency"
                                     placeholder="Cost"
                                     min={0}
                                     onKeyDown={preventNegative}
@@ -372,7 +372,7 @@ const ClinicSettings: React.FC = () => {
                             </div>
                         </ListItem>
                     ))}
-                    <button 
+                    <button
                         onClick={addOverhead}
                         className="w-full py-4 border-2 border-dashed border-blue-200 rounded-xl text-blue-600 font-bold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
@@ -380,8 +380,8 @@ const ClinicSettings: React.FC = () => {
                     </button>
                 </div>
                 <div className="flex justify-end mt-4 pt-4 border-t border-blue-50">
-                    <button 
-                        onClick={handleSaveOverhead} 
+                    <button
+                        onClick={handleSaveOverhead}
                         className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
@@ -396,24 +396,24 @@ const ClinicSettings: React.FC = () => {
                     {localStaffMembers.map((member) => (
                         <div key={member.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-all">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-4 items-start">
-                                
+
                                 {/* 1. Identity (Cols 1-3) */}
                                 <div className="md:col-span-3 flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Identity</label>
-                                    <StyledInput 
-                                        type="text" 
-                                        placeholder="Staff Name" 
-                                        value={member.name} 
-                                        onChange={(v) => updateStaff(member.id, 'name', v)} 
-                                        className="mb-0" 
+                                    <StyledInput
+                                        type="text"
+                                        placeholder="Staff Name"
+                                        value={member.name}
+                                        onChange={(v) => updateStaff(member.id, 'name', v)}
+                                        className="mb-0"
                                         inputClassName="h-10"
                                     />
-                                    <StyledInput 
-                                        type="text" 
-                                        placeholder="Role / Position" 
-                                        value={member.role} 
-                                        onChange={(v) => updateStaff(member.id, 'role', v)} 
-                                        className="mb-0" 
+                                    <StyledInput
+                                        type="text"
+                                        placeholder="Role / Position"
+                                        value={member.role}
+                                        onChange={(v) => updateStaff(member.id, 'role', v)}
+                                        className="mb-0"
                                         inputClassName="h-10 text-sm"
                                     />
                                 </div>
@@ -421,35 +421,35 @@ const ClinicSettings: React.FC = () => {
                                 {/* 2. Compensation (Cols 4-8) */}
                                 <div className="md:col-span-5 flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Compensation</label>
-                                    <StyledInput 
-                                        type="currency" 
-                                        placeholder="Base Salary" 
+                                    <StyledInput
+                                        type="currency"
+                                        placeholder="Base Salary"
                                         min={0}
                                         onKeyDown={preventNegative}
-                                        value={member.salary} 
-                                        onChange={(v) => updateStaff(member.id, 'salary', v)} 
-                                        className="mb-0" 
+                                        value={member.salary}
+                                        onChange={(v) => updateStaff(member.id, 'salary', v)}
+                                        className="mb-0"
                                         inputClassName="h-10"
                                     />
                                     <div className="grid grid-cols-2 gap-2">
-                                        <StyledInput 
-                                            type="currency" 
-                                            placeholder="EPF/SOCSO" 
+                                        <StyledInput
+                                            type="currency"
+                                            placeholder="EPF/SOCSO"
                                             min={0}
                                             onKeyDown={preventNegative}
-                                            value={member.benefits} 
-                                            onChange={(v) => updateStaff(member.id, 'benefits', v)} 
-                                            className="mb-0" 
+                                            value={member.benefits}
+                                            onChange={(v) => updateStaff(member.id, 'benefits', v)}
+                                            className="mb-0"
                                             inputClassName="h-10"
                                         />
-                                        <StyledInput 
-                                            type="currency" 
-                                            placeholder="Bonus" 
+                                        <StyledInput
+                                            type="currency"
+                                            placeholder="Bonus"
                                             min={0}
                                             onKeyDown={preventNegative}
-                                            value={member.bonus} 
-                                            onChange={(v) => updateStaff(member.id, 'bonus', v)} 
-                                            className="mb-0" 
+                                            value={member.bonus}
+                                            onChange={(v) => updateStaff(member.id, 'bonus', v)}
+                                            className="mb-0"
                                             inputClassName="h-10"
                                         />
                                     </div>
@@ -459,43 +459,43 @@ const ClinicSettings: React.FC = () => {
                                 <div className="md:col-span-3 flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Schedule</label>
                                     <div className="grid grid-cols-2 gap-2">
-                                         <div>
-                                            <StyledInput 
-                                                type="number" 
-                                                value={member.workingDays ?? localSettings.workingDaysPerWeek} 
-                                                onChange={(v) => updateStaff(member.id, 'workingDays', v)} 
-                                                className="mb-0" 
+                                        <div>
+                                            <StyledInput
+                                                type="number"
+                                                value={member.workingDays ?? localSettings.workingDaysPerWeek}
+                                                onChange={(v) => updateStaff(member.id, 'workingDays', v)}
+                                                className="mb-0"
                                                 min={0} max={7}
                                                 onKeyDown={preventNegative}
                                                 inputClassName="h-10"
                                             />
                                             <span className="text-[10px] text-slate-400 font-semibold text-center block mt-1">Days/Wk</span>
-                                         </div>
-                                         <div>
-                                            <StyledInput 
-                                                type="number" 
-                                                value={member.workingHours ?? localSettings.hoursPerDay} 
-                                                onChange={(v) => updateStaff(member.id, 'workingHours', v)} 
-                                                className="mb-0" 
+                                        </div>
+                                        <div>
+                                            <StyledInput
+                                                type="number"
+                                                value={member.workingHours ?? localSettings.hoursPerDay}
+                                                onChange={(v) => updateStaff(member.id, 'workingHours', v)}
+                                                className="mb-0"
                                                 min={0} max={24}
                                                 onKeyDown={preventNegative}
                                                 inputClassName="h-10"
                                             />
                                             <span className="text-[10px] text-slate-400 font-semibold text-center block mt-1">Hrs/Day</span>
-                                         </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* 4. Actions (Col 12) */}
                                 <div className="md:col-span-1 flex flex-col justify-center items-center h-full pt-6 gap-2">
-                                    <button 
+                                    <button
                                         onClick={() => duplicateStaff(member.id)}
                                         className="text-slate-300 hover:text-indigo-500 p-2 rounded-lg hover:bg-indigo-50 transition-colors"
                                         title="Duplicate Staff"
                                     >
                                         <Copy className="w-5 h-5" />
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => removeStaff(member.id)}
                                         className="text-slate-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors"
                                         title="Remove Staff"
@@ -507,7 +507,7 @@ const ClinicSettings: React.FC = () => {
                             </div>
                         </div>
                     ))}
-                    <button 
+                    <button
                         onClick={addStaff}
                         className="w-full py-4 border-2 border-dashed border-indigo-200 rounded-xl text-indigo-600 font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 mt-2"
                     >
@@ -515,8 +515,8 @@ const ClinicSettings: React.FC = () => {
                     </button>
                 </div>
                 <div className="flex justify-end mt-4 pt-4 border-t border-indigo-50">
-                    <button 
-                        onClick={handleSaveStaff} 
+                    <button
+                        onClick={handleSaveStaff}
                         className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
@@ -540,41 +540,41 @@ const ClinicSettings: React.FC = () => {
                                 <StyledInput type="text" placeholder="Equipment Name" value={asset.name} onChange={(v) => updateAsset(asset.id, 'name', v)} className="mb-0" />
                             </div>
                             <div className="md:col-span-3">
-                                <StyledInput 
-                                    type="currency" 
-                                    placeholder="Price" 
+                                <StyledInput
+                                    type="currency"
+                                    placeholder="Price"
                                     min={0}
                                     onKeyDown={preventNegative}
-                                    value={asset.purchasePrice} 
-                                    onChange={(v) => updateAsset(asset.id, 'purchasePrice', v)} 
-                                    className="mb-0" 
+                                    value={asset.purchasePrice}
+                                    onChange={(v) => updateAsset(asset.id, 'purchasePrice', v)}
+                                    className="mb-0"
                                 />
                             </div>
                             <div className="md:col-span-2">
-                                <StyledInput 
-                                    type="number" 
-                                    placeholder="Yrs" 
+                                <StyledInput
+                                    type="number"
+                                    placeholder="Yrs"
                                     min={0}
                                     onKeyDown={preventNegative}
-                                    value={asset.lifespanYears} 
-                                    onChange={(v) => updateAsset(asset.id, 'lifespanYears', v)} 
-                                    className="mb-0" 
+                                    value={asset.lifespanYears}
+                                    onChange={(v) => updateAsset(asset.id, 'lifespanYears', v)}
+                                    className="mb-0"
                                 />
                             </div>
                             <div className="md:col-span-2">
-                                <StyledInput 
-                                    type="currency" 
-                                    placeholder="Resale" 
+                                <StyledInput
+                                    type="currency"
+                                    placeholder="Resale"
                                     min={0}
                                     onKeyDown={preventNegative}
-                                    value={asset.resaleValue} 
-                                    onChange={(v) => updateAsset(asset.id, 'resaleValue', v)} 
-                                    className="mb-0" 
+                                    value={asset.resaleValue}
+                                    onChange={(v) => updateAsset(asset.id, 'resaleValue', v)}
+                                    className="mb-0"
                                 />
                             </div>
                         </ListItem>
                     ))}
-                    <button 
+                    <button
                         onClick={addAsset}
                         className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
@@ -582,8 +582,8 @@ const ClinicSettings: React.FC = () => {
                     </button>
                 </div>
                 <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
-                    <button 
-                        onClick={handleSaveAssets} 
+                    <button
+                        onClick={handleSaveAssets}
                         className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
@@ -593,8 +593,8 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Confirmation Modal */}
-            <ConfirmationModal 
-                isOpen={confirmModal.isOpen} 
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
                 onConfirm={executeSave}
                 title="Save Changes?"

@@ -3,26 +3,26 @@ import { GlobalState, CalculatorContextType, SavedPlan } from '../types';
 
 const INITIAL_STATE: GlobalState = {
   clinicSettings: { clinicName: 'My Dental Clinic', workingDaysPerWeek: 5.5, hoursPerDay: 8, currencySymbol: 'RM' },
-  overhead: { 
+  overhead: {
     items: [
       { id: '1', name: 'Rent', monthlyCost: 3000 },
       { id: '2', name: 'Utilities', monthlyCost: 500 },
       { id: '3', name: 'Internet & Phone', monthlyCost: 150 },
       { id: '4', name: 'Cleaning Services', monthlyCost: 300 },
       { id: '5', name: 'Maintenance', monthlyCost: 200 }
-    ] 
+    ]
   },
-  staff: { 
+  staff: {
     members: [
       { id: '1', name: 'Dr. Associate', role: 'Dentist', salary: 8000, benefits: 1000, bonus: 500, workingDays: 5.5, workingHours: 8 },
       { id: '2', name: 'Sarah', role: 'Nurse', salary: 2500, benefits: 300, bonus: 100, workingDays: 5.5, workingHours: 8 }
-    ] 
+    ]
   },
-  depreciation: { 
+  depreciation: {
     assets: [
       { id: '1', name: 'Dental Chair Unit', purchasePrice: 45000, resaleValue: 5000, lifespanYears: 10 },
       { id: '2', name: 'X-Ray Machine', purchasePrice: 15000, resaleValue: 2000, lifespanYears: 8 }
-    ] 
+    ]
   },
   consumables: { items: [{ id: '1', name: 'Bonding Agent', cost: 5 }, { id: '2', name: 'Composite', cost: 8 }] },
   sterilization: { pouchCost: 0.5, chemicalCost: 1.0, ppeCost: 2.0, electricityCost: 1.5, instrumentsPerCycle: 10 },
@@ -62,7 +62,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (item) {
           const parsed = JSON.parse(item);
           if (parsed) {
-             loadedState[key] = { ...loadedState[key], ...parsed };
+            loadedState[key] = { ...loadedState[key], ...parsed };
           }
         }
       } catch (e) {
@@ -131,7 +131,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const resetAll = () => {
-    if(confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+    if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
       (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
         localStorage.removeItem(STORAGE_KEYS[key]);
       });
@@ -150,15 +150,15 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const overhead = state.overhead.items.reduce((acc, i) => acc + i.monthlyCost, 0);
     const staff = state.staff.members.reduce((acc, m) => acc + m.salary + m.benefits + m.bonus, 0);
     const depreciation = state.depreciation.assets.reduce((acc, a) => {
-         const months = a.lifespanYears * 12;
-         return acc + (months > 0 ? (a.purchasePrice - a.resaleValue) / months : 0);
+      const months = a.lifespanYears * 12;
+      return acc + (months > 0 ? (a.purchasePrice - a.resaleValue) / months : 0);
     }, 0);
     const regulatory = (state.regulatory.annualApc + state.regulatory.annualXray + state.regulatory.annualInsurance) / 12 + state.regulatory.monthlyWaste;
-    
+
     const transFeeAmount = state.financial.estMonthlyRevenue * (state.financial.transactionFeesPercent / 100);
-    const taxEstimate = state.financial.estMonthlyRevenue * (state.financial.taxRate / 100); 
+    const taxEstimate = state.financial.estMonthlyRevenue * (state.financial.taxRate / 100);
     const financial = state.financial.monthlyInterest + state.financial.monthlyBankCharges + transFeeAmount + taxEstimate;
-    
+
     const owner = state.owner.desiredNetIncome;
 
     return overhead + staff + depreciation + regulatory + financial + owner;
@@ -203,15 +203,15 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const showToast = (message: string) => setToast({ message, isVisible: true });
 
   return (
-    <CalculatorContext.Provider value={{ 
-      state, 
-      updateSection, 
-      resetAll, 
-      saveSection, 
-      toast, 
-      hideToast, 
-      showToast, 
-      getTotalMonthlyHours, 
+    <CalculatorContext.Provider value={{
+      state,
+      updateSection,
+      resetAll,
+      saveSection,
+      toast,
+      hideToast,
+      showToast,
+      getTotalMonthlyHours,
       getGlobalTotalMonthlyCost,
       savedPlans,
       savePlan,

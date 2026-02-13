@@ -208,40 +208,112 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
             }
          });
 
-         // 3. Reality Check (Fine-Tuning)
+         // 3. Reality Check (Strict Capacity Scaling)
+         // If over capacity, scale EVERYTHING down proportionally to fit.
+         if (enforceCapacity && currentUsedMinutes > capacityMinutes) {
+            const scaleFactor = capacityMinutes / currentUsedMinutes;
+            // Reset and re-apply scaled
+            currentGrossMargin = 0;
+            currentUsedMinutes = 0;
+
+            scoredProcedures.forEach(p => {
+               // Scale down and floor to be safe
+               let qty = Math.floor(simPlan[p.id] * scaleFactor);
+               simPlan[p.id] = qty;
+               currentGrossMargin += qty * p.unitMargin;
+               currentUsedMinutes += qty * p.duration;
+            });
+         }
+
 
          // Sorts for Fine-Tuning
          const sortedByEfficiencyAsc = [...scoredProcedures].sort((a, b) => a.hourlyProfit - b.hourlyProfit);
          const sortedByEfficiencyDesc = [...scoredProcedures].sort((a, b) => b.hourlyProfit - a.hourlyProfit);
 
-         // Check 1: Over Capacity? -> Reduce from LOWEST efficiency
-         while (enforceCapacity && currentUsedMinutes > capacityMinutes) {
-            const candidate = sortedByEfficiencyAsc.find(p => simPlan[p.id] > 0);
-            if (!candidate) break; // Should not happen if over capacity
+         // Check 1: Fill Gaps (Greedy Fill)
+         // Use remaining time to add most efficient items or any items that fit
+         let fillIterations = 0;
+         while (fillIterations < 1000) {
+            // STOP if target met (save capacity)
+            if (currentGrossMargin >= requiredMargin) break;
 
-            simPlan[candidate.id]--;
-            currentUsedMinutes -= candidate.duration;
-            currentGrossMargin -= candidate.unitMargin;
-         }
-
-         // Check 2: Under Target? -> Add to HIGHEST efficiency
-         // Loop until target met OR capacity full (if enforced)
-         // Prevents infinite loop with maxIterations safety, though logic should converge
-         let iterations = 0;
-         const maxFineTune = 10000;
-
-         while (currentGrossMargin < requiredMargin && iterations < maxFineTune) {
-            // Find best candidate that fits
             const candidate = sortedByEfficiencyDesc.find(p =>
                !enforceCapacity || (currentUsedMinutes + p.duration <= capacityMinutes)
             );
 
-            if (!candidate) break; // No more room or no valid candidates
+            if (!candidate) break; // No more room or no candidate fits
 
             simPlan[candidate.id]++;
             currentUsedMinutes += candidate.duration;
             currentGrossMargin += candidate.unitMargin;
-            iterations++;
+            fillIterations++;
+         }
+
+         // Check 2: Upgrade Phase (Smart Multi-Swap)
+         // If we are strictly enforcing capacity and haven't hit target, try to SWAP low eff for high eff.
+         const maxSwapIterations = 2000;
+         let swapIterations = 0;
+
+         while (
+            enforceCapacity &&
+            currentGrossMargin < requiredMargin &&
+            swapIterations < maxSwapIterations
+         ) {
+            // 1. Find a High Efficiency Candidate that DOESN'T fit
+            // (If it fit, Fill Gaps would have taken it)
+            const candidate = sortedByEfficiencyDesc.find(p =>
+               currentUsedMinutes + p.duration > capacityMinutes
+            );
+
+            if (!candidate) break;
+
+            // 2. Calculate Space Needed
+            const spaceNeeded = (currentUsedMinutes + candidate.duration) - capacityMinutes;
+
+            // 3. Find Low Efficiency Items to Remove to clear space
+            // Must invoke a net positive profit change.
+            let spaceCleared = 0;
+            let lostMargin = 0;
+            const toRemove: { id: string, qty: number }[] = [];
+
+            // Iterate worst to best
+            for (const worst of sortedByEfficiencyAsc) {
+               if (simPlan[worst.id] > 0) {
+                  // How many can we remove?
+                  const available = simPlan[worst.id];
+                  // We need to clear `spaceNeeded - spaceCleared`
+                  // Each `worst` clears `worst.duration`
+                  const neededCount = Math.ceil((spaceNeeded - spaceCleared) / worst.duration);
+                  const take = Math.min(available, neededCount);
+
+                  if (take > 0) {
+                     toRemove.push({ id: worst.id, qty: take });
+                     spaceCleared += take * worst.duration;
+                     lostMargin += take * worst.unitMargin;
+                  }
+
+                  if (spaceCleared >= spaceNeeded) break;
+               }
+            }
+
+            // 4. Do we have a valid swap?
+            if (spaceCleared >= spaceNeeded && (candidate.unitMargin > lostMargin)) {
+               // Execute Swap
+               toRemove.forEach(r => {
+                  simPlan[r.id] -= r.qty;
+               });
+               simPlan[candidate.id]++;
+
+               currentUsedMinutes = currentUsedMinutes - spaceCleared + candidate.duration;
+               currentGrossMargin = currentGrossMargin - lostMargin + candidate.unitMargin;
+            } else {
+               // Optimization Failed for this candidate.
+               // We break here to avoid infinite loops, but ideally we'd try the next candidate.
+               // For now, stopping is safer than looping forever.
+               break;
+            }
+
+            swapIterations++;
          }
 
          const profitMet = currentGrossMargin >= requiredMargin;
@@ -528,7 +600,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                               </div>
                               <div className="text-right">
                                  <span className={`text-xl font-black ${results.isTimeExceeded ? 'text-rose-600' : 'text-blue-600'}`}>
-                                    {results.timeUsedHours.toFixed(0)}
+                                    {results.timeUsedHours.toFixed(1)}
                                  </span>
                                  <span className="text-xs text-gray-400 font-medium block"> / {constraints.capacityHours.toFixed(0)} hrs</span>
                               </div>
