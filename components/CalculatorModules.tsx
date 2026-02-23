@@ -65,49 +65,55 @@ const SharpInput = ({
   type?: 'text' | 'number' | 'currency';
   placeholder?: string;
   tooltip?: string;
-}) => (
-  <div className="group relative mb-4">
-    {label && <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>}
-    <div className="relative flex items-center border border-gray-300 bg-white hover:border-blue-400 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors rounded-sm">
-      {type === 'currency' && (
-        <div className="pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10 rounded-l-sm">
-          <span className="text-gray-500 text-sm font-bold">RM</span>
-        </div>
-      )}
-      <input
-        type={type === 'text' ? 'text' : 'number'}
-        min="0"
-        value={value === 0 && type !== 'text' ? '' : value}
-        onChange={(e) => {
-          if (type === 'text') {
-            onChange(e.target.value);
-          } else {
-            // Constraint 2: No negatives
-            const val = parseFloat(e.target.value);
-            onChange(isNaN(val) ? 0 : Math.max(0, val));
-          }
-        }}
-        className={`
-            block w-full border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
-            focus:ring-0 sm:text-sm font-medium rounded-sm
+
+}) => {
+  const { state } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
+
+  return (
+    <div className="group relative mb-4">
+      {label && <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>}
+      <div className="relative flex items-center border border-gray-300 bg-white hover:border-blue-400 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors rounded-sm overflow-hidden">
+        {type === 'currency' && (
+          <div className="pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10">
+            <span className="text-gray-500 text-sm font-bold whitespace-nowrap">{currencySymbol}</span>
+          </div>
+        )}
+        <input
+          type={type === 'text' ? 'text' : 'number'}
+          min="0"
+          value={value === 0 && type !== 'text' ? '' : value}
+          onChange={(e) => {
+            if (type === 'text') {
+              onChange(e.target.value);
+            } else {
+              // Constraint 2: No negatives
+              const val = parseFloat(e.target.value);
+              onChange(isNaN(val) ? 0 : Math.max(0, val));
+            }
+          }}
+          className={`
+            block flex-1 w-full min-w-0 border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
+            focus:ring-0 sm:text-sm font-medium
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
         `}
-        placeholder={placeholder}
-      />
-      {type === 'number' && label.toLowerCase().includes('duration') && (
-        <span className="pr-3 text-gray-400 text-xs font-medium">min</span>
+          placeholder={placeholder}
+        />
+        {type === 'number' && label.toLowerCase().includes('duration') && (
+          <span className="pr-3 text-gray-400 text-xs font-medium whitespace-nowrap">min</span>
+        )}
+      </div>
+
+      {/* Constraint 4: Hover-Only Descriptions */}
+      {tooltip && (
+        <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs p-2 rounded-sm z-50 w-64 shadow-xl pointer-events-none animate-in fade-in slide-in-from-bottom-1 duration-200">
+          {tooltip}
+          <div className="absolute left-4 -bottom-1 w-2 h-2 bg-gray-800 rotate-45"></div>
+        </div>
       )}
     </div>
-
-    {/* Constraint 4: Hover-Only Descriptions */}
-    {tooltip && (
-      <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs p-2 rounded-sm z-50 w-64 shadow-xl pointer-events-none animate-in fade-in slide-in-from-bottom-1 duration-200">
-        {tooltip}
-        <div className="absolute left-4 -bottom-1 w-2 h-2 bg-gray-800 rotate-45"></div>
-      </div>
-    )}
-  </div>
-);
+  );
+};
 
 // --- Reusable Calculator Card ---
 interface CalculatorCardProps {
@@ -576,7 +582,7 @@ export const ProcedureBuilder = () => {
             {/* Metric 1: Break Even */}
             <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Min Cost to Cover</p>
-              <p className="text-lg font-bold text-gray-700 mt-1">RM {currentTotalCost.toFixed(0)}</p>
+              <p className="text-lg font-bold text-gray-700 mt-1">{state.clinicSettings.currencySymbol} {currentTotalCost.toFixed(0)}</p>
             </div>
 
             {/* Metric 2: Net Profit */}
@@ -584,7 +590,7 @@ export const ProcedureBuilder = () => {
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Net Profit / Case</p>
               <div className={`flex items-center gap-1 mt-1 ${currentNetProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {currentNetProfit >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                <span className="text-lg font-bold">RM {currentNetProfit.toFixed(0)}</span>
+                <span className="text-lg font-bold">{state.clinicSettings.currencySymbol} {currentNetProfit.toFixed(0)}</span>
               </div>
             </div>
 
@@ -599,7 +605,7 @@ export const ProcedureBuilder = () => {
             {/* Metric 4: Hourly Profit */}
             <div className="p-3 bg-blue-50 rounded-md border border-blue-100 shadow-sm">
               <p className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Profit Per Chair Hour</p>
-              <p className="text-lg font-bold text-blue-700 mt-1">RM {currentHourlyProfit.toFixed(0)}</p>
+              <p className="text-lg font-bold text-blue-700 mt-1">{state.clinicSettings.currencySymbol} {currentHourlyProfit.toFixed(0)}</p>
             </div>
           </div>
         </div>
@@ -635,9 +641,9 @@ export const ProcedureBuilder = () => {
                 return (
                   <tr key={item.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => handleEdit(item)}>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 text-right font-medium">RM {itemBreakEven.toFixed(0)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">RM {item.price.toFixed(0)}</td>
-                    <td className={`px-4 py-3 text-sm font-bold text-right ${itemProfit >= 0 ? 'text-teal-600' : 'text-red-500'}`}>RM {itemProfit.toFixed(0)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500 text-right font-medium">{state.clinicSettings.currencySymbol} {itemBreakEven.toFixed(0)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{state.clinicSettings.currencySymbol} {item.price.toFixed(0)}</td>
+                    <td className={`px-4 py-3 text-sm font-bold text-right ${itemProfit >= 0 ? 'text-teal-600' : 'text-red-500'}`}>{state.clinicSettings.currencySymbol} {itemProfit.toFixed(0)}</td>
                     <td className="px-4 py-3 text-right flex justify-end gap-2">
                       <button
                         onClick={(e) => {
@@ -1051,6 +1057,7 @@ export const DepreciationCalculator = () => {
 // --- 4. Consumables (Dynamic) ---
 export const ConsumablesCalculator = () => {
   const { state, updateSection } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const { items } = state.consumables;
 
   const [newItemName, setNewItemName] = useState('');
@@ -1078,7 +1085,7 @@ export const ConsumablesCalculator = () => {
     <CalculatorCard
       title="Consumables & Materials"
       resultTitle="Total Material Cost"
-      resultValue={`RM ${totalCost.toFixed(2)}`}
+      resultValue={`${currencySymbol} ${totalCost.toFixed(2)}`}
       section="consumables"
       visualData={visualData}
       tooltipData={{ title: "Variable Costs", content: "These costs scale with patient volume." }}
@@ -1100,7 +1107,7 @@ export const ConsumablesCalculator = () => {
           <div key={item.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
             <span className="text-gray-900 font-medium">{item.name}</span>
             <div className="flex items-center space-x-4">
-              <span className="font-bold text-teal-700">RM {item.cost.toFixed(2)}</span>
+              <span className="font-bold text-teal-700">{currencySymbol} {item.cost.toFixed(2)}</span>
               <button onClick={() => removeItem(item.id)} className="text-slate-400 hover:text-red-500"><Trash2 className="w-5 h-5" /></button>
             </div>
           </div>
@@ -1113,12 +1120,13 @@ export const ConsumablesCalculator = () => {
 // --- 5. Sterilization ---
 export const SterilizationCalculator = () => {
   const { state, updateSection } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const { pouchCost, chemicalCost, ppeCost, electricityCost, instrumentsPerCycle } = state.sterilization;
   const totalCycleCost = pouchCost + chemicalCost + ppeCost + electricityCost;
   const costPerPack = instrumentsPerCycle > 0 ? totalCycleCost / instrumentsPerCycle : 0;
   const visualData = [{ name: 'Pouch', value: pouchCost, color: '#0f766e' }, { name: 'Chemicals', value: chemicalCost, color: '#14b8a6' }, { name: 'PPE', value: ppeCost, color: '#2dd4bf' }];
   return (
-    <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`RM ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical">
+    <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical">
       <StyledInput label="Autoclave Pouch Cost" value={pouchCost} onChange={(v) => updateSection('sterilization', { pouchCost: v })} type="currency" />
       <StyledInput label="Chemical Indicator Cost" value={chemicalCost} onChange={(v) => updateSection('sterilization', { chemicalCost: v })} type="currency" />
       <StyledInput label="PPE Cost (Gloves/Masks)" value={ppeCost} onChange={(v) => updateSection('sterilization', { ppeCost: v })} type="currency" />
@@ -1131,12 +1139,13 @@ export const SterilizationCalculator = () => {
 // --- 6. Lab ---
 export const LabCalculator = () => {
   const { state, updateSection } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const { labFee, shippingCost, markupPercent } = state.lab;
   const baseCost = labFee + shippingCost;
   const finalPrice = baseCost * (1 + (markupPercent / 100));
   const visualData = [{ name: 'Base Fee', value: labFee, color: '#0d9488' }, { name: 'Shipping', value: shippingCost, color: '#14b8a6' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#22c55e' }];
   return (
-    <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`RM ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical">
+    <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical">
       <StyledInput label="Lab Fee" value={labFee} onChange={(v) => updateSection('lab', { labFee: v })} type="currency" />
       <StyledInput label="Shipping" value={shippingCost} onChange={(v) => updateSection('lab', { shippingCost: v })} type="currency" />
       <div className="pt-2"><StyledInput label="Desired Markup %" value={markupPercent} onChange={(v) => updateSection('lab', { markupPercent: v })} type="percent" /></div>
@@ -1147,12 +1156,13 @@ export const LabCalculator = () => {
 // --- 7. Marketing ---
 export const MarketingCalculator = () => {
   const { state, updateSection } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const { adSpend, agencyFees, productionCosts, newPatients } = state.marketing;
   const totalSpend = adSpend + agencyFees + productionCosts;
   const cac = newPatients > 0 ? totalSpend / newPatients : 0;
   const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#be123c' }, { name: 'Agency Fee', value: agencyFees, color: '#e11d48' }];
   return (
-    <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`RM ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="growth">
+    <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="growth">
       <StyledInput label="Monthly Ad Spend" value={adSpend} onChange={(v) => updateSection('marketing', { adSpend: v })} type="currency" />
       <StyledInput label="Agency Fees" value={agencyFees} onChange={(v) => updateSection('marketing', { agencyFees: v })} type="currency" />
       <StyledInput label="Production Costs" value={productionCosts} onChange={(v) => updateSection('marketing', { productionCosts: v })} type="currency" />
@@ -1164,12 +1174,13 @@ export const MarketingCalculator = () => {
 // --- 8. Regulatory ---
 export const RegulatoryCalculator = () => {
   const { state, updateSection } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const { annualApc, annualXray, annualInsurance, monthlyWaste } = state.regulatory;
   const monthlyAmortized = (annualApc + annualXray + annualInsurance) / 12;
   const totalMonthly = monthlyAmortized + monthlyWaste;
   const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#e11d48' }, { name: 'Insurance', value: annualInsurance / 12, color: '#f43f5e' }];
   return (
-    <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`RM ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="growth">
+    <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="growth">
       <StyledInput label="Annual APC Fee" value={annualApc} onChange={(v) => updateSection('regulatory', { annualApc: v })} type="currency" />
       <StyledInput label="Annual X-Ray License" value={annualXray} onChange={(v) => updateSection('regulatory', { annualXray: v })} type="currency" />
       <StyledInput label="Annual Indemnity Insurance" value={annualInsurance} onChange={(v) => updateSection('regulatory', { annualInsurance: v })} type="currency" />
@@ -1181,13 +1192,14 @@ export const RegulatoryCalculator = () => {
 // --- 9. Financial ---
 export const FinancialCalculator = () => {
   const { state, updateSection } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const { monthlyInterest, monthlyBankCharges, transactionFeesPercent, estMonthlyRevenue, taxRate } = state.financial;
   const transFeeAmount = estMonthlyRevenue * (transactionFeesPercent / 100);
   const taxEstimate = estMonthlyRevenue * (taxRate / 100);
   const totalFinancial = monthlyInterest + monthlyBankCharges + transFeeAmount + taxEstimate;
   const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#334155' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#475569' }];
   return (
-    <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`RM ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="foundation">
+    <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="foundation">
       <StyledInput label="Monthly Loan Interest" value={monthlyInterest} onChange={(v) => updateSection('financial', { monthlyInterest: v })} type="currency" />
       <StyledInput label="Bank Charges / Software" value={monthlyBankCharges} onChange={(v) => updateSection('financial', { monthlyBankCharges: v })} type="currency" />
       <div className="grid grid-cols-2 gap-4"><StyledInput label="Est. Monthly Revenue" value={estMonthlyRevenue} onChange={(v) => updateSection('financial', { estMonthlyRevenue: v })} type="currency" /><StyledInput label="Trans. Fee %" value={transactionFeesPercent} onChange={(v) => updateSection('financial', { transactionFeesPercent: v })} type="percent" /></div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCalculator } from '../context/CalculatorContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Info, ChevronDown, ChevronUp, DollarSign } from 'lucide-react';
 
@@ -28,24 +29,26 @@ interface ResultVisualsProps {
 
 const COLORS = ['#94a3b8', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444'];
 
-const ResultVisuals: React.FC<ResultVisualsProps> = ({ 
-  title, 
-  mainValue, 
-  subValue, 
-  data, 
+const ResultVisuals: React.FC<ResultVisualsProps> = ({
+  title,
+  mainValue,
+  subValue,
+  data,
   type = 'cost',
   projectionData,
   tooltipData,
   headerClassName = "bg-slate-900"
 }) => {
+  const { state } = useCalculator();
+  const { currencySymbol } = state.clinicSettings;
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   // Projection Calculation
   const projections = projectionData ? [
-    { freq: 'Daily', multiplier: 1 }, 
-    { freq: 'Weekly', multiplier: 5 }, 
-    { freq: 'Monthly', multiplier: 22 }, 
-    { freq: 'Yearly', multiplier: 264 } 
+    { freq: 'Daily', multiplier: 1 },
+    { freq: 'Weekly', multiplier: 5 },
+    { freq: 'Monthly', multiplier: 22 },
+    { freq: 'Yearly', multiplier: 264 }
   ] : [];
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -53,7 +56,7 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
       return (
         <div className="bg-white p-2 border border-slate-200 shadow-lg rounded-lg">
           <p className="text-xs font-semibold text-slate-700">{payload[0].name}</p>
-          <p className="text-sm font-bold text-slate-900">RM {payload[0].value.toFixed(2)}</p>
+          <p className="text-sm font-bold text-slate-900">{currencySymbol} {payload[0].value.toFixed(2)}</p>
         </div>
       );
     }
@@ -90,9 +93,9 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              verticalAlign="bottom" 
-              height={36} 
+            <Legend
+              verticalAlign="bottom"
+              height={36}
               iconType="circle"
               wrapperStyle={{ marginTop: '40px' }}
               formatter={(value, entry: any) => (
@@ -101,12 +104,12 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
             />
           </PieChart>
         </ResponsiveContainer>
-        
+
         {/* Center Text (Total or Label) */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
-           <div className="text-center">
-             <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest">Total</p>
-           </div>
+          <div className="text-center">
+            <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest">Total</p>
+          </div>
         </div>
       </div>
 
@@ -131,10 +134,10 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
                   <tr key={proj.freq}>
                     <td className="px-2 py-2 font-medium text-slate-700">{proj.freq}</td>
                     <td className="px-2 py-2 text-slate-600">
-                      RM {(projectionData.dailyRevenue * proj.multiplier).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {currencySymbol} {(projectionData.dailyRevenue * proj.multiplier).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </td>
                     <td className="px-2 py-2 font-bold text-teal-600">
-                      RM {(projectionData.dailyProfit * proj.multiplier).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {currencySymbol} {(projectionData.dailyProfit * proj.multiplier).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </td>
                   </tr>
                 ))}
@@ -147,7 +150,7 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
       {/* Educational Tooltip Accordion */}
       {tooltipData && (
         <div className={`border-t border-slate-200 bg-blue-50 ${isTooltipOpen ? '' : 'rounded-b-xl'}`}>
-          <button 
+          <button
             onClick={() => setIsTooltipOpen(!isTooltipOpen)}
             className="w-full p-3 flex items-center justify-between text-blue-800 hover:bg-blue-100 transition-colors"
           >
@@ -157,7 +160,7 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
             </div>
             {isTooltipOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
-          
+
           {isTooltipOpen && (
             <div className="p-4 pt-0 text-xs text-blue-700 leading-relaxed rounded-b-xl">
               <p className="font-semibold mb-1">{tooltipData.title}</p>

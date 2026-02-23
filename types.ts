@@ -1,18 +1,18 @@
 
-export type ViewState = 
+export type ViewState =
   | 'settings'
-  | 'dashboard' 
+  | 'dashboard'
   | 'history'
   | 'procedure_builder'
-  | 'overhead' 
-  | 'staff' 
-  | 'depreciation' 
-  | 'consumables' 
-  | 'sterilization' 
-  | 'lab' 
-  | 'marketing' 
-  | 'regulatory' 
-  | 'financial' 
+  | 'overhead'
+  | 'staff'
+  | 'depreciation'
+  | 'consumables'
+  | 'sterilization'
+  | 'lab'
+  | 'marketing'
+  | 'regulatory'
+  | 'financial'
   | 'owner';
 
 export interface CostCategoryDefinition {
@@ -165,12 +165,12 @@ export interface RegulatoryData {
 
 // 9. Financial
 export interface FinancialData {
-  loanPrincipal: number; 
+  loanPrincipal: number;
   monthlyInterest: number;
   monthlyBankCharges: number;
-  transactionFeesPercent: number; 
-  estMonthlyRevenue: number; 
-  taxRate: number; 
+  transactionFeesPercent: number;
+  estMonthlyRevenue: number;
+  taxRate: number;
 }
 
 // 10. Owner Comp
@@ -199,18 +199,20 @@ export interface CalculatorContextType {
   updateSection: <K extends keyof GlobalState>(section: K, data: Partial<GlobalState[K]>) => void;
   saveSection: (section: keyof GlobalState, customMessage?: string) => void;
   resetAll: () => void;
+  loadSampleData: () => void;
+  clearAllData: () => void;
   toast: { message: string; isVisible: boolean };
   hideToast: () => void;
   showToast: (message: string) => void;
   getTotalMonthlyHours: () => number;
   getGlobalTotalMonthlyCost: () => number;
-  
+
   // History & Modal Management
   savedPlans: SavedPlan[];
   savePlan: (plan: SavedPlan) => void;
   deletePlan: (id: string) => void;
   updatePlan: (plan: SavedPlan) => void;
-  
+
   // Global Modal Control
   modalState: {
     isOpen: boolean;

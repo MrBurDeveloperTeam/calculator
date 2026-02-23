@@ -6,7 +6,9 @@ import {
     Plus,
     Trash2,
     Copy,
-    Info
+    Info,
+    Database,
+    RotateCcw
 } from 'lucide-react';
 import StyledInput from './StyledInput';
 import CollapsibleSection from './CollapsibleSection';
@@ -36,7 +38,15 @@ const ListItem: React.FC<{
     );
 
 const ClinicSettings: React.FC = () => {
-    const { state, updateSection, saveSection, showToast } = useCalculator();
+    const { state, updateSection, saveSection, showToast, loadSampleData, clearAllData } = useCalculator();
+
+    // Sync local state when global state changes (e.g. after Load/Clear)
+    useEffect(() => {
+        setLocalSettings(state.clinicSettings);
+        setLocalOverheadItems(state.overhead.items);
+        setLocalStaffMembers(state.staff.members);
+        setLocalAssets(state.depreciation.assets);
+    }, [state]);
 
     // --- Local State for Manual Sync ---
     const [localSettings, setLocalSettings] = useState<ClinicSettingsData>(state.clinicSettings);
@@ -220,9 +230,27 @@ const ClinicSettings: React.FC = () => {
     return (
         <div className="max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
             {/* Header */}
-            <div className="flex flex-col mb-8">
-                <h1 className="text-3xl font-bold text-slate-900">Master Clinic Setup</h1>
-                <p className="text-slate-500 mt-1">Configure your entire clinic's operational baseline in one place.</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900">Master Clinic Setup</h1>
+                    <p className="text-slate-500 mt-1">Configure your entire clinic's operational baseline in one place.</p>
+                </div>
+                <div className="flex gap-3">
+                    <button
+                        onClick={loadSampleData}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all text-sm font-medium shadow-sm"
+                    >
+                        <Database className="w-4 h-4" />
+                        Load Sample Data
+                    </button>
+                    <button
+                        onClick={clearAllData}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all text-sm font-medium shadow-sm"
+                    >
+                        <RotateCcw className="w-4 h-4" />
+                        Clear All Data
+                    </button>
+                </div>
             </div>
 
             {/* Section 1: Operating Parameters */}

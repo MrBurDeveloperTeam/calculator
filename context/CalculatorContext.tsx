@@ -33,6 +33,20 @@ const INITIAL_STATE: GlobalState = {
   owner: { desiredNetIncome: 15000, riskBufferPercent: 10, personalTax: 2000 },
 };
 
+const EMPTY_STATE: GlobalState = {
+  clinicSettings: { clinicName: '', workingDaysPerWeek: 0, hoursPerDay: 0, currencySymbol: '' },
+  overhead: { items: [] },
+  staff: { members: [] },
+  depreciation: { assets: [] },
+  consumables: { items: [] },
+  sterilization: { pouchCost: 0, chemicalCost: 0, ppeCost: 0, electricityCost: 0, instrumentsPerCycle: 0 },
+  lab: { labFee: 0, shippingCost: 0, markupPercent: 0 },
+  marketing: { adSpend: 0, agencyFees: 0, productionCosts: 0, newPatients: 0 },
+  regulatory: { annualApc: 0, annualXray: 0, annualInsurance: 0, monthlyWaste: 0 },
+  financial: { loanPrincipal: 0, monthlyInterest: 0, monthlyBankCharges: 0, transactionFeesPercent: 0, estMonthlyRevenue: 0, taxRate: 0 },
+  owner: { desiredNetIncome: 0, riskBufferPercent: 0, personalTax: 0 },
+};
+
 // Distinct keys for each calculator
 const STORAGE_KEYS: Record<keyof GlobalState, string> = {
   clinicSettings: 'dental_calc_settings',
@@ -140,6 +154,26 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  const loadSampleData = () => {
+    if (confirm('Load sample data? This will overwrite current settings.')) {
+      setState(INITIAL_STATE);
+      (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
+        localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(INITIAL_STATE[key]));
+      });
+      setToast({ message: 'Sample data loaded.', isVisible: true });
+    }
+  };
+
+  const clearAllData = () => {
+    if (confirm('Clear ALL data? This will set everything to zero/empty.')) {
+      setState(EMPTY_STATE);
+      (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
+        localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(EMPTY_STATE[key]));
+      });
+      setToast({ message: 'All data cleared.', isVisible: true });
+    }
+  };
+
   const getTotalMonthlyHours = () => {
     const { workingDaysPerWeek, hoursPerDay } = state.clinicSettings;
     const total = workingDaysPerWeek * hoursPerDay * 4.3333;
@@ -207,6 +241,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       state,
       updateSection,
       resetAll,
+      loadSampleData,
+      clearAllData,
       saveSection,
       toast,
       hideToast,

@@ -562,7 +562,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                                        This is the maximum amount of profit based on the opex timeframe.
                                     </div>
                                  </span>
-                                 <span className="text-xs text-gray-400 font-medium block"> / {currencySymbol}{targetProfit.toLocaleString()}</span>
+                                 <span className="text-xs text-gray-400 font-medium block"> / {currencySymbol} {targetProfit.toLocaleString()}</span>
                               </div>
                            </div>
 
@@ -660,10 +660,10 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                                  <div key={proc.id} className={`px-6 py-3 flex items-center transition-colors hover:bg-gray-50 ${isActive ? 'bg-white' : 'bg-white opacity-80'}`}>
                                     <div className="flex-1">
                                        <p className={`font-bold text-sm text-gray-900`}>{proc.name}</p>
-                                       <p className="text-[10px] text-gray-400">Gross Profit: {currencySymbol}{margin.toFixed(0)}</p>
+                                       <p className="text-[10px] text-gray-400">Gross Profit: {currencySymbol} {margin.toFixed(0)}</p>
                                     </div>
                                     <div className="w-32 text-right font-medium text-emerald-600 text-sm">
-                                       {currencySymbol}{margin.toFixed(0)}
+                                       {currencySymbol} {margin.toFixed(0)}
                                     </div>
                                     <div className="w-24 text-center text-gray-500 text-xs">
                                        {proc.duration} min
@@ -703,7 +703,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                                  : 'Adjust plan to meet target within capacity.'}
                            </p>
                            <p className="text-xs text-gray-500">
-                              Total Procedures: {results.totalProcedures} | Gross Margin: {currencySymbol}{results.grossMargin.toLocaleString()}
+                              Total Procedures: {results.totalProcedures} | Gross Margin: {currencySymbol} {results.grossMargin.toLocaleString()}
                            </p>
                         </div>
                      </div>
