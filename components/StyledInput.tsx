@@ -5,7 +5,7 @@ interface StyledInputProps {
   label?: string;
   value: number | string;
   onChange: (value: any) => void;
-  type?: 'currency' | 'percent' | 'number' | 'text';
+  type?: 'currency' | 'percent' | 'number' | 'text' | 'password';
   helperText?: React.ReactNode;
   placeholder?: string;
   className?: string; // Container class override
@@ -46,10 +46,10 @@ const StyledInput: React.FC<StyledInputProps> = ({
         )}
 
         <input
-          type={type === 'text' ? 'text' : 'number'}
-          value={value === 0 && type !== 'text' ? '' : value}
+          type={type === 'text' ? 'text' : type === 'password' ? 'password' : 'number'}
+          value={value === 0 && (type !== 'text' && type !== 'password') ? '' : value}
           onChange={(e) => {
-            if (type === 'text') {
+            if (type === 'text' || type === 'password') {
               onChange(e.target.value);
             } else {
               // Note: we still allow raw input here, validation happens in logic

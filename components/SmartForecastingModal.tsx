@@ -156,7 +156,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
          profitProgress: Math.min(Math.max(profitProgress, 0), 100),
          timeProgress: Math.min(timeProgress, 100),
          isProfitMet: netProfit >= targetProfit,
-         isTimeExceeded: timeUsedHours > constraints.capacityHours,
+         isTimeExceeded: timeUsedHours > (constraints.capacityHours + 0.001),
       };
    }, [plan, savedProcedures, constraints, targetProfit]);
 
@@ -198,9 +198,9 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
          scoredProcedures.forEach(p => {
             if (totalEfficiencyScore > 0 && p.unitMargin > 0) {
                const targetShare = requiredMargin * (p.hourlyProfit / totalEfficiencyScore);
-               // Round to integer
-               const rawQty = Math.round(targetShare / p.unitMargin);
-               const qty = Math.max(0, rawQty);
+               // Floor the target share so we don't accidentally overshoot in a large batch
+               const rawQty = Math.floor(targetShare / p.unitMargin);
+               const qty = Math.max(1, rawQty); // FORCE at least 1 to ensure a truly "Balanced" round-robin feel
 
                simPlan[p.id] = qty;
                currentGrossMargin += qty * p.unitMargin;
@@ -219,10 +219,30 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
             scoredProcedures.forEach(p => {
                // Scale down and floor to be safe
                let qty = Math.floor(simPlan[p.id] * scaleFactor);
+               // Try to preserve our forced baseline of 1 so it doesn't look empty
+               qty = Math.max(1, qty);
+
                simPlan[p.id] = qty;
                currentGrossMargin += qty * p.unitMargin;
                currentUsedMinutes += qty * p.duration;
             });
+
+            // If preserving the baseline of 1 pushed us over capacity, we MUST trim 
+            // the least efficient procedures to zero.
+            let trimIterations = 0;
+            while (currentUsedMinutes > capacityMinutes && trimIterations < 1000) {
+               // Find least efficient that still has > 0 quantity
+               const toTrim = [...scoredProcedures]
+                  .sort((a, b) => a.hourlyProfit - b.hourlyProfit)
+                  .find(x => simPlan[x.id] > 0);
+
+               if (!toTrim) break; // Safety break
+
+               simPlan[toTrim.id]--;
+               currentUsedMinutes -= toTrim.duration;
+               currentGrossMargin -= toTrim.unitMargin;
+               trimIterations++;
+            }
          }
 
 
@@ -340,6 +360,10 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
          setIsGenerated(true);
       } else {
          // 2. Capacity reached but profit NOT met.
+         // First, show the user the best we could do WITHIN capacity.
+         setPlan(normalResult.plan);
+         setIsGenerated(true);
+
          // Try "Overflow" run (Ignore Capacity) to see if it's even possible to hit target
          const overflowResult = runSimulation(proceduresToUse, false);
 
@@ -348,18 +372,13 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
             if (allowOverflow) {
                // If we are already allowed to overflow (re-run from modal), set it.
                setPlan(overflowResult.plan);
-               setIsGenerated(true);
             } else {
-               // Otherwise, prompt user.
+               // Otherwise, prompt user with option to proceed with Overflow
                setPendingOverflowPlan(overflowResult.plan);
                setShowCapacityWarning(true);
             }
-         } else {
-            // Even with infinite capacity we couldn't hit it (unlikely unless no profitable procedures), 
-            // OR max iterations reached. Just show what we got from normal run.
-            setPlan(normalResult.plan);
-            setIsGenerated(true);
          }
+         // If `overflowResult.profitMet` is also false, we already gave them the best normal result.
       }
    };
 
@@ -466,7 +485,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                      </select>
                      <div className="mt-2 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 p-2 rounded-sm border border-blue-100">
                         <Clock className="w-3 h-3" />
-                        <span>Capacity: <strong>{constraints.capacityHours.toFixed(0)} hrs</strong> | OpEx: <strong>{currencySymbol}{constraints.fixedOpEx.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong></span>
+                        <span>Capacity: <strong>{constraints.capacityHours.toFixed(0)} hrs</strong> | OpEx: <strong>{currencySymbol} {constraints.fixedOpEx.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong></span>
                      </div>
                   </div>
 
@@ -525,6 +544,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                   <div className="mt-auto pt-4 border-t border-gray-100">
                      <button
                         onClick={() => generateSmartPlan(false)}
+                        disabled={targetProfit <= 0}
                         className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                      >
                         <Wand2 className="w-5 h-5" />
