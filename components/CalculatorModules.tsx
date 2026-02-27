@@ -217,12 +217,9 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
 
 // --- Procedure Profitability Library ---
 export const ProcedureBuilder = () => {
-  const { state, getTotalMonthlyHours, getGlobalTotalMonthlyCost, showToast } = useCalculator();
+  const { state, getTotalMonthlyHours, getGlobalTotalMonthlyCost, showToast, savedProcedures, saveProcedure, updateProcedure, deleteProcedure } = useCalculator();
   const { currencySymbol } = state.clinicSettings;
   const consumablesList = state.consumables.items;
-  const STORAGE_KEY = 'dental_saved_procedures';
-
-  const [procedures, setProcedures] = useState<SavedProcedure[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Input State
@@ -241,15 +238,6 @@ export const ProcedureBuilder = () => {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setProcedures(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to load saved procedures", e);
-      }
-    }
-
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -258,11 +246,6 @@ export const ProcedureBuilder = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const saveToStorage = (data: SavedProcedure[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    setProcedures(data);
-  };
 
   // --- Centralized Cost Logic Integration ---
   const totalMonthlyFixed = getGlobalTotalMonthlyCost();
@@ -316,7 +299,7 @@ export const ProcedureBuilder = () => {
     }
 
     const newProcedure: SavedProcedure = {
-      id: editingId || Date.now().toString(),
+      id: editingId || crypto.randomUUID(),
       name: inputName,
       price: inputPrice,
       duration: inputDuration,
@@ -324,13 +307,11 @@ export const ProcedureBuilder = () => {
       recipe: recipe
     };
 
-    let updatedList;
     if (editingId) {
-      updatedList = procedures.map(p => p.id === editingId ? newProcedure : p);
+      updateProcedure(newProcedure);
     } else {
-      updatedList = [...procedures, newProcedure];
+      saveProcedure(newProcedure);
     }
-    saveToStorage(updatedList);
     showToast(editingId ? "Procedure updated successfully!" : "Procedure saved to library!");
     resetForm();
   };
@@ -345,7 +326,7 @@ export const ProcedureBuilder = () => {
     } else {
       // Migration for legacy items without a recipe: 
       if (proc.variableCost > 0) {
-        setRecipe([{ id: 'legacy_' + Date.now(), name: 'Legacy Material Cost', cost: proc.variableCost, quantity: 1 }]);
+        setRecipe([{ id: crypto.randomUUID(), name: 'Legacy Material Cost', cost: proc.variableCost, quantity: 1 }]);
       } else {
         setRecipe([]);
       }
@@ -361,8 +342,7 @@ export const ProcedureBuilder = () => {
 
   const executeDelete = () => {
     if (deleteTargetId) {
-      const updated = procedures.filter(p => p.id !== deleteTargetId);
-      saveToStorage(updated);
+      deleteProcedure(deleteTargetId);
       if (editingId === deleteTargetId) resetForm();
       showToast('Procedure deleted successfully.');
     }
@@ -634,7 +614,7 @@ export const ProcedureBuilder = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {procedures.map((item) => {
+              {savedProcedures.map((item) => {
                 const itemFixedCost = item.duration * globalMinuteRate;
                 const itemBreakEven = item.variableCost + itemFixedCost;
                 const itemProfit = item.price - itemBreakEven;
@@ -658,7 +638,7 @@ export const ProcedureBuilder = () => {
                   </tr>
                 );
               })}
-              {procedures.length === 0 && <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">Library is empty.</td></tr>}
+              {savedProcedures.length === 0 && <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">Library is empty.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -1066,7 +1046,7 @@ export const ConsumablesCalculator = () => {
   const addItem = () => {
     if (newItemName && newItemCost > 0) {
       updateSection('consumables', {
-        items: [...items, { id: Date.now().toString(), name: newItemName, cost: newItemCost }]
+        items: [...items, { id: crypto.randomUUID(), name: newItemName, cost: newItemCost }]
       });
       setNewItemName('');
       setNewItemCost(0);

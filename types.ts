@@ -1,3 +1,18 @@
+import { User } from '@supabase/supabase-js';
+
+export interface Profile {
+  user_id: string;
+  email: string;
+  name: string | null;
+  account_type: 'individual' | 'company' | 'admin' | null;
+  phone: string | null;
+  position: string | null;
+  company_name: string | null;
+  avatar_url: string | null;
+  background_url: string | null;
+  clinic_id: string | null;
+  status: string | null;
+}
 
 export type ViewState =
   | 'settings'
@@ -197,10 +212,8 @@ export interface GlobalState {
 export interface CalculatorContextType {
   state: GlobalState;
   updateSection: <K extends keyof GlobalState>(section: K, data: Partial<GlobalState[K]>) => void;
-  saveSection: (section: keyof GlobalState, customMessage?: string) => void;
+  saveSection: (section: keyof GlobalState, customMessage?: string, explicitData?: any) => void;
   resetAll: () => void;
-  loadSampleData: () => void;
-  clearAllData: () => void;
   toast: { message: string; isVisible: boolean };
   hideToast: () => void;
   showToast: (message: string) => void;
@@ -212,6 +225,12 @@ export interface CalculatorContextType {
   savePlan: (plan: SavedPlan) => void;
   deletePlan: (id: string) => void;
   updatePlan: (plan: SavedPlan) => void;
+
+  // Global Procedure Library
+  savedProcedures: SavedProcedure[];
+  saveProcedure: (procedure: SavedProcedure) => void;
+  deleteProcedure: (id: string) => void;
+  updateProcedure: (procedure: SavedProcedure) => void;
 
   // Global Modal Control
   modalState: {

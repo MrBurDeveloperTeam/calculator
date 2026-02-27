@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ViewState } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import HistoryTab from './components/HistoryTab';
 import Toast from './components/Toast';
 import { CalculatorProvider, useCalculator } from './context/CalculatorContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginPage from './components/Auth/LoginPage';
 import ClinicSettings from './components/ClinicSettings';
 import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
@@ -23,10 +26,28 @@ import {
   ProcedureBuilder
 } from './components/CalculatorModules';
 
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin border-opacity-50"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const AppContent: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewState>('settings'); 
+  const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+  const { signOut } = useAuth();
   const { toast, hideToast, modalState, closeModal } = useCalculator();
 
   const renderView = () => {
@@ -51,44 +72,56 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
-      <Sidebar 
-        currentView={currentView} 
-        onChangeView={setCurrentView} 
+      <Sidebar
+        currentView={currentView}
+        onChangeView={setCurrentView}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
       />
-      
+
       <div className="flex-1 flex flex-col lg:pl-64 transition-all duration-300">
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
           <span className="font-bold text-slate-800">DentalSuite Pro</span>
-          <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
-            <Menu className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={signOut} className="p-2 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md">
+              <LogOut className="w-5 h-5" />
+            </button>
+            <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
         </header>
 
+        {/* Desktop Header Actions (Optional padding logic) */}
+        <div className="hidden lg:flex justify-end p-4 absolute top-0 right-0 z-20">
+          <button onClick={signOut} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors">
+            <LogOut className="w-4 h-4" /> Sign Out
+          </button>
+        </div>
+
         {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 lg:p-8 overflow-y-auto mt-4 lg:mt-12">
           {renderView()}
         </main>
       </div>
 
       {/* Global Modals for Planning */}
-      <ROICalculatorModal 
-         isOpen={modalState.isOpen && modalState.type === 'ROI'} 
-         onClose={closeModal} 
-         initialPlan={modalState.initialData}
+      <ROICalculatorModal
+        isOpen={modalState.isOpen && modalState.type === 'ROI'}
+        onClose={closeModal}
+        initialPlan={modalState.initialData}
       />
-      <SmartForecastingModal 
-         isOpen={modalState.isOpen && modalState.type === 'FORECAST'} 
-         onClose={closeModal}
-         initialPlan={modalState.initialData}
+      <SmartForecastingModal
+        isOpen={modalState.isOpen && modalState.type === 'FORECAST'}
+        onClose={closeModal}
+        initialPlan={modalState.initialData}
       />
 
-      <Toast 
-        message={toast.message} 
-        isVisible={toast.isVisible} 
-        onClose={hideToast} 
+      <Toast
+        message={toast.message}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
       />
     </div>
   );
@@ -96,9 +129,23 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <CalculatorProvider>
-      <AppContent />
-    </CalculatorProvider>
+    <AuthProvider>
+      <CalculatorProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <AppContent />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </CalculatorProvider>
+    </AuthProvider>
   );
 };
 

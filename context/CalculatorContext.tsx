@@ -1,30 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { GlobalState, CalculatorContextType, SavedPlan } from '../types';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure } from '../types';
+import { useAuth } from './AuthContext';
+import * as api from '../data/api';
 
 const INITIAL_STATE: GlobalState = {
   clinicSettings: { clinicName: 'My Dental Clinic', workingDaysPerWeek: 5.5, hoursPerDay: 8, currencySymbol: 'RM' },
-  overhead: {
-    items: [
-      { id: '1', name: 'Rent', monthlyCost: 3000 },
-      { id: '2', name: 'Utilities', monthlyCost: 500 },
-      { id: '3', name: 'Internet & Phone', monthlyCost: 150 },
-      { id: '4', name: 'Cleaning Services', monthlyCost: 300 },
-      { id: '5', name: 'Maintenance', monthlyCost: 200 }
-    ]
-  },
-  staff: {
-    members: [
-      { id: '1', name: 'Dr. Associate', role: 'Dentist', salary: 8000, benefits: 1000, bonus: 500, workingDays: 5.5, workingHours: 8 },
-      { id: '2', name: 'Sarah', role: 'Nurse', salary: 2500, benefits: 300, bonus: 100, workingDays: 5.5, workingHours: 8 }
-    ]
-  },
-  depreciation: {
-    assets: [
-      { id: '1', name: 'Dental Chair Unit', purchasePrice: 45000, resaleValue: 5000, lifespanYears: 10 },
-      { id: '2', name: 'X-Ray Machine', purchasePrice: 15000, resaleValue: 2000, lifespanYears: 8 }
-    ]
-  },
-  consumables: { items: [{ id: '1', name: 'Bonding Agent', cost: 5 }, { id: '2', name: 'Composite', cost: 8 }] },
+  overhead: { items: [] },
+  staff: { members: [] },
+  depreciation: { assets: [] },
+  consumables: { items: [] },
   sterilization: { pouchCost: 0.5, chemicalCost: 1.0, ppeCost: 2.0, electricityCost: 1.5, instrumentsPerCycle: 10 },
   lab: { labFee: 200, shippingCost: 20, markupPercent: 50 },
   marketing: { adSpend: 1000, agencyFees: 500, productionCosts: 200, newPatients: 20 },
@@ -33,99 +17,132 @@ const INITIAL_STATE: GlobalState = {
   owner: { desiredNetIncome: 15000, riskBufferPercent: 10, personalTax: 2000 },
 };
 
-const EMPTY_STATE: GlobalState = {
-  clinicSettings: { clinicName: '', workingDaysPerWeek: 0, hoursPerDay: 0, currencySymbol: '' },
-  overhead: { items: [] },
-  staff: { members: [] },
-  depreciation: { assets: [] },
-  consumables: { items: [] },
-  sterilization: { pouchCost: 0, chemicalCost: 0, ppeCost: 0, electricityCost: 0, instrumentsPerCycle: 0 },
-  lab: { labFee: 0, shippingCost: 0, markupPercent: 0 },
-  marketing: { adSpend: 0, agencyFees: 0, productionCosts: 0, newPatients: 0 },
-  regulatory: { annualApc: 0, annualXray: 0, annualInsurance: 0, monthlyWaste: 0 },
-  financial: { loanPrincipal: 0, monthlyInterest: 0, monthlyBankCharges: 0, transactionFeesPercent: 0, estMonthlyRevenue: 0, taxRate: 0 },
-  owner: { desiredNetIncome: 0, riskBufferPercent: 0, personalTax: 0 },
-};
-
-// Distinct keys for each calculator
-const STORAGE_KEYS: Record<keyof GlobalState, string> = {
-  clinicSettings: 'dental_calc_settings',
-  overhead: 'dental_calc_overhead',
-  staff: 'dental_calc_staff',
-  depreciation: 'dental_calc_depreciation',
-  consumables: 'dental_calc_consumables',
-  sterilization: 'dental_calc_sterilization',
-  lab: 'dental_calc_lab',
-  marketing: 'dental_calc_marketing',
-  regulatory: 'dental_calc_regulatory',
-  financial: 'dental_calc_financial',
-  owner: 'dental_calc_owner',
-};
-
 const CalculatorContext = createContext<CalculatorContextType | undefined>(undefined);
 
 export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toast, setToast] = useState({ message: '', isVisible: false });
-
-  // Load state from localStorage individually for each key
-  const [state, setState] = useState<GlobalState>(() => {
-    const loadedState = { ...INITIAL_STATE };
-    (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
-      try {
-        const item = localStorage.getItem(STORAGE_KEYS[key]);
-        if (item) {
-          const parsed = JSON.parse(item);
-          if (parsed) {
-            loadedState[key] = { ...loadedState[key], ...parsed };
-          }
-        }
-      } catch (e) {
-        console.error(`Failed to load ${key}`, e);
-      }
-    });
-    return loadedState;
-  });
-
-  // --- Saved Plans State ---
+  const [state, setState] = useState<GlobalState>(INITIAL_STATE);
   const [savedPlans, setSavedPlans] = useState<SavedPlan[]>([]);
+  const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
+  const [modalState, setModalState] = useState<{ isOpen: boolean; type: 'ROI' | 'FORECAST' | null; initialData: SavedPlan | null }>({ isOpen: false, type: null, initialData: null });
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const { user } = useAuth(); // Hook into the authenticated session
+  const isFetchingRef = useRef(false);
 
-  // Load Plans on Mount
+  // 1. Central Data Fetching on Login
   useEffect(() => {
-    const plans = localStorage.getItem('dental_saved_plans');
-    if (plans) {
+    let isMounted = true;
+
+    if (!user) {
+      setState(INITIAL_STATE);
+      setSavedPlans([]);
+      setSavedProcedures([]);
+      setIsDataLoaded(false);
+      return;
+    }
+
+    if (isFetchingRef.current) return;
+
+    const fetchUserSupabaseData = async () => {
+      isFetchingRef.current = true;
       try {
-        setSavedPlans(JSON.parse(plans));
-      } catch (e) {
-        console.error("Failed to load plans", e);
+        const [
+          settings,
+          sterilization,
+          lab,
+          marketing,
+          regulatory,
+          financial,
+          owner,
+          overheadItems,
+          staffMembers,
+          assets,
+          consumableItems,
+          plans,
+          procedures
+        ] = await Promise.all([
+          api.getSingularConfig<any>('calc_settings', user.id),
+          api.getSingularConfig<any>('calc_sterilization_config', user.id),
+          api.getSingularConfig<any>('calc_lab_config', user.id),
+          api.getSingularConfig<any>('calc_marketing_config', user.id),
+          api.getSingularConfig<any>('calc_regulatory_config', user.id),
+          api.getSingularConfig<any>('calc_financial_config', user.id),
+          api.getSingularConfig<any>('calc_owner_config', user.id),
+          api.getListItems<any>('calc_overhead_items', user.id),
+          api.getListItems<any>('calc_staff_members', user.id),
+          api.getListItems<any>('calc_depreciation_assets', user.id),
+          api.getListItems<any>('calc_consumable_items', user.id),
+          api.getPlans(user.id),
+          api.getProcedures(user.id)
+        ]);
+
+        setState(prev => ({
+          clinicSettings: {
+            clinicName: settings?.clinic_name ?? prev.clinicSettings.clinicName,
+            workingDaysPerWeek: settings?.working_days_per_week ?? prev.clinicSettings.workingDaysPerWeek,
+            hoursPerDay: settings?.hours_per_day ?? prev.clinicSettings.hoursPerDay,
+            currencySymbol: settings?.currency_symbol ?? prev.clinicSettings.currencySymbol
+          },
+          overhead: { items: overheadItems.map((i: any) => ({ ...i, monthlyCost: i.monthly_cost })) },
+          staff: { members: staffMembers.map((i: any) => ({ ...i, workingDays: i.working_days, workingHours: i.working_hours })) },
+          depreciation: { assets: assets.map((i: any) => ({ ...i, purchasePrice: i.purchase_price, resaleValue: i.resale_value, lifespanYears: i.lifespan_years })) },
+          consumables: {
+            items: consumableItems ?? prev.consumables.items
+          }, sterilization: {
+            pouchCost: sterilization?.pouch_cost ?? prev.sterilization.pouchCost,
+            chemicalCost: sterilization?.chemical_cost ?? prev.sterilization.chemicalCost,
+            ppeCost: sterilization?.ppe_cost ?? prev.sterilization.ppeCost,
+            electricityCost: sterilization?.electricity_cost ?? prev.sterilization.electricityCost,
+            instrumentsPerCycle: sterilization?.instruments_per_cycle ?? prev.sterilization.instrumentsPerCycle
+          },
+          lab: {
+            labFee: lab?.lab_fee ?? prev.lab.labFee,
+            shippingCost: lab?.shipping_cost ?? prev.lab.shippingCost,
+            markupPercent: lab?.markup_percent ?? prev.lab.markupPercent
+          },
+          marketing: {
+            adSpend: marketing?.ad_spend ?? prev.marketing.adSpend,
+            agencyFees: marketing?.agency_fees ?? prev.marketing.agencyFees,
+            productionCosts: marketing?.production_costs ?? prev.marketing.productionCosts,
+            newPatients: marketing?.new_patients ?? prev.marketing.newPatients
+          },
+          regulatory: {
+            annualApc: regulatory?.annual_apc ?? prev.regulatory.annualApc,
+            annualXray: regulatory?.annual_xray ?? prev.regulatory.annualXray,
+            annualInsurance: regulatory?.annual_insurance ?? prev.regulatory.annualInsurance,
+            monthlyWaste: regulatory?.monthly_waste ?? prev.regulatory.monthlyWaste
+          },
+          financial: {
+            loanPrincipal: financial?.loan_principal ?? prev.financial.loanPrincipal,
+            monthlyInterest: financial?.monthly_interest ?? prev.financial.monthlyInterest,
+            monthlyBankCharges: financial?.monthly_bank_charges ?? prev.financial.monthlyBankCharges,
+            transactionFeesPercent: financial?.transaction_fees_percent ?? prev.financial.transactionFeesPercent,
+            estMonthlyRevenue: financial?.est_monthly_revenue ?? prev.financial.estMonthlyRevenue,
+            taxRate: financial?.tax_rate ?? prev.financial.taxRate
+          },
+          owner: {
+            desiredNetIncome: owner?.desired_net_income ?? prev.owner.desiredNetIncome,
+            riskBufferPercent: owner?.risk_buffer_percent ?? prev.owner.riskBufferPercent,
+            personalTax: owner?.personal_tax ?? prev.owner.personalTax
+          }
+        }));
+
+        setSavedPlans(plans);
+        setSavedProcedures(procedures || []);
+
+        setIsDataLoaded(true);
+
+      } catch (err) {
+        console.error("Failed to load user data from Supabase", err);
+        setToast({ message: 'Failed to sync data from cloud.', isVisible: true });
+      } finally {
+        isFetchingRef.current = false;
       }
-    }
-  }, []);
+    };
 
-  // --- Global Modal State ---
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean;
-    type: 'ROI' | 'FORECAST' | null;
-    initialData: SavedPlan | null;
-  }>({
-    isOpen: false,
-    type: null,
-    initialData: null
-  });
+    fetchUserSupabaseData();
+  }, [user?.id]);
 
-  // Seed Data Injection for Procedures (Runs once on mount)
-  useEffect(() => {
-    const existing = localStorage.getItem('dental_saved_procedures');
-    if (!existing || existing === '[]') {
-      const SEED_DATA = [
-        { id: 'seed_1', name: 'General Scaling & Polishing', price: 150, duration: 30, variableCost: 15 },
-        { id: 'seed_2', name: 'Complex Wisdom Tooth Surgery', price: 800, duration: 60, variableCost: 60 },
-        { id: 'seed_3', name: 'Zirconia Crown (Posterior)', price: 1500, duration: 90, variableCost: 400 }, // Mat 50 + Lab 350
-        { id: 'seed_4', name: 'Whitening (Chairside)', price: 900, duration: 60, variableCost: 120 },
-        { id: 'seed_5', name: 'Composite Filling (Large)', price: 250, duration: 45, variableCost: 25 },
-      ];
-      localStorage.setItem('dental_saved_procedures', JSON.stringify(SEED_DATA));
-    }
-  }, []);
 
   const updateSection = <K extends keyof GlobalState>(section: K, data: Partial<GlobalState[K]>) => {
     setState(prev => ({
@@ -134,45 +151,114 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   };
 
-  const saveSection = (section: keyof GlobalState, customMessage?: string) => {
+  const saveSection = async (section: keyof GlobalState, customMessage?: string, explicitData?: any) => {
     try {
-      const data = state[section];
-      localStorage.setItem(STORAGE_KEYS[section], JSON.stringify(data));
-      setToast({ message: customMessage || 'Configuration saved!', isVisible: true });
+      const data = explicitData || state[section];
+
+      // Mapping logic for Singular Configurations vs Arrays
+      switch (section) {
+        case 'clinicSettings':
+          await api.updateSingularConfig('calc_settings', user!.id, {
+            clinic_name: (data as any).clinicName,
+            working_days_per_week: (data as any).workingDaysPerWeek,
+            hours_per_day: (data as any).hoursPerDay,
+            currency_symbol: (data as any).currencySymbol
+          });
+          break;
+        case 'sterilization':
+          await api.updateSingularConfig('calc_sterilization_config', user!.id, {
+            pouch_cost: (data as any).pouchCost,
+            chemical_cost: (data as any).chemicalCost,
+            ppe_cost: (data as any).ppeCost,
+            electricity_cost: (data as any).electricityCost,
+            instruments_per_cycle: (data as any).instrumentsPerCycle
+          });
+          break;
+        case 'lab':
+          await api.updateSingularConfig('calc_lab_config', user!.id, {
+            lab_fee: (data as any).labFee,
+            shipping_cost: (data as any).shippingCost,
+            markup_percent: (data as any).markupPercent
+          });
+          break;
+        case 'marketing':
+          await api.updateSingularConfig('calc_marketing_config', user!.id, {
+            ad_spend: (data as any).adSpend,
+            agency_fees: (data as any).agencyFees,
+            production_costs: (data as any).productionCosts,
+            new_patients: (data as any).newPatients
+          });
+          break;
+        case 'regulatory':
+          await api.updateSingularConfig('calc_regulatory_config', user!.id, {
+            annual_apc: (data as any).annualApc,
+            annual_xray: (data as any).annualXray,
+            annual_insurance: (data as any).annualInsurance,
+            monthly_waste: (data as any).monthlyWaste
+          });
+          break;
+        case 'financial':
+          await api.updateSingularConfig('calc_financial_config', user!.id, {
+            loan_principal: (data as any).loanPrincipal,
+            monthly_interest: (data as any).monthlyInterest,
+            monthly_bank_charges: (data as any).monthlyBankCharges,
+            transaction_fees_percent: (data as any).transactionFeesPercent,
+            est_monthly_revenue: (data as any).estMonthlyRevenue,
+            tax_rate: (data as any).taxRate
+          });
+          break;
+        case 'owner':
+          await api.updateSingularConfig('calc_owner_config', user!.id, {
+            desired_net_income: (data as any).desiredNetIncome,
+            risk_buffer_percent: (data as any).riskBufferPercent,
+            personal_tax: (data as any).personalTax
+          });
+          break;
+
+        // Batch Arrays (Deleted and completely replaced for simplicity on 'save')
+        case 'overhead':
+          await api.syncEntireList(
+            'calc_overhead_items',
+            user!.id,
+            (data as any).items.map((i: any) => ({ id: i.id, name: i.name, monthly_cost: i.monthlyCost }))
+          );
+          break;
+        case 'staff':
+          await api.syncEntireList(
+            'calc_staff_members',
+            user!.id,
+            (data as any).members.map((i: any) => ({
+              id: i.id, name: i.name, role: i.role, salary: i.salary,
+              benefits: i.benefits, bonus: i.bonus, working_days: i.workingDays, working_hours: i.workingHours
+            }))
+          );
+          break;
+        case 'depreciation':
+          await api.syncEntireList(
+            'calc_depreciation_assets',
+            user!.id,
+            (data as any).assets.map((i: any) => ({
+              id: i.id, name: i.name, purchase_price: i.purchasePrice, resale_value: i.resaleValue, lifespan_years: i.lifespanYears
+            }))
+          );
+          break;
+        case 'consumables':
+          await api.syncEntireList('calc_consumable_items', user!.id, (data as any).items);
+          break;
+      }
+
+      setToast({ message: customMessage || 'Saved to Cloud Database', isVisible: true });
     } catch (e) {
-      console.error("Failed to save section", e);
+      console.error("Failed to save section to Supabase", e);
+      setToast({ message: 'Error saving data to cloud.', isVisible: true });
     }
   };
 
   const resetAll = () => {
-    if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
-      (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
-        localStorage.removeItem(STORAGE_KEYS[key]);
-      });
-      setState(INITIAL_STATE);
-      setToast({ message: 'All data reset to defaults.', isVisible: true });
-    }
+    // Currently disabled for cloud integrity, could implement delete cascader
+    setToast({ message: 'Cloud reset not implemented yet.', isVisible: true });
   };
 
-  const loadSampleData = () => {
-    if (confirm('Load sample data? This will overwrite current settings.')) {
-      setState(INITIAL_STATE);
-      (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
-        localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(INITIAL_STATE[key]));
-      });
-      setToast({ message: 'Sample data loaded.', isVisible: true });
-    }
-  };
-
-  const clearAllData = () => {
-    if (confirm('Clear ALL data? This will set everything to zero/empty.')) {
-      setState(EMPTY_STATE);
-      (Object.keys(STORAGE_KEYS) as Array<keyof GlobalState>).forEach((key) => {
-        localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(EMPTY_STATE[key]));
-      });
-      setToast({ message: 'All data cleared.', isVisible: true });
-    }
-  };
 
   const getTotalMonthlyHours = () => {
     const { workingDaysPerWeek, hoursPerDay } = state.clinicSettings;
@@ -198,41 +284,80 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return overhead + staff + depreciation + regulatory + financial + owner;
   };
 
-  // --- Plan Management Functions ---
-  const savePlan = (plan: SavedPlan) => {
-    const newPlans = [...savedPlans, plan];
-    setSavedPlans(newPlans);
-    localStorage.setItem('dental_saved_plans', JSON.stringify(newPlans));
-    setToast({ message: 'Plan saved successfully!', isVisible: true });
+  // --- Remote Plan Management Functions ---
+  const savePlan = async (plan: SavedPlan) => {
+    try {
+      await api.upsertPlan(user!.id, plan);
+      setSavedPlans(prev => [...prev.filter(p => p.id !== plan.id), plan]);
+      setToast({ message: 'Plan saved to Cloud!', isVisible: true });
+    } catch (e) {
+      console.error("Error saving plan:", e);
+      setToast({ message: 'Error saving plan.', isVisible: true });
+    }
   };
 
-  const updatePlan = (plan: SavedPlan) => {
-    const newPlans = savedPlans.map(p => p.id === plan.id ? plan : p);
-    setSavedPlans(newPlans);
-    localStorage.setItem('dental_saved_plans', JSON.stringify(newPlans));
-    setToast({ message: 'Plan updated successfully!', isVisible: true });
+  const updatePlan = async (plan: SavedPlan) => {
+    try {
+      await api.upsertPlan(user!.id, plan);
+      setSavedPlans(prev => prev.map(p => p.id === plan.id ? plan : p));
+      setToast({ message: 'Plan updated in Cloud!', isVisible: true });
+    } catch (e) {
+      console.error("Error updating plan:", e);
+      setToast({ message: 'Error updating plan.', isVisible: true });
+    }
   };
 
-  const deletePlan = (id: string) => {
-    const newPlans = savedPlans.filter(p => p.id !== id);
-    setSavedPlans(newPlans);
-    localStorage.setItem('dental_saved_plans', JSON.stringify(newPlans));
-    setToast({ message: 'Plan deleted.', isVisible: true });
+  const deletePlan = async (id: string) => {
+    try {
+      await api.deletePlan(id);
+      setSavedPlans(prev => prev.filter(p => p.id !== id));
+      setToast({ message: 'Plan removed from Cloud.', isVisible: true });
+    } catch (e) {
+      console.error("Error deleting plan:", e);
+      setToast({ message: 'Error deleting plan.', isVisible: true });
+    }
+  };
+
+  // --- Remote Procedure Management Functions ---
+  const saveProcedure = async (procedure: SavedProcedure) => {
+    try {
+      // In Supabase, upsert is driven by ID. 
+      await api.upsertProcedure(user!.id, procedure);
+      setSavedProcedures(prev => [...prev.filter(p => p.id !== procedure.id), procedure]);
+      setToast({ message: 'Procedure saved to Cloud!', isVisible: true });
+    } catch (e) {
+      console.error("Error saving procedure:", e);
+      setToast({ message: 'Error saving procedure.', isVisible: true });
+    }
+  };
+
+  const updateProcedure = async (procedure: SavedProcedure) => {
+    try {
+      await api.upsertProcedure(user!.id, procedure);
+      setSavedProcedures(prev => prev.map(p => p.id === procedure.id ? procedure : p));
+      setToast({ message: 'Procedure updated in Cloud!', isVisible: true });
+    } catch (e) {
+      console.error("Error updating procedure:", e);
+      setToast({ message: 'Error updating procedure.', isVisible: true });
+    }
+  };
+
+  const deleteProcedure = async (id: string) => {
+    try {
+      await api.deleteProcedure(id);
+      setSavedProcedures(prev => prev.filter(p => p.id !== id));
+      setToast({ message: 'Procedure removed from Cloud.', isVisible: true });
+    } catch (e) {
+      console.error("Error deleting procedure:", e);
+      setToast({ message: 'Error deleting procedure.', isVisible: true });
+    }
   };
 
   // --- Modal Control Functions ---
   const openModal = (type: 'ROI' | 'FORECAST', data: SavedPlan | null = null) => {
-    setModalState({
-      isOpen: true,
-      type,
-      initialData: data
-    });
+    setModalState({ isOpen: true, type, initialData: data });
   };
-
-  const closeModal = () => {
-    setModalState(prev => ({ ...prev, isOpen: false, initialData: null }));
-  };
-
+  const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false, initialData: null }));
   const hideToast = () => setToast(prev => ({ ...prev, isVisible: false }));
   const showToast = (message: string) => setToast({ message, isVisible: true });
 
@@ -241,8 +366,6 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       state,
       updateSection,
       resetAll,
-      loadSampleData,
-      clearAllData,
       saveSection,
       toast,
       hideToast,
@@ -253,6 +376,10 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       savePlan,
       updatePlan,
       deletePlan,
+      savedProcedures,
+      saveProcedure,
+      updateProcedure,
+      deleteProcedure,
       modalState,
       openModal,
       closeModal

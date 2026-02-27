@@ -14,11 +14,15 @@ type Timeframe = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 type Algorithm = 'balanced' | 'efficiency';
 
 const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, onClose, initialPlan }) => {
-   const { state, savePlan, updatePlan } = useCalculator();
+   const { state, savePlan, updatePlan, savedProcedures: remoteProcedures } = useCalculator();
    const { currencySymbol, hoursPerDay, workingDaysPerWeek } = state.clinicSettings;
 
+   // Sort procedures alphabetically
+   const savedProcedures = useMemo(() => {
+      return [...remoteProcedures].sort((a, b) => a.name.localeCompare(b.name));
+   }, [remoteProcedures]);
+
    // --- State ---
-   const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
    const [plan, setPlan] = useState<Record<string, number>>({});
 
    // Controls
@@ -39,33 +43,24 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
    // Load Procedures & Initial Plan Data
    useEffect(() => {
       if (isOpen) {
-         const saved = localStorage.getItem('dental_saved_procedures');
-         if (saved) {
-            try {
-               const parsed: SavedProcedure[] = JSON.parse(saved);
-               const sorted = parsed.sort((a, b) => a.name.localeCompare(b.name));
-               setSavedProcedures(sorted);
-
-               if (initialPlan) {
-                  // Hydrate from Saved Plan
-                  setPlan(initialPlan.inputs);
-                  setTargetProfit(initialPlan.targetProfit || 5000);
-                  setTimeframe(initialPlan.timeframe);
-                  if (initialPlan.algorithm) setAlgorithm(initialPlan.algorithm);
-                  setIsGenerated(true);
-               } else {
-                  // Init empty
-                  const initialQty: Record<string, number> = {};
-                  sorted.forEach(p => initialQty[p.id] = 0);
-                  setPlan(initialQty);
-                  setIsGenerated(false);
-               }
-            } catch (e) {
-               console.error("Failed to load saved procedures", e);
+         if (initialPlan) {
+            // Hydrate from Saved Plan
+            setPlan(initialPlan.inputs);
+            setTargetProfit(initialPlan.targetProfit || 5000);
+            setTimeframe(initialPlan.timeframe);
+            if (initialPlan.algorithm) setAlgorithm(initialPlan.algorithm);
+            setIsGenerated(true);
+         } else {
+            // Init empty if empty
+            if (Object.keys(plan).length === 0) {
+               const initialQty: Record<string, number> = {};
+               savedProcedures.forEach(p => initialQty[p.id] = 0);
+               setPlan(initialQty);
+               setIsGenerated(false);
             }
          }
       }
-   }, [isOpen, initialPlan]);
+   }, [isOpen, initialPlan, savedProcedures]);
 
    // --- 1. OpEx Data Parity (Manual Summation) ---
    const monthlyFixedCost = useMemo(() => {
@@ -399,7 +394,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
    // --- Save Logic ---
    const handleSaveConfirm = (name: string) => {
       const planData: SavedPlan = {
-         id: initialPlan ? initialPlan.id : Date.now().toString(),
+         id: initialPlan ? initialPlan.id : crypto.randomUUID(),
          name,
          date: new Date().toISOString(),
          type: 'FORECAST',

@@ -38,7 +38,7 @@ const ListItem: React.FC<{
     );
 
 const ClinicSettings: React.FC = () => {
-    const { state, updateSection, saveSection, showToast, loadSampleData, clearAllData } = useCalculator();
+    const { state, updateSection, saveSection, showToast } = useCalculator();
 
     // Sync local state when global state changes (e.g. after Load/Clear)
     useEffect(() => {
@@ -143,7 +143,7 @@ const ClinicSettings: React.FC = () => {
 
     // 2. Overhead Handlers
     const addOverhead = () => {
-        setLocalOverheadItems(prev => [...prev, { id: Date.now().toString(), name: '', monthlyCost: 0 }]);
+        setLocalOverheadItems(prev => [...prev, { id: crypto.randomUUID(), name: '', monthlyCost: 0 }]);
     };
     const updateOverhead = (id: string, field: 'name' | 'monthlyCost', value: any) => {
         setLocalOverheadItems(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
@@ -160,7 +160,7 @@ const ClinicSettings: React.FC = () => {
     // 3. Staff Handlers
     const addStaff = () => {
         setLocalStaffMembers(prev => [...prev, {
-            id: Date.now().toString(),
+            id: crypto.randomUUID(),
             name: '',
             role: '',
             salary: 0,
@@ -174,7 +174,7 @@ const ClinicSettings: React.FC = () => {
         const member = localStaffMembers.find(m => m.id === id);
         if (member) {
             const index = localStaffMembers.findIndex(m => m.id === id);
-            const copy = { ...member, id: Date.now().toString(), name: `${member.name} (Copy)` };
+            const copy = { ...member, id: crypto.randomUUID(), name: `${member.name} (Copy)` };
             const newList = [...localStaffMembers];
             newList.splice(index + 1, 0, copy);
             setLocalStaffMembers(newList);
@@ -194,7 +194,7 @@ const ClinicSettings: React.FC = () => {
 
     // 4. Assets Handlers
     const addAsset = () => {
-        setLocalAssets(prev => [...prev, { id: Date.now().toString(), name: '', purchasePrice: 0, resaleValue: 0, lifespanYears: 0 }]);
+        setLocalAssets(prev => [...prev, { id: crypto.randomUUID(), name: '', purchasePrice: 0, resaleValue: 0, lifespanYears: 0 }]);
     };
     const updateAsset = (id: string, field: string, value: any) => {
         setLocalAssets(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
@@ -213,16 +213,16 @@ const ClinicSettings: React.FC = () => {
         const { section } = confirmModal;
         if (section === 'params') {
             updateSection('clinicSettings', localSettings);
-            saveSection('clinicSettings', 'Operating Parameters saved.');
+            saveSection('clinicSettings', 'Operating Parameters saved.', localSettings);
         } else if (section === 'overhead') {
             updateSection('overhead', { items: localOverheadItems });
-            saveSection('overhead', 'Fixed Overhead saved.');
+            saveSection('overhead', 'Fixed Overhead saved.', { items: localOverheadItems });
         } else if (section === 'staff') {
             updateSection('staff', { members: localStaffMembers });
-            saveSection('staff', 'Staff Roster saved.');
+            saveSection('staff', 'Staff Roster saved.', { members: localStaffMembers });
         } else if (section === 'assets') {
             updateSection('depreciation', { assets: localAssets });
-            saveSection('depreciation', 'Assets saved.');
+            saveSection('depreciation', 'Assets saved.', { assets: localAssets });
         }
         setConfirmModal({ isOpen: false, section: null });
     };
@@ -235,22 +235,7 @@ const ClinicSettings: React.FC = () => {
                     <h1 className="text-3xl font-bold text-slate-900">Master Clinic Setup</h1>
                     <p className="text-slate-500 mt-1">Configure your entire clinic's operational baseline in one place.</p>
                 </div>
-                <div className="flex gap-3">
-                    <button
-                        onClick={loadSampleData}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all text-sm font-medium shadow-sm"
-                    >
-                        <Database className="w-4 h-4" />
-                        Load Sample Data
-                    </button>
-                    <button
-                        onClick={clearAllData}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all text-sm font-medium shadow-sm"
-                    >
-                        <RotateCcw className="w-4 h-4" />
-                        Clear All Data
-                    </button>
-                </div>
+
             </div>
 
             {/* Section 1: Operating Parameters */}
