@@ -4,17 +4,17 @@ import { useAuth } from './AuthContext';
 import * as api from '../data/api';
 
 const INITIAL_STATE: GlobalState = {
-  clinicSettings: { clinicName: 'My Dental Clinic', workingDaysPerWeek: 5.5, hoursPerDay: 8, currencySymbol: 'RM' },
+  clinicSettings: { clinicName: '', workingDaysPerWeek: 0, hoursPerDay: 0, currencySymbol: '' },
   overhead: { items: [] },
   staff: { members: [] },
   depreciation: { assets: [] },
   consumables: { items: [] },
-  sterilization: { pouchCost: 0.5, chemicalCost: 1.0, ppeCost: 2.0, electricityCost: 1.5, instrumentsPerCycle: 10 },
-  lab: { labFee: 200, shippingCost: 20, markupPercent: 50 },
-  marketing: { adSpend: 1000, agencyFees: 500, productionCosts: 200, newPatients: 20 },
-  regulatory: { annualApc: 1000, annualXray: 500, annualInsurance: 2000, monthlyWaste: 150 },
-  financial: { loanPrincipal: 0, monthlyInterest: 300, monthlyBankCharges: 50, transactionFeesPercent: 1.5, estMonthlyRevenue: 50000, taxRate: 24 },
-  owner: { desiredNetIncome: 15000, riskBufferPercent: 10, personalTax: 2000 },
+  sterilization: { pouchCost: 0, chemicalCost: 0, ppeCost: 0, electricityCost: 0, instrumentsPerCycle: 0 },
+  lab: { labFee: 0, shippingCost: 0, markupPercent: 0 },
+  marketing: { adSpend: 0, agencyFees: 0, productionCosts: 0, newPatients: 0 },
+  regulatory: { annualApc: 0, annualXray: 0, annualInsurance: 0, monthlyWaste: 0 },
+  financial: { loanPrincipal: 0, monthlyInterest: 0, monthlyBankCharges: 0, transactionFeesPercent: 0, estMonthlyRevenue: 0, taxRate: 0 },
+  owner: { desiredNetIncome: 0, riskBufferPercent: 0, personalTax: 0 },
 };
 
 const CalculatorContext = createContext<CalculatorContextType | undefined>(undefined);
