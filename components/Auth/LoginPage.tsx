@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { signInDual, signUpDual } from '../../lib/odooApi';
 import { Mail, Lock, LogIn, UserPlus, AlertCircle, ShieldCheck, TrendingUp } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
@@ -19,23 +19,10 @@ const LoginPage: React.FC = () => {
 
         try {
             if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
+                await signInDual({ email, password });
                 navigate('/');
             } else {
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                        },
-                    },
-                });
-                if (error) throw error;
+                await signUpDual({ email, password, fullName });
                 // The trigger will automatically create the profile row
                 navigate('/');
             }

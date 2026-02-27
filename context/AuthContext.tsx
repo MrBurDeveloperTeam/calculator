@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types';
+import { exchangeSsoToken } from '../lib/odooApi';
 
 interface AuthContextType {
     user: User | null;
@@ -23,17 +24,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // 1. Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        const initializeAuth = async () => {
+            // 1. Attempt SSO Exchange first (silently configures Supabase session if Odoo cookie is valid)
+            await exchangeSsoToken().catch(console.warn);
+
+            // 2. Get initial session from Supabase (now potentially populated by the SSO exchange)
+            const { data: { session } } = await supabase.auth.getSession();
             setUser(session?.user ?? null);
             if (session?.user) {
                 fetchProfile(session.user.id);
             } else {
                 setIsLoading(false);
             }
-        });
+        };
 
-        // 2. Listen for auth changes
+        initializeAuth();
+
+        // 3. Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
             if (session?.user) {
