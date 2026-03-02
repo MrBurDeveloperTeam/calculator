@@ -11,6 +11,10 @@ export function useSsoExchange() {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
         const { data } = await api.get('/sso/exchange');
+        const { error } = await supabase.auth.setSession({
+                access_token: data.data.access_token,
+                refresh_token: data.data.refresh_token,
+            });
         console.log('sessionData response:', sessionData);
         const { data: userData } = await supabase.auth.getUser();
         const userId = userData.user?.id || null;
