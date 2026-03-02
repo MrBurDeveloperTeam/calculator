@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types';
 import { exchangeSsoToken } from '../lib/odooApi';
+import { api } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
@@ -75,6 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const signOut = async () => {
+        await api.post('/logout')
         await supabase.auth.signOut();
     };
 
