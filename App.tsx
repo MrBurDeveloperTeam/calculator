@@ -54,10 +54,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   };
 
   useEffect(() => {
-    const checkSession = async () => {
+    const initialize = async () => {
       await checkSession();
     }
-    checkSession();
+    initialize();
   }, [])
 
   if (isLoading) {
