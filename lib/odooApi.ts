@@ -104,7 +104,6 @@ export async function exchangeSsoToken() {
         }
     } catch (err) {
         console.warn('No active SSO session to exchange.');
-        navigate('/login', { replace: true });
         return false;
     }
     return false;
