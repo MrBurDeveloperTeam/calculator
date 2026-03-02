@@ -11,6 +11,7 @@ export function useSsoExchange() {
         const { data } = await api.get('/sso/exchange')
         return data
       } catch (error) {
+        console.log('error during SSO exchange, likely no active session:', error);
         navigate('/login', { replace: true });
         throw error
       }
