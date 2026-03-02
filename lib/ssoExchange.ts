@@ -17,5 +17,7 @@ export function useSsoExchange() {
       }
     },
     staleTime: 5 * 60 * 1000, // optional
+    retry: false,              // ✅ stop retry immediately
+    refetchOnWindowFocus: false,
   })
 }
