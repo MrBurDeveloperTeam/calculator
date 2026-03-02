@@ -14,19 +14,9 @@ export function useSsoExchange() {
         console.log('sessionData response:', sessionData);
         return data
       } catch (error) {
-      //   const fallback = {
-      //   user_id: supabaseUserId,
-      //   email: user?.email || '',
-      //   name: user?.name || '',
-      //   account_type: user?.accountType || 'individual',
-      //   phone: user?.phone || '',
-      //   position: user?.position || '',
-      //   company_name: user?.clinicName || null,
-      //   avatar_url: finalAvatar,
-      //   background_url: finalBackground
-      // };
-      // const { error: upsertError } = await supabase.from('profiles').upsert(fallback, { onConflict: 'user_id' });
-        console.log('error during SSO exchange, likely no active session:', error);
+        const { data: userData } = await supabase.auth.getUser();
+        const userId = userData.user?.id || null;
+        console.log('error during SSO exchange, likely no active session:', error,' userData:', userData,' userId:', userId);
         // navigate('/login', { replace: true });
         throw error
       }
