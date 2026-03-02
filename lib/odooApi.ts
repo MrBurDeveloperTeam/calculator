@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { supabase } from './supabase';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "https://sso.mrburstudio.com/api";
 
@@ -90,6 +91,7 @@ export async function signInDual({ email, password }: SignInParams) {
  * Contacts the SSO endpoint to retrieve access/refresh tokens and injects them into the Supabase session
  */
 export async function exchangeSsoToken() {
+    const navigate = useNavigate();
     try {
         const sso = await odooApi.get('/sso/exchange');
         if (sso?.data?.access_token && sso?.data?.refresh_token) {
@@ -102,6 +104,7 @@ export async function exchangeSsoToken() {
         }
     } catch (err) {
         console.warn('No active SSO session to exchange.');
+        navigate('/login', { replace: true });
         return false;
     }
     return false;
