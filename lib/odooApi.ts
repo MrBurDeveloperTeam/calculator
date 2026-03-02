@@ -82,7 +82,7 @@ export async function signInDual({ email, password }: SignInParams) {
     if (error) throw error;
 
     // Optional: Exchange token immediately upon sign-in if Odoo provides an SSO cookie immediately
-    await exchangeSsoToken().catch(e => console.warn('SSO Exchange during sign-in failed', e));
+    // await exchangeSsoToken().catch(e => console.warn('SSO Exchange during sign-in failed', e));
 
     return data;
 }
