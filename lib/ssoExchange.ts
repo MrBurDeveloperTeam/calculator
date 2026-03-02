@@ -12,7 +12,7 @@ export function useSsoExchange() {
         return data
       } catch (error) {
         console.log('error during SSO exchange, likely no active session:', error);
-        navigate('/login', { replace: true });
+        // navigate('/login', { replace: true });
         throw error
       }
     },
