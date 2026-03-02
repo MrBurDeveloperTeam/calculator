@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, LogOut } from 'lucide-react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -26,6 +26,7 @@ import {
   ProcedureBuilder
 } from './components/CalculatorModules';
 import { useSsoExchange } from './lib/ssoExchange';
+import { set } from 'zod/v4';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -39,8 +40,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     );
   }
 
-  console.log('the data: ',data)
-
   if (!user && !data) {
     return <Navigate to="/login" replace />;
   }
@@ -49,10 +48,18 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 const AppContent: React.FC = () => {
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { signOut } = useAuth();
   const { toast, hideToast, modalState, closeModal } = useCalculator();
+
+  const logOut = async () => {
+    await signOut().then((res) => {
+      console.log("Logged out successfully, navigating to login page.");
+      navigate('/login');
+    })
+  }
 
   const renderView = () => {
     switch (currentView) {
@@ -88,7 +95,7 @@ const AppContent: React.FC = () => {
         <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
           <span className="font-bold text-slate-800">DentalSuite Pro</span>
           <div className="flex items-center gap-2">
-            <button onClick={signOut} className="p-2 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md">
+            <button onClick={logOut} className="p-2 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md">
               <LogOut className="w-5 h-5" />
             </button>
             <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
@@ -99,7 +106,7 @@ const AppContent: React.FC = () => {
 
         {/* Desktop Header Actions (Optional padding logic) */}
         <div className="hidden lg:flex justify-end p-4 absolute top-0 right-0 z-20">
-          <button onClick={signOut} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors">
+          <button onClick={logOut} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors">
             <LogOut className="w-4 h-4" /> Sign Out
           </button>
         </div>
