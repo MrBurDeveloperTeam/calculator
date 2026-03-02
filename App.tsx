@@ -30,9 +30,9 @@ import { set } from 'zod/v4';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
-  const { data, isLoading: isSsoLoading, error } = useSsoExchange()
+  // const { data, isLoading: isSsoLoading, error } = useSsoExchange()
 
-  if (isLoading || isSsoLoading) {
+  if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin border-opacity-50"></div>
@@ -40,7 +40,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     );
   }
 
-  if (!user && !data) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
