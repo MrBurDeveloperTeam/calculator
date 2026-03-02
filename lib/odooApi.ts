@@ -74,15 +74,12 @@ export async function signUpDual({ email, password, fullName }: SignUpParams) {
  * Falls back to Supabase auth natively if Odoo is unreachable.
  */
 export async function signInDual({ email, password }: SignInParams) {
-    const { data, error } = await odooApi.post('/auth/login', { email, password }).catch(async (err) => {
-        console.warn('Odoo fallback triggered during sign-in:', err);
-        return await supabase.auth.signInWithPassword({ email, password: password || '' });
-    }) as any;
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: password || '' });
 
     if (error) throw error;
 
     // Optional: Exchange token immediately upon sign-in if Odoo provides an SSO cookie immediately
-    await exchangeSsoToken().catch(e => console.warn('SSO Exchange during sign-in failed', e));
+    // await exchangeSsoToken().catch(e => console.warn('SSO Exchange during sign-in failed', e));
 
     return data;
 }
