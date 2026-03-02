@@ -12,11 +12,12 @@ export function useSsoExchange() {
         const { data: sessionData } = await supabase.auth.getSession();
         const { data } = await api.get('/sso/exchange');
         console.log('sessionData response:', sessionData);
-        return data
-      } catch (error) {
         const { data: userData } = await supabase.auth.getUser();
         const userId = userData.user?.id || null;
-        console.log('error during SSO exchange, likely no active session:', error,' userData:', userData,' userId:', userId);
+        console.log('userData:', userData, 'userId:', userId);
+        return data
+      } catch (error) {
+        console.log('error during SSO exchange, likely no active session:', error);
         // navigate('/login', { replace: true });
         throw error
       }
