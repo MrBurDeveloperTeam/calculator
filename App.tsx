@@ -25,42 +25,13 @@ import {
   OwnerCalculator,
   ProcedureBuilder
 } from './components/CalculatorModules';
-import { api } from './lib/api';
-import { supabase } from './lib/supabase';
+import { useSsoExchange } from './lib/ssoExchange';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
+  const { data, isLoading: isSsoLoading, error } = useSsoExchange()
 
-    const checkSession = async () => {
-    try {
-      const sso = await api.get('/sso/exchange');
-      if (sso.data?.access_token) {
-        const { error } = await supabase.auth.setSession({
-          access_token: sso.data.access_token,
-          refresh_token: sso.data.refresh_token
-        });
-        if (error) throw error;
-        return true;
-      }
-    } catch (error: any) {
-      await supabase.auth.signOut();
-      if (error.message?.includes('401') || error.message?.includes('Not authenticated') || error.message?.includes('missing_sso')) {
-        console.info('SSO: No active session found (guest user)');
-      } else {
-        console.warn('SSO Exchange failed (Cloudflare worker unavailable or error). Falling back to Supabase directly.', error);
-      }
-    }
-    return false;
-  };
-
-  useEffect(() => {
-    const initialize = async () => {
-      await checkSession();
-    }
-    initialize();
-  }, [])
-
-  if (isLoading) {
+  if (isLoading || isSsoLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin border-opacity-50"></div>
@@ -68,7 +39,9 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     );
   }
 
-  if (!user) {
+  console.log('the data: ',data)
+
+  if (!user && !data) {
     return <Navigate to="/login" replace />;
   }
 
