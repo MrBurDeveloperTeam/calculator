@@ -8,7 +8,7 @@ import HistoryTab from './components/HistoryTab';
 import Toast from './components/Toast';
 import { CalculatorProvider, useCalculator } from './context/CalculatorContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import LoginPage from './components/Auth/LoginPage';
+import LandingPage from './components/LandingPage';
 import ClinicSettings from './components/ClinicSettings';
 import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
@@ -28,7 +28,7 @@ import {
 import { useSsoExchange } from './lib/ssoExchange';
 import { set } from 'zod/v4';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
   const { data, isLoading: isSsoLoading, error } = useSsoExchange();
 
@@ -40,8 +40,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     );
   }
 
-  if (!user && !data) {
-    return <Navigate to="/login" replace />;
+  if (!user) {
+    return <LandingPage />;
   }
 
   return <>{children}</>;
@@ -57,8 +57,8 @@ const AppContent: React.FC = () => {
 
   const logOut = async () => {
     await signOut().then((res) => {
-      console.log("Logged out successfully, navigating to login page.");
-      navigate('/login', { replace: true });
+      console.log("Logged out successfully, navigating to landing page.");
+      navigate('/', { replace: true });
     })
   }
 
@@ -181,13 +181,13 @@ const App: React.FC = () => {
       <CalculatorProvider>
         <Router>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<Navigate to="/" replace />} />
             <Route
               path="/*"
               element={
-                <ProtectedRoute>
+                <AuthManager>
                   <AppContent />
-                </ProtectedRoute>
+                </AuthManager>
               }
             />
           </Routes>
