@@ -48,7 +48,7 @@ export async function signUpDual({ email, password, fullName }: SignUpParams) {
     };
 
     // 1. Try pushing to the primary Odoo API
-    const odooResponse = await odooApi.post('/appointment/sign-up', odooPayload).catch(async (err) => {
+    const odooResponse = await odooApi.post('/calculator/sign-up', odooPayload).catch(async (err) => {
         console.warn('Odoo fallback triggered during sign-up:', err);
         return await supabase.auth.signUp(supaPayload);
     });
