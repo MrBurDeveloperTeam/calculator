@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { supabase } from './supabase';
-import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "https://sso.mrburstudio.com/api";
 
@@ -48,7 +47,7 @@ export async function signUpDual({ email, password, fullName }: SignUpParams) {
     };
 
     // 1. Try pushing to the primary Odoo API
-    const odooResponse = await odooApi.post('/appointment/sign-up', odooPayload).catch(async (err) => {
+    const odooResponse = await odooApi.post('/calculator/sign-up', odooPayload).catch(async (err) => {
         console.warn('Odoo fallback triggered during sign-up:', err);
         return await supabase.auth.signUp(supaPayload);
     });
@@ -85,7 +84,6 @@ export async function signInDual({ email, password }: SignInParams) {
  * Contacts the SSO endpoint to retrieve access/refresh tokens and injects them into the Supabase session
  */
 export async function exchangeSsoToken() {
-    const navigate = useNavigate();
     try {
         const sso = await odooApi.get('/sso/exchange');
         if (sso?.data?.access_token && sso?.data?.refresh_token) {

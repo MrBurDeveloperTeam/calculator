@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const signOut = async () => {
-        await api.post('/logout')
+        // await api.post('/logout')
         await supabase.auth.signOut();
     };
 

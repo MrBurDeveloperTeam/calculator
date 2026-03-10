@@ -37,6 +37,26 @@ const ListItem: React.FC<{
         </div>
     );
 
+const daysOptions = Array.from({ length: 14 }, (_, i) => (i + 1) * 0.5);
+const hoursOptions = Array.from({ length: 48 }, (_, i) => (i + 1) * 0.5);
+
+const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", selectClassName = "h-12" }: any) => (
+    <div className={className}>
+        {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
+        <div className={`relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-1`}>
+            <select
+                value={value}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className={`block flex-1 w-full min-w-0 border-0 bg-white text-slate-900 font-semibold focus:ring-0 sm:text-sm sm:leading-6 px-4 ${selectClassName}`}
+            >
+                {options.map((opt: number) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                ))}
+            </select>
+        </div>
+    </div>
+);
+
 const ClinicSettings: React.FC = () => {
     const { state, updateSection, saveSection, showToast } = useCalculator();
 
@@ -279,24 +299,18 @@ const ClinicSettings: React.FC = () => {
                             <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Operational Schedule</h4>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <StyledInput
+                            <SelectDropdown
                                 label="Days per Week"
                                 value={localSettings.workingDaysPerWeek}
-                                onChange={(v) => setLocalSettings(prev => ({ ...prev, workingDaysPerWeek: v }))}
-                                type="number"
-                                min={0} max={7}
-                                onKeyDown={preventNegative}
-                                placeholder="5.5"
+                                onChange={(v: number) => setLocalSettings(prev => ({ ...prev, workingDaysPerWeek: v }))}
+                                options={daysOptions}
                                 className="mb-0"
                             />
-                            <StyledInput
+                            <SelectDropdown
                                 label="Hours per Day"
                                 value={localSettings.hoursPerDay}
-                                onChange={(v) => setLocalSettings(prev => ({ ...prev, hoursPerDay: v }))}
-                                type="number"
-                                min={0} max={24}
-                                onKeyDown={preventNegative}
-                                placeholder="8"
+                                onChange={(v: number) => setLocalSettings(prev => ({ ...prev, hoursPerDay: v }))}
+                                options={hoursOptions}
                                 className="mb-0"
                             />
                         </div>
@@ -473,26 +487,22 @@ const ClinicSettings: React.FC = () => {
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Schedule</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                            <StyledInput
-                                                type="number"
+                                            <SelectDropdown
                                                 value={member.workingDays ?? localSettings.workingDaysPerWeek}
-                                                onChange={(v) => updateStaff(member.id, 'workingDays', v)}
+                                                onChange={(v: number) => updateStaff(member.id, 'workingDays', v)}
+                                                options={daysOptions}
                                                 className="mb-0"
-                                                min={0} max={7}
-                                                onKeyDown={preventNegative}
-                                                inputClassName="h-10"
+                                                selectClassName="h-10"
                                             />
                                             <span className="text-[10px] text-slate-400 font-semibold text-center block mt-1">Days/Wk</span>
                                         </div>
                                         <div>
-                                            <StyledInput
-                                                type="number"
+                                            <SelectDropdown
                                                 value={member.workingHours ?? localSettings.hoursPerDay}
-                                                onChange={(v) => updateStaff(member.id, 'workingHours', v)}
+                                                onChange={(v: number) => updateStaff(member.id, 'workingHours', v)}
+                                                options={hoursOptions}
                                                 className="mb-0"
-                                                min={0} max={24}
-                                                onKeyDown={preventNegative}
-                                                inputClassName="h-10"
+                                                selectClassName="h-10"
                                             />
                                             <span className="text-[10px] text-slate-400 font-semibold text-center block mt-1">Hrs/Day</span>
                                         </div>
