@@ -139,6 +139,75 @@ const LandingPage: React.FC = () => {
 
                 </div>
 
+                {/* Features Showcase / Teaser Section */}
+                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10 mt-12 mb-12">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+                            Everything you need to run a profitable clinic
+                        </h2>
+                        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+                            Stop guessing your margins. DentalSuite Pro brings your entire financial ecosystem into one dashboard.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {/* Teaser 1 */}
+                        <div className="bg-white rounded-3xl p-8 shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-blue-200 transition-colors group">
+                            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
+                                <Clock className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-3">True Hourly Chair Rate</h3>
+                            <p className="text-slate-600 leading-relaxed mb-6">
+                                Calculate exactly how much it costs to keep your clinic running per hour. Factor in rent, staff, depreciation, and consumables automatically.
+                            </p>
+                            <div className="h-24 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4">
+                                <div className="w-full space-y-2">
+                                    <div className="flex justify-between text-xs text-slate-500 font-bold"><span className="uppercase text-[10px]">Overhead</span><span>RM 8,400</span></div>
+                                    <div className="w-full bg-slate-200 rounded-full h-1.5"><div className="bg-blue-500 h-1.5 rounded-full w-[60%]"></div></div>
+                                    <div className="flex justify-between text-xs text-slate-500 font-bold mt-2"><span className="uppercase text-[10px]">Hourly Rate</span><span className="text-blue-600">RM 145/hr</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Teaser 2 */}
+                        <div className="bg-white rounded-3xl p-8 shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-teal-200 transition-colors group">
+                            <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-teal-500 transition-all duration-300">
+                                <BarChart3 className="w-6 h-6 text-teal-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-3">Treatment ROI Engine</h3>
+                            <p className="text-slate-600 leading-relaxed mb-6">
+                                Build treatment models down to the cotton roll. Know instantly if a procedure is profitable or if you are losing money on materials.
+                            </p>
+                            <div className="h-24 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center overflow-hidden relative">
+                                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-teal-100 rounded-full mix-blend-multiply opacity-50 blur-xl"></div>
+                                <div className="text-center z-10">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Profit Margin</div>
+                                    <div className="text-2xl font-black text-teal-600">+42.8%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Teaser 3 */}
+                        <div className="bg-white rounded-3xl p-8 shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-indigo-200 transition-colors group md:col-span-2 lg:col-span-1">
+                            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-600 transition-all duration-300">
+                                <ShieldCheck className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-3">Smart Forecasting</h3>
+                            <p className="text-slate-600 leading-relaxed mb-6">
+                                Set revenue goals and let the system reverse-engineer your targets. Know exactly how many treatments you need per month to hit your goals.
+                            </p>
+                            <div className="h-24 bg-slate-50 rounded-xl border border-slate-100 p-4 relative overflow-hidden flex items-end gap-2">
+                                <div className="w-full bg-indigo-200 rounded-t-sm h-[30%]"></div>
+                                <div className="w-full bg-indigo-300 rounded-t-sm h-[50%]"></div>
+                                <div className="w-full bg-indigo-400 rounded-t-sm h-[70%]"></div>
+                                <div className="w-full bg-indigo-600 rounded-t-sm h-[100%] relative">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold text-indigo-600 bg-white px-1 py-0.5 rounded shadow-sm">Target</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Features Bar */}
                 <div className="border-t border-slate-200 bg-white mt-auto">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
