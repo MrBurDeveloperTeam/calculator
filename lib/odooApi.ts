@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "https://sso.snabbb.com/api";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "https://sso.mrburstudio.com/api";
 
 export const odooApi = axios.create({
     baseURL: API_URL,
