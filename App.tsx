@@ -26,7 +26,7 @@ import {
   ProcedureBuilder
 } from './components/CalculatorModules';
 import { useSsoExchange } from './lib/ssoExchange';
-import { set } from 'zod/v4';
+
 
 const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -94,7 +94,11 @@ const AppContent: React.FC = () => {
       <div className="flex-1 flex flex-col lg:pl-64 transition-all duration-300">
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
-          <span className="font-bold text-slate-800">DentalSuite Pro</span>
+          <div className="flex items-center gap-2">
+            <a href="https://app.snabbb.com/">
+              <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-6 w-auto hover:opacity-80 transition-opacity" />
+            </a>
+          </div>
           <div className="flex items-center gap-2">
             <div className="relative">
               <button
