@@ -95,7 +95,9 @@ const AppContent: React.FC = () => {
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-2">
-            <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-6 w-auto" />
+            <a href="https://app.snabbb.com/">
+              <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-6 w-auto hover:opacity-80 transition-opacity" />
+            </a>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">

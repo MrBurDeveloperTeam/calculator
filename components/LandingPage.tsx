@@ -41,7 +41,9 @@ const LandingPage: React.FC = () => {
                     <div className="flex justify-between items-center h-20">
                         {/* Logo */}
                         <div className="flex items-center gap-3">
-                            <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-10 w-auto" />
+                            <a href="https://app.snabbb.com/">
+                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-10 w-auto hover:opacity-80 transition-opacity" />
+                            </a>
                         </div>
 
                         {/* Navigation / Actions */}
@@ -593,7 +595,9 @@ const LandingPage: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                             <div className="col-span-1 md:col-span-2">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <img src="/Snabbb (White).png" alt="Snabbb Logo" className="h-10 w-auto" />
+                                    <a href="https://app.snabbb.com/">
+                                        <img src="/Snabbb (White).png" alt="Snabbb Logo" className="h-10 w-auto hover:opacity-80 transition-opacity" />
+                                    </a>
                                 </div>
                                 <p className="text-slate-400 text-lg max-w-sm leading-relaxed">The ultimate clinical modeling interface. Analyze treatments, optimize overheads, and forecast revenue accurately in real time.</p>
                             </div>

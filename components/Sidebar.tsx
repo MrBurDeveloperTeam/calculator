@@ -58,7 +58,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, se
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="h-16 flex items-center px-6 border-b border-slate-800 flex-shrink-0 gap-3">
-          <img src="/Snabbb (White).png" alt="Snabbb Logo" className="h-8 w-auto" />
+          <a href="https://app.snabbb.com/">
+            <img src="/Snabbb (White).png" alt="Snabbb Logo" className="h-8 w-auto hover:opacity-80 transition-opacity" />
+          </a>
         </div>
 
         <nav className="p-4 space-y-1 overflow-y-auto flex-1">
