@@ -57,13 +57,13 @@ const AppContent: React.FC = () => {
 
   const logOut = async () => {
     await signOut().then((res) => {
-      if (window.opener && !window.opener.closed) {
-        window.opener.postMessage(
-          { type: 'SSO_LOGOUT', source: 'miniapp' },
-          'https://app.snabbb.com'
-        );
-      }
     })
+    if (window.opener && !window.opener.closed) {
+      window.opener.postMessage(
+        { type: 'SSO_LOGOUT', source: 'miniapp' },
+        'https://app.snabbb.com'
+      );
+    }
   }
 
   const renderView = () => {
