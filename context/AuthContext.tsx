@@ -76,13 +76,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const signOut = async () => {
-        // await api.post('/logout')
+        try {
+        await api.post('/logout')
         await supabase.auth.signOut();
         if (window.opener && !window.opener.closed) {
           window.opener.postMessage(
             { type: 'SSO_LOGOUT', source: 'miniapp' },
             'https://app.snabbb.com'
           );
+        }
+        } catch (err) {
+            console.error('Error during sign out:', err);
+        } finally {
+            window.location.href = 'https://app.snabbb.com';
         }
     };
 
