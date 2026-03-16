@@ -57,8 +57,12 @@ const AppContent: React.FC = () => {
 
   const logOut = async () => {
     await signOut().then((res) => {
-      console.log("Logged out successfully, navigating to landing page.");
-      navigate('/', { replace: true });
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage(
+          { type: 'SSO_LOGOUT', source: 'miniapp' },
+          'https://app.snabbb.com'
+        );
+      }
     })
   }
 
