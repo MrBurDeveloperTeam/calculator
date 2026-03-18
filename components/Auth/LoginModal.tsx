@@ -16,9 +16,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
     const [fullName, setFullName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Load saved email if it exists
+        const savedEmail = localStorage.getItem('snabbb_remembered_email');
+        if (savedEmail) {
+            setEmail(savedEmail);
+            setRememberMe(true);
+        }
         setIsLogin(defaultIsLogin);
         setError(null);
     }, [isOpen, defaultIsLogin]);
@@ -29,6 +36,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
         setError(null);
 
         try {
+            if (rememberMe) {
+                localStorage.setItem('snabbb_remembered_email', email);
+            } else {
+                localStorage.removeItem('snabbb_remembered_email');
+            }
+
             if (isLogin) {
                 await signInDual({ email, password });
                 onClose();
@@ -130,6 +143,34 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
                             />
                         </div>
                     </div>
+
+                    {/* Remember Me - only show for login */}
+                    {isLogin && (
+                        <div className="flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setRememberMe(!rememberMe)}
+                                className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                                    rememberMe
+                                        ? 'bg-blue-600 border-blue-600'
+                                        : 'bg-white border-slate-300 hover:border-blue-400'
+                                }`}
+                                aria-label="Remember me"
+                            >
+                                {rememberMe && (
+                                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                )}
+                            </button>
+                            <span
+                                className="text-sm font-medium text-slate-600 cursor-pointer select-none"
+                                onClick={() => setRememberMe(!rememberMe)}
+                            >
+                                Remember me
+                            </span>
+                        </div>
+                    )}
 
                     {error && (
                         <div className="bg-red-50 border border-red-100/60 rounded-xl p-3 flex items-start gap-2">
