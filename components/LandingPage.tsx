@@ -46,6 +46,15 @@ const LandingPage: React.FC = () => {
                             </a>
                         </div>
 
+                        {/* Middle Navigation Links */}
+                        <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
+                            <a href="#features" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Features</a>
+                            <a href="#demo" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Simulator</a>
+                            <a href="#how-it-works" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">How it Works</a>
+                            <a href="#pricing" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Pricing</a>
+                            <a href="#faq" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">FAQ</a>
+                        </nav>
+
                         {/* Navigation / Actions */}
                         <div className="flex items-center gap-4">
                             <button
@@ -156,7 +165,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Features Showcase / Teaser Section */}
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10 mt-12 mb-12">
+                <div id="features" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10 mt-12 mb-12">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
                             Everything you need to run a profitable clinic
@@ -225,7 +234,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Interactive Demo Section */}
-                <div className="w-full bg-slate-50 py-16 lg:py-24 relative z-10 border-y border-slate-200/50">
+                <div id="demo" className="w-full bg-slate-50 py-16 lg:py-24 relative z-10 border-y border-slate-200/50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col lg:flex-row items-center gap-16">
                             <div className="flex-1 lg:pr-8">
@@ -392,7 +401,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* How It Works Section */}
-                <div className="w-full bg-slate-900 py-20 lg:py-32 relative z-10 overflow-hidden">
+                <div id="how-it-works" className="w-full bg-slate-900 py-20 lg:py-32 relative z-10 overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
                     
@@ -478,7 +487,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* FAQ Section */}
-                <div className="w-full bg-white py-20 lg:py-32 relative z-10 border-t border-slate-200 overflow-hidden">
+                <div id="faq" className="w-full bg-white py-20 lg:py-32 relative z-10 border-t border-slate-200 overflow-hidden">
                     {/* Abstract background shapes */}
                     <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-slate-50 border border-slate-100/50 transform rotate-12 -z-10" />
                     <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] rounded-3xl bg-slate-50 border border-slate-100/50 transform -rotate-12 -z-10" />
@@ -545,7 +554,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Pricing / CTA Section */}
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10">
+                <div id="pricing" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10">
                     <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-[3rem] p-8 md:p-16 lg:px-24 border border-blue-100/50 shadow-xl flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-50 pointer-events-none" />
                         
