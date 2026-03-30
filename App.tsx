@@ -57,8 +57,6 @@ const AppContent: React.FC = () => {
 
   const logOut = async () => {
     await signOut().then((res) => {
-      console.log("Logged out successfully, navigating to landing page.");
-      navigate('/', { replace: true });
     })
   }
 
