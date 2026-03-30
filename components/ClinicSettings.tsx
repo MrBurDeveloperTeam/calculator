@@ -461,7 +461,7 @@ const ClinicSettings: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-2">
                                         <StyledInput
                                             type="currency"
-                                            placeholder="EPF/SOCSO"
+                                            placeholder="Benefits"
                                             min={0}
                                             onKeyDown={preventNegative}
                                             value={member.benefits}
