@@ -42,7 +42,7 @@ const LandingPage: React.FC = () => {
                         {/* Logo */}
                         <div className="flex items-center gap-3">
                             <a href="https://app.snabbb.com/">
-                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-10 w-auto hover:opacity-80 transition-opacity" />
+                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo " className="h-10 w-auto hover:opacity-80 transition-opacity" />
                             </a>
                         </div>
 
