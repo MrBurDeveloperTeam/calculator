@@ -42,7 +42,7 @@ const LandingPage: React.FC = () => {
                         {/* Logo */}
                         <div className="flex items-center gap-3">
                             <a href="https://app.snabbb.com/">
-                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-10 w-auto hover:opacity-80 transition-opacity" />
+                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo " className="h-10 w-auto hover:opacity-80 transition-opacity" />
                             </a>
                         </div>
 
@@ -187,9 +187,9 @@ const LandingPage: React.FC = () => {
                             </p>
                             <div className="h-24 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4">
                                 <div className="w-full space-y-2">
-                                    <div className="flex justify-between text-xs text-slate-500 font-bold"><span className="uppercase text-[10px]">Overhead</span><span>RM 8,400</span></div>
+                                    <div className="flex justify-between text-xs text-slate-500 font-bold"><span className="uppercase text-[10px]">Overhead</span><span>USD 8,400</span></div>
                                     <div className="w-full bg-slate-200 rounded-full h-1.5"><div className="bg-blue-500 h-1.5 rounded-full w-[60%]"></div></div>
-                                    <div className="flex justify-between text-xs text-slate-500 font-bold mt-2"><span className="uppercase text-[10px]">Hourly Rate</span><span className="text-blue-600">RM 145/hr</span></div>
+                                    <div className="flex justify-between text-xs text-slate-500 font-bold mt-2"><span className="uppercase text-[10px]">Hourly Rate</span><span className="text-blue-600">USD 145/hr</span></div>
                                 </div>
                             </div>
                         </div>
@@ -284,16 +284,16 @@ const LandingPage: React.FC = () => {
                                     
                                     <div className="space-y-4 mb-8">
                                         <div className="flex justify-between items-center py-3 border-b border-slate-800">
-                                            <span className="text-slate-400 font-medium">Gross Revenue (RM {demoRevenuePerTreatment}/ea)</span>
-                                            <span className="text-white font-bold">RM {demoGrossRevenue.toLocaleString()}</span>
+                                            <span className="text-slate-400 font-medium">Gross Revenue (USD {demoRevenuePerTreatment}/ea)</span>
+                                            <span className="text-white font-bold">USD {demoGrossRevenue.toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between items-center py-3 border-b border-slate-800">
-                                            <span className="text-slate-400 font-medium">Materials (RM {demoMaterialCost}/ea)</span>
-                                            <span className="text-red-400 font-bold">- RM {demoTotalMaterialCost.toLocaleString()}</span>
+                                            <span className="text-slate-400 font-medium">Materials (USD {demoMaterialCost}/ea)</span>
+                                            <span className="text-red-400 font-bold">- USD {demoTotalMaterialCost.toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between items-center py-3 border-b border-slate-800">
                                             <span className="text-slate-400 font-medium">Fixed Overhead Allocation</span>
-                                            <span className="text-red-400 font-bold">- RM {demoOverhead.toLocaleString()}</span>
+                                            <span className="text-red-400 font-bold">- USD {demoOverhead.toLocaleString()}</span>
                                         </div>
                                     </div>
                                     
@@ -301,7 +301,7 @@ const LandingPage: React.FC = () => {
                                         <div className="text-indigo-200 text-sm font-bold uppercase tracking-wider mb-1">True Net Profit</div>
                                         <div className="flex items-baseline gap-2">
                                             <span className={`text-4xl font-black ${demoNetProfit < 0 ? 'text-red-400' : 'text-white'}`}>
-                                                {demoNetProfit < 0 ? '-' : ''}RM {Math.abs(demoNetProfit).toLocaleString()}
+                                                {demoNetProfit < 0 ? '-' : ''}USD {Math.abs(demoNetProfit).toLocaleString()}
                                             </span>
                                         </div>
                                         {demoNetProfit < 0 && (
@@ -584,7 +584,7 @@ const LandingPage: React.FC = () => {
                             <h3 className="text-2xl font-bold text-slate-900 mb-2">Pro Plan</h3>
                             <p className="text-slate-500 mb-6 text-sm">Everything required to systematically grow your margins.</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-5xl font-black text-slate-900">RM 99</span>
+                                <span className="text-5xl font-black text-slate-900">USD 99</span>
                                 <span className="text-slate-500 font-medium">/mo</span>
                             </div>
                             <button

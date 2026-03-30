@@ -15,13 +15,22 @@ export function useSsoExchange() {
                 access_token: data.access_token,
                 refresh_token: data.refresh_token,
             });
+        
+        localStorage.setItem('is_sso_session', 'true');
         console.log('sessionData response:', sessionData);
         const { data: userData } = await supabase.auth.getUser();
         const userId = userData.user?.id || null;
         console.log('userData:', userData, 'userId:', userId);
         return data
-      } catch (error) {
+      } catch (error: any) {
         console.log('error during SSO exchange, likely no active session:', error);
+        
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session && (error.status === 401 || error.status === 403 || error.status === 404) && localStorage.getItem('is_sso_session') === 'true') {
+           await supabase.auth.signOut();
+           localStorage.removeItem('is_sso_session');
+        }
+        
         // navigate('/login', { replace: true });
         throw error
       }

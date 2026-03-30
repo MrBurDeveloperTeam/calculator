@@ -18,7 +18,9 @@ odooApi.interceptors.response.use(
             err?.response?.data?.message ||
             err?.response?.data?.error ||
             err.message;
-        return Promise.reject(new Error(msg));
+        const error = new Error(msg) as any;
+        error.status = err?.response?.status;
+        return Promise.reject(error);
     }
 );
 
@@ -76,6 +78,9 @@ export async function signInDual({ email, password }: SignInParams) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: password || '' });
 
     if (error) throw error;
+    
+    // Explicitly note that this is a direct, non-SSO login
+    localStorage.setItem('is_sso_session', 'false');
 
     return data;
 }
@@ -92,11 +97,19 @@ export async function exchangeSsoToken() {
                 refresh_token: sso.data.refresh_token,
             });
             if (error) throw error;
+            localStorage.setItem('is_sso_session', 'true');
             return true;
         }
-    } catch (err) {
-        console.warn('No active SSO session to exchange.');
+    } catch (err: any) {
+        console.warn('No active SSO session to exchange.', err.message);
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        // If there is an authorization failure and we previously had an SSO session
+        if (sessionData.session && (err.status === 401 || err.status === 403 || err.status === 404) && localStorage.getItem('is_sso_session') === 'true') {
+            await supabase.auth.signOut();
+            localStorage.removeItem('is_sso_session');
+        }
         return false;
     }
     return false;
-} 
+}  
