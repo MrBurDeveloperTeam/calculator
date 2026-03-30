@@ -79,6 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // 1. Clear local Supabase session first to guarantee local logout
         try {
             await supabase.auth.signOut();
+            localStorage.removeItem('is_sso_session');
         } catch (err) {
             console.error('Error clearing local session:', err);
         }
