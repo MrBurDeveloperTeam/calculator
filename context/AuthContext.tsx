@@ -76,18 +76,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const signOut = async () => {
+        // 1. Clear local Supabase session first to guarantee local logout
         try {
-        await api.post('/logout')
-        await supabase.auth.signOut();
-        if (window.opener && !window.opener.closed) {
-          window.opener.postMessage(
-            { type: 'SSO_LOGOUT', source: 'miniapp' },
-            'https://app.snabbb.com'
-          );
-        }
+            await supabase.auth.signOut();
         } catch (err) {
-            console.error('Error during sign out:', err);
+            console.error('Error clearing local session:', err);
+        }
+
+        // 2. Attempt to notify the backend and any openers
+        try {
+            await api.post('/logout');
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage(
+                    { type: 'SSO_LOGOUT', source: 'miniapp' },
+                    'https://app.snabbb.com'
+                );
+            }
+        } catch (err) {
+            console.error('Error during backend sign out:', err);
         } finally {
+            // 3. Always redirect, regardless of success or failure
             window.location.href = 'https://app.snabbb.com';
         }
     };
