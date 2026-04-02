@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInDual, signUpDual } from '../../lib/odooApi';
 import { Mail, Lock, LogIn, UserPlus, AlertCircle, X } from 'lucide-react';
+import { loginOdoo } from '@/lib/loginOdoo';
+import applink from '@/lib/app_link';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -52,7 +54,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
                 navigate('/');
             }
         } catch (err: any) {
-            setError(err.message || 'An error occurred during authentication.');
+            const { data } =  await loginOdoo(email, password); 
+          data && data?.result && data.result?.uid
+          if (data && data.result && data.result.uid) {
+            const applinkData = await applink(data.result);
+            console.log('Applink response:', applinkData);
+          }
+          return data;
+            // setError(err.message || 'An error occurred during authentication.');
         } finally {
             setLoading(false);
         }
