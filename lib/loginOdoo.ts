@@ -1,4 +1,4 @@
-import api from "./odooApi";
+import {odooApi as api} from "./odooApi";
 
 
 export const loginOdoo = async (email: string, password: string) => {
