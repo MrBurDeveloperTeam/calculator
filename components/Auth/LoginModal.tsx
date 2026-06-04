@@ -70,7 +70,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
 
                 {/* Close Button */}

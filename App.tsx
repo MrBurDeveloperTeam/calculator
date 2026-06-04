@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Menu, LogOut, User as UserIcon } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
@@ -12,6 +12,9 @@ import LandingPage from './components/LandingPage';
 import ClinicSettings from './components/ClinicSettings';
 import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
+import CatMascot from './components/CatMascot';
+import MolarAIFloat from './components/MolarAIFloat';
+import { VirtualPetContainer } from './VirtualPet/VirtualPetContainer';
 import {
   OverheadCalculator,
   StaffCalculator,
@@ -41,7 +44,13 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   if (!user) {
-    return <LandingPage />;
+    return (
+      <>
+        <LandingPage />
+        <CatMascot disabled />
+        <MolarAIFloat disabled />
+      </>
+    );
   }
 
   return <>{children}</>;
@@ -52,8 +61,38 @@ const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isVirtualPetOpen, setIsVirtualPetOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { toast, hideToast, modalState, closeModal } = useCalculator();
+  const {
+    state,
+    savedPlans,
+    savedProcedures,
+    toast,
+    hideToast,
+    modalState,
+    closeModal,
+    getGlobalTotalMonthlyCost,
+    getTotalMonthlyHours,
+  } = useCalculator();
+
+  const aiContext = useMemo(() => {
+    const totalMonthlyCost = getGlobalTotalMonthlyCost();
+    const totalMonthlyHours = getTotalMonthlyHours();
+    return [
+      `Current view: ${currentView}`,
+      `Clinic: ${state.clinicSettings.clinicName || 'Not set'}`,
+      `Working days/week: ${state.clinicSettings.workingDaysPerWeek || 0}`,
+      `Hours/day: ${state.clinicSettings.hoursPerDay || 0}`,
+      `Currency: ${state.clinicSettings.currencySymbol || 'Not set'}`,
+      `Total monthly cost: ${totalMonthlyCost}`,
+      `Total monthly hours: ${totalMonthlyHours}`,
+      `Saved plans: ${savedPlans.length}`,
+      `Saved procedures: ${savedProcedures.length}`,
+      `Overhead items: ${state.overhead.items.length}`,
+      `Staff members: ${state.staff.members.length}`,
+      `Consumables: ${state.consumables.items.length}`,
+    ].join('\n');
+  }, [currentView, getGlobalTotalMonthlyCost, getTotalMonthlyHours, savedPlans.length, savedProcedures.length, state]);
 
   const logOut = async () => {
     await signOut().then((res) => {
@@ -172,6 +211,18 @@ const AppContent: React.FC = () => {
         message={toast.message}
         isVisible={toast.isVisible}
         onClose={hideToast}
+      />
+
+      <div className={isVirtualPetOpen ? 'hidden' : 'contents'}>
+        <CatMascot onCatClick={() => setIsVirtualPetOpen(true)} />
+        <MolarAIFloat
+          userContext={aiContext}
+          onPetToggle={() => setIsVirtualPetOpen(true)}
+        />
+      </div>
+      <VirtualPetContainer
+        isOpen={isVirtualPetOpen}
+        onClose={() => setIsVirtualPetOpen(false)}
       />
     </div>
   );
