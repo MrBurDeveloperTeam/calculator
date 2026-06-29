@@ -29,6 +29,19 @@ import {
   ProcedureBuilder
 } from './components/CalculatorModules';
 import { useSsoExchange } from './lib/ssoExchange';
+import {
+  normalizeTheme,
+  readStoredTheme,
+  readThemeCookie,
+  writeThemeCookie,
+  writeStoredTheme,
+  applyThemeToDocument,
+  broadcastTheme,
+  syncThemeFromOdoo,
+  pushThemeToOdoo,
+  THEME_SYNC,
+  type ThemePreference,
+} from './lib/themeSync';
 
 
 const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -47,8 +60,8 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
       <>
         <LandingPage />
-        <CatMascot disabled />
-        <MolarAIFloat disabled />
+        <CatMascot disabled onCatClick={() => {}} />
+        <MolarAIFloat disabled userContext="" onPetToggle={() => {}} />
       </>
     );
   }
@@ -56,7 +69,12 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-const AppContent: React.FC = () => {
+interface AppContentProps {
+  theme: ThemePreference;
+  onThemeChange: (theme: ThemePreference) => void;
+}
+
+const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -126,6 +144,8 @@ const AppContent: React.FC = () => {
         onChangeView={setCurrentView}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
+        theme={theme}
+        onThemeChange={onThemeChange}
       />
 
       <div className="flex-1 flex flex-col lg:pl-64 transition-all duration-300">
@@ -229,6 +249,77 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Snabbb theme inheritance: Worker-injected value/cookie first, mini-app fallback second.
+  const [theme, setTheme] = useState<ThemePreference>(() => readStoredTheme() || 'light');
+
+  useEffect(() => {
+    const normalized = normalizeTheme(theme) || 'light';
+    applyThemeToDocument(normalized);
+  }, [theme]);
+
+  useEffect(() => {
+    syncThemeFromOdoo((odooTheme) => {
+      setTheme((current) => (current === odooTheme ? current : odooTheme));
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleStorageSync = (event: StorageEvent) => {
+      if (event.key !== THEME_SYNC.localStorageKey && event.key !== 'snabbb-theme') return;
+      const next = normalizeTheme(event.newValue);
+      if (next) setTheme((current) => (current === next ? current : next));
+    };
+
+    const handleMessageSync = (event: MessageEvent) => {
+      const data = event.data;
+      if (!data || data.type !== THEME_SYNC.messageType) return;
+      if (data.source === THEME_SYNC.appSource) return;
+
+      const next = normalizeTheme(data.theme);
+      if (next) setTheme((current) => (current === next ? current : next));
+    };
+
+    const handleSystemThemeChange = () => {
+      setTheme((current) => {
+        if (current === 'system') applyThemeToDocument('system');
+        return current;
+      });
+    };
+
+    let lastCookie = readThemeCookie();
+    const cookieInterval = window.setInterval(() => {
+      const currentCookie = readThemeCookie();
+      if (currentCookie && currentCookie !== lastCookie) {
+        lastCookie = currentCookie;
+        setTheme((current) => (current === currentCookie ? current : currentCookie));
+      }
+    }, 1000);
+
+    const mediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+
+    window.addEventListener('storage', handleStorageSync);
+    window.addEventListener('message', handleMessageSync);
+    mediaQuery?.addEventListener?.('change', handleSystemThemeChange);
+    mediaQuery?.addListener?.(handleSystemThemeChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageSync);
+      window.removeEventListener('message', handleMessageSync);
+      mediaQuery?.removeEventListener?.('change', handleSystemThemeChange);
+      mediaQuery?.removeListener?.(handleSystemThemeChange);
+      window.clearInterval(cookieInterval);
+    };
+  }, []);
+
+  const handleSetTheme = (newTheme: ThemePreference) => {
+    const normalized = normalizeTheme(newTheme) || 'light';
+    setTheme(normalized);
+    writeThemeCookie(normalized);
+    writeStoredTheme(normalized);
+    broadcastTheme(normalized);
+    void pushThemeToOdoo(normalized);
+  };
+
   return (
     <AuthProvider>
       <CalculatorProvider>
@@ -239,7 +330,7 @@ const App: React.FC = () => {
               path="/*"
               element={
                 <AuthManager>
-                  <AppContent />
+                  <AppContent theme={theme} onThemeChange={handleSetTheme} />
                 </AuthManager>
               }
             />
