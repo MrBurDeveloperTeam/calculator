@@ -112,6 +112,26 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
     ].join('\n');
   }, [currentView, getGlobalTotalMonthlyCost, getTotalMonthlyHours, savedPlans.length, savedProcedures.length, state]);
 
+  useEffect(() => {
+    const wheelOptions: AddEventListenerOptions = { capture: true, passive: false };
+
+    const preventNumberInputScroll = (event: WheelEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof HTMLInputElement) || target.type !== 'number') return;
+      if (document.activeElement !== target) return;
+
+      event.preventDefault();
+      target.blur();
+    };
+
+    document.addEventListener('wheel', preventNumberInputScroll, wheelOptions);
+
+    return () => {
+      document.removeEventListener('wheel', preventNumberInputScroll, wheelOptions);
+    };
+  }, []);
+
   const logOut = async () => {
     await signOut().then((res) => {
     })
