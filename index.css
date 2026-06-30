@@ -70,6 +70,27 @@ body {
   background: #94a3b8; /* slate-400 */
 }
 
+/* Virtual Pet food tray: thin transparent-track scrollbar, overrides the global one above */
+.pet-food-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.pet-food-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.pet-food-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pet-food-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border: none;
+  border-radius: 9999px;
+}
+
 /* For Firefox */
 * {
   scrollbar-width: thin;
