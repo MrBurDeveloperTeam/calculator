@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types';
 import { exchangeSsoToken } from '../lib/odooApi';
+import { api } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
@@ -75,7 +76,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const signOut = async () => {
-        await supabase.auth.signOut();
+        // 1. Clear local Supabase session first to guarantee local logout
+        try {
+            await supabase.auth.signOut();
+            localStorage.removeItem('is_sso_session');
+        } catch (err) {
+            console.error('Error clearing local session:', err);
+        }
+
+        // 2. Attempt to notify the backend and any openers
+        try {
+            await api.post('/logout');
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage(
+                    { type: 'SSO_LOGOUT', source: 'miniapp' },
+                    'https://app.snabbb.com'
+                );
+            }
+        } catch (err) {
+            console.error('Error during backend sign out:', err);
+        } finally {
+            // 3. Always redirect, regardless of success or failure
+            window.location.href = 'https://app.snabbb.com';
+        }
     };
 
     return (
