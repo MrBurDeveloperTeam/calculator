@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Mail, Phone, Settings as SettingsIcon, User as UserIcon, ChevronRight, Wallet, Tv } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Profile } from '../types';
+import { useAppLink } from '../lib/useAppLink';
 
 interface ProfileMenuProps {
   user: SupabaseUser | null;
@@ -25,9 +26,29 @@ const getInitials = (name: string) => {
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, triggerClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { mutateAsync: getAppLink } = useAppLink();
 
   const displayName = profile?.name || (user?.user_metadata as any)?.full_name || user?.email?.split('@')[0] || 'Account';
   const badgeLabel = profile?.position || profile?.company_name || profile?.account_type;
+
+  // Opens another Snabbb app via an SSO handoff so the destination recognizes
+  // the session instead of bouncing back to its own login/home page.
+  const openAppLink = async (appCode: string, fallbackUrl: string) => {
+    setIsOpen(false);
+    const win = window.open('', '_blank');
+    try {
+      const res = await getAppLink({
+        app: appCode,
+        email: user?.email || '',
+        name: displayName,
+      });
+      const url = res?.result?.url || fallbackUrl;
+      if (win) win.location.href = url;
+    } catch (err) {
+      console.error(`Failed to create SSO link for "${appCode}":`, err);
+      if (win) win.location.href = fallbackUrl;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -108,11 +129,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
             {/* Nav Items */}
             <div className="p-2 border-b border-[var(--app-border)]">
               {/* Snabbb Credit */}
-              <a
-                href="https://reward.snabbb.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
+              <button
+                onClick={() => openAppLink('reward', 'https://reward.snabbb.com')}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
@@ -123,14 +141,11 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">View your balance & rewards</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
-              </a>
+              </button>
 
               {/* My Channel */}
-              <a
-                href="https://e-learning.snabbb.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
+              <button
+                onClick={() => openAppLink('e-learning', 'https://e-learning.snabbb.com')}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
@@ -141,14 +156,11 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Manage your channel</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
-              </a>
+              </button>
 
               {/* Settings */}
-              <a
-                href="https://app.snabbb.com/profile-settings"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
+              <button
+                onClick={() => openAppLink('snabbb', 'https://app.snabbb.com/profile-settings')}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
@@ -159,7 +171,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Account & preferences</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
-              </a>
+              </button>
             </div>
 
             {/* Log Out */}
