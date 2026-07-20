@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Mail, Phone, Settings as SettingsIcon, User as UserIcon, ChevronRight } from 'lucide-react';
+import { LogOut, Mail, Phone, Settings as SettingsIcon, User as UserIcon, ChevronRight, Wallet, Tv } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Profile } from '../types';
 
@@ -107,6 +107,43 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
 
             {/* Nav Items */}
             <div className="p-2 border-b border-[var(--app-border)]">
+              {/* Snabbb Credit */}
+              <a
+                href="https://reward.snabbb.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
+              >
+                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
+                  <Wallet className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Snabbb Credit</p>
+                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">View your balance & rewards</p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
+              </a>
+
+              {/* My Channel */}
+              <a
+                href="https://e-learning.snabbb.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
+              >
+                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
+                  <Tv className="w-3.5 h-3.5 text-[var(--snabbb-accent)]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">My Channel</p>
+                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Manage your channel</p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
+              </a>
+
+              {/* Settings */}
               <a
                 href="https://app.snabbb.com/profile-settings"
                 target="_blank"
@@ -118,8 +155,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   <SettingsIcon className="w-3.5 h-3.5 text-[var(--app-text-soft)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Snabbb Account</p>
-                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Manage your profile &amp; billing</p>
+                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Settings</p>
+                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Account & preferences</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </a>
