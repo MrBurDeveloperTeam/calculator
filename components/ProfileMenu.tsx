@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Mail, Phone, Settings as SettingsIcon, User as UserIcon, ChevronRight, Wallet, Tv } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Profile } from '../types';
-import { useAppLink } from '../lib/useAppLink';
+import { useGetUserId } from '../lib/useAppLink';
 
 interface ProfileMenuProps {
   user: SupabaseUser | null;
@@ -26,35 +26,10 @@ const getInitials = (name: string) => {
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, triggerClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { mutateAsync: getAppLink } = useAppLink();
+    const { mutateAsync: createAppLink, isPending } = useGetUserId();
 
   const displayName = profile?.name || (user?.user_metadata as any)?.full_name || user?.email?.split('@')[0] || 'Account';
   const badgeLabel = profile?.position || profile?.company_name || profile?.account_type;
-
-  // Opens another Snabbb app via an SSO handoff so the destination recognizes
-  // the session instead of bouncing back to its own login/home page.
-  //
-  // NOTE: result.url points at the SSO gateway (sso.snabbb.com), not the
-  // final app — it's a token-carrying redirect the gateway resolves itself.
-  // We don't know its redirect-target parameter convention yet, so for now
-  // we use it as-is (lands on the app's default page, but at least
-  // authenticated) rather than guessing at its path/query contract again.
-  const openAppLink = async (appCode: string, targetUrl: string) => {
-    setIsOpen(false);
-    const win = window.open('', '_blank');
-    try {
-      const res = await getAppLink({
-        app: appCode,
-        email: user?.email || '',
-        name: displayName,
-      });
-      const url = res?.result?.url || targetUrl;
-      if (win) win.location.href = url;
-    } catch (err) {
-      console.error(`Failed to create SSO link for "${appCode}":`, err);
-      if (win) win.location.href = targetUrl;
-    }
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -136,7 +111,19 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
             <div className="p-2 border-b border-[var(--app-border)]">
               {/* Snabbb Credit */}
               <button
-                onClick={() => openAppLink('reward', 'https://reward.snabbb.com')}
+                 onClick={async () => {
+                          const res = await createAppLink({
+                            app: 'reward',
+                            email: user?.email,
+                            name: user?.user_metadata.name,
+                          });
+                          
+                          const supabaseUserId = res.result?.supabase_user_id;
+                          const w = window.open('', '_blank');
+                          if (supabaseUserId && w) {
+                            w.location.href = `https://reward.snabbb.com`;
+                          }
+                        }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
@@ -151,7 +138,19 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
 
               {/* My Channel */}
               <button
-                onClick={() => openAppLink('e-learning', 'https://e-learning.snabbb.com')}
+                onClick={async () => {
+                          const res = await createAppLink({
+                            app: 'e-learning',
+                            email: user?.email,
+                            name: user?.user_metadata.name,
+                          });
+                          
+                          const supabaseUserId = res.result?.supabase_user_id;
+                          const w = window.open('', '_blank');
+                          if (supabaseUserId && w) {
+                            w.location.href = `https://e-learning.snabbb.com/channel/${supabaseUserId}`;
+                          }
+                        }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
@@ -166,7 +165,19 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
 
               {/* Settings */}
               <button
-                onClick={() => openAppLink('snabbb', 'https://app.snabbb.com/profile-settings')}
+                onClick={async () => {
+                          const res = await createAppLink({
+                            app: 'snabbb',
+                            email: user?.email,
+                            name: user?.user_metadata.name,
+                          });
+                          
+                          const supabaseUserId = res.result?.supabase_user_id;
+                          const w = window.open('', '_blank');
+                          if (supabaseUserId && w) {
+                            w.location.href = `https://app.snabbb.com/profile-settings`;
+                          }
+                        }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
