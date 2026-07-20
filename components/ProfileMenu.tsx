@@ -23,6 +23,27 @@ const getInitials = (name: string) => {
   return initials || 'U';
 };
 
+/**
+ * The SSO endpoint's `result.url` carries the auth handoff (token/session
+ * params) but always points at the target app's root — it has no idea we
+ * wanted a specific page like /profile-settings. This keeps the SSO
+ * origin + auth params, but swaps in the path (and any extra query params)
+ * from the URL we actually want to land on.
+ */
+const buildTargetUrl = (ssoUrl: string | undefined, desiredUrl: string) => {
+  if (!ssoUrl) return desiredUrl;
+  try {
+    const sso = new URL(ssoUrl);
+    const desired = new URL(desiredUrl);
+    sso.pathname = desired.pathname;
+    desired.searchParams.forEach((value, key) => sso.searchParams.set(key, value));
+    sso.hash = desired.hash || sso.hash;
+    return sso.toString();
+  } catch {
+    return desiredUrl;
+  }
+};
+
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, triggerClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -32,8 +53,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
   const badgeLabel = profile?.position || profile?.company_name || profile?.account_type;
 
   // Opens another Snabbb app via an SSO handoff so the destination recognizes
-  // the session instead of bouncing back to its own login/home page.
-  const openAppLink = async (appCode: string, fallbackUrl: string) => {
+  // the session instead of bouncing back to its own login/home page, while
+  // still landing on the specific page we intended (e.g. /profile-settings).
+  const openAppLink = async (appCode: string, targetUrl: string) => {
     setIsOpen(false);
     const win = window.open('', '_blank');
     try {
@@ -42,11 +64,11 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
         email: user?.email || '',
         name: displayName,
       });
-      const url = res?.result?.url || fallbackUrl;
+      const url = buildTargetUrl(res?.result?.url, targetUrl);
       if (win) win.location.href = url;
     } catch (err) {
       console.error(`Failed to create SSO link for "${appCode}":`, err);
-      if (win) win.location.href = fallbackUrl;
+      if (win) win.location.href = targetUrl;
     }
   };
 
