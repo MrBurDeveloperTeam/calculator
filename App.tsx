@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Menu, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import HistoryTab from './components/HistoryTab';
 import Toast from './components/Toast';
+import ProfileMenu from './components/ProfileMenu';
 import { CalculatorProvider, useCalculator } from './context/CalculatorContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPage from './components/LandingPage';
@@ -78,9 +79,8 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isVirtualPetOpen, setIsVirtualPetOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const {
     state,
     savedPlans,
@@ -177,27 +177,12 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
             </a>
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                onBlur={() => setTimeout(() => setIsUserMenuOpen(false), 200)}
-                className="p-2 text-slate-600 hover:bg-slate-100 rounded-full border border-slate-200 transition-colors"
-                title="User Menu"
-              >
-                <UserIcon className="w-5 h-5" />
-              </button>
-              {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
-                  <div className="px-4 py-3 text-sm text-slate-700 border-b border-slate-100 bg-slate-50 truncate">
-                    <div className="font-medium text-slate-900 mb-0.5">Signed in as</div>
-                    <div className="text-slate-500 truncate">{user?.email}</div>
-                  </div>
-                  <button onClick={logOut} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
-                    <LogOut className="w-4 h-4" /> Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
+            <ProfileMenu
+              user={user}
+              profile={profile}
+              onSignOut={logOut}
+              triggerClassName="p-2 text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full border border-[var(--app-border)] transition-colors"
+            />
             <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
               <Menu className="w-6 h-6" />
             </button>
@@ -206,27 +191,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
 
         {/* Desktop Header Actions (Optional padding logic) */}
         <div className="hidden lg:flex justify-end p-4 absolute top-0 right-0 z-20">
-          <div className="relative">
-            <button
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              onBlur={() => setTimeout(() => setIsUserMenuOpen(false), 200)}
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-full bg-white border border-slate-200 shadow-sm transition-colors"
-              title="User Menu"
-            >
-              <UserIcon className="w-5 h-5" />
-            </button>
-            {isUserMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
-                <div className="px-4 py-3 text-sm text-slate-700 border-b border-slate-100 bg-slate-50 truncate">
-                  <div className="font-medium text-slate-900 mb-0.5">Signed in as</div>
-                  <div className="text-slate-500 truncate">{user?.email}</div>
-                </div>
-                <button onClick={logOut} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
-                  <LogOut className="w-4 h-4" /> Sign Out
-                </button>
-              </div>
-            )}
-          </div>
+          <ProfileMenu user={user} profile={profile} onSignOut={logOut} />
         </div>
 
         {/* Main Content Area */}
