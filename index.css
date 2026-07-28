@@ -595,3 +595,166 @@ body {
   .fixed-overhead-info-icon {
   color: #2563eb !important;
 }
+
+/* ROI Simulator: selected Strategy Engine option */
+:root[data-theme="dark"]
+  .roi-strategy-engine
+  .roi-strategy-option-selected {
+  background-color: #eef2ff !important;
+  border-color: #818cf8 !important;
+}
+
+:root[data-theme="dark"]
+  .roi-strategy-engine
+  .roi-strategy-option-selected
+  .roi-strategy-title {
+  color: #1e1b4b !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .roi-strategy-engine
+  .roi-strategy-option-selected
+  .roi-strategy-description {
+  color: #475569 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .roi-strategy-engine
+  .roi-strategy-option-selected
+  .roi-strategy-icon {
+  background-color: #c7d2fe !important;
+  color: #4f46e5 !important;
+}
+
+/* Unselected Strategy Engine options */
+:root[data-theme="dark"]
+  .roi-strategy-engine
+  .roi-strategy-option:not(.roi-strategy-option-selected)
+  .roi-strategy-title {
+  color: var(--app-text) !important;
+}
+
+:root[data-theme="dark"]
+  .roi-strategy-engine
+  .roi-strategy-option:not(.roi-strategy-option-selected)
+  .roi-strategy-description {
+  color: var(--app-text-muted) !important;
+}
+
+/* Staff Costs: readable light cards in dark mode */
+:root[data-theme="dark"]
+  .staff-cost-page
+  .calculator-card-header {
+  background-color: #eef2ff !important;
+  border-color: #c7d2fe !important;
+}
+
+:root[data-theme="dark"]
+  .staff-cost-page
+  .calculator-card-header-title {
+  color: #312e81 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .staff-cost-page
+  .calculator-card-header-subtitle {
+  color: #475569 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .staff-cost-page
+  .calculator-card-header-icon {
+  background-color: #ffffff !important;
+  color: #4f46e5 !important;
+}
+
+/* Staff Analytics View note */
+:root[data-theme="dark"]
+  .staff-cost-page
+  .staff-analytics-card {
+  background-color: #eef2ff !important;
+  border-color: #c7d2fe !important;
+  color: #1e3a8a !important;
+}
+
+:root[data-theme="dark"]
+  .staff-cost-page
+  .staff-analytics-text {
+  color: #1e3a8a !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .staff-cost-page
+  .staff-analytics-text strong {
+  color: #312e81 !important;
+}
+
+:root[data-theme="dark"]
+  .staff-cost-page
+  .staff-analytics-icon {
+  color: #4f46e5 !important;
+  opacity: 1 !important;
+}
+
+/* Equipment Depreciation: readable light cards in dark mode */
+:root[data-theme="dark"]
+  .depreciation-page
+  .calculator-card-header {
+  background-color: #eef2ff !important;
+  border-color: #c7d2fe !important;
+}
+
+:root[data-theme="dark"]
+  .depreciation-page
+  .calculator-card-header-title {
+  color: #312e81 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .depreciation-page
+  .calculator-card-header-subtitle {
+  color: #475569 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .depreciation-page
+  .calculator-card-header-icon {
+  background-color: #ffffff !important;
+  color: #4f46e5 !important;
+}
+
+/* Equipment Depreciation Analytics View note */
+:root[data-theme="dark"]
+  .depreciation-page
+  .depreciation-analytics-card {
+  background-color: #fffbeb !important;
+  border-color: #fcd34d !important;
+  color: #92400e !important;
+}
+
+:root[data-theme="dark"]
+  .depreciation-page
+  .depreciation-analytics-text {
+  color: #92400e !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .depreciation-page
+  .depreciation-analytics-text strong {
+  color: #78350f !important;
+}
+
+:root[data-theme="dark"]
+  .depreciation-page
+  .depreciation-analytics-icon {
+  color: #d97706 !important;
+  opacity: 1 !important;
+}

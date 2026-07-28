@@ -815,10 +815,15 @@ export const StaffCalculator = () => {
       tooltipData={{ title: "Labor Efficiency", content: `Total payroll is ${currencySymbol} ${totalMonthlyCost.toLocaleString()}/mo. With ${clinicTotalHours.toFixed(0)} clinical hours, you spend ${currencySymbol} ${clinicHourlyCost.toFixed(2)} on staff for every open hour.` }}
       theme="external"
       readOnly={true}
+      pageClassName="staff-cost-page"
     >
-      <div className="mb-6 bg-indigo-50 text-indigo-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-indigo-100">
-        <Users className="w-5 h-5 flex-shrink-0" />
-        <span>Analytics View. Manage schedules & rosters in <strong>Clinic Settings</strong>.</span>
+      <div className="staff-analytics-card mb-6 bg-indigo-50 text-indigo-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-indigo-100">
+        <Users className="staff-analytics-icon w-5 h-5 flex-shrink-0" />
+
+        <span className="staff-analytics-text">
+          Analytics View. Manage schedules & rosters in{' '}
+          <strong>Clinic Settings</strong>.
+        </span>
       </div>
 
       {/* BAR CHART: True Hourly Rate Comparison */}
@@ -949,10 +954,14 @@ export const DepreciationCalculator = () => {
       tooltipData={{ title: "Hidden Costs", content: `Your equipment loses ${currencySymbol} ${totalMonthlyDepreciation.toFixed(0)} in value every month. Spread over your clinical hours, this adds to your hourly base cost.` }}
       theme="external"
       readOnly={true}
+      pageClassName="depreciation-page"
     >
-      <div className="mb-6 bg-amber-50 text-amber-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-amber-100">
-        <Armchair className="w-5 h-5 flex-shrink-0" />
-        <span>This is an Analytics View. Manage your assets in <strong>Clinic Settings</strong>.</span>
+      <div className="depreciation-analytics-card mb-6 bg-amber-50 text-amber-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-amber-100">
+        <Armchair className="depreciation-analytics-icon w-5 h-5 flex-shrink-0" />
+
+        <span className="depreciation-analytics-text">
+          This is an Analytics View. Manage your assets in <strong>Clinic Settings</strong>.
+        </span>
       </div>
 
       {/* CHART SECTION */}
