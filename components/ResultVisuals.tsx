@@ -64,7 +64,7 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-slate-200 h-full flex flex-col relative">
+    <div className="result-visuals bg-white rounded-xl shadow-lg border border-slate-200 h-full flex flex-col relative">
       {/* Header */}
       <div className={`p-6 text-white rounded-t-xl ${headerClassName}`}>
         <h3 className="opacity-80 text-xs font-bold uppercase tracking-wider mb-1">{title}</h3>
@@ -149,21 +149,36 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
 
       {/* Educational Tooltip Accordion */}
       {tooltipData && (
-        <div className={`border-t border-slate-200 bg-blue-50 ${isTooltipOpen ? '' : 'rounded-b-xl'}`}>
+        <div
+          className={`result-tooltip-panel border-t border-slate-200 bg-blue-50 ${
+            isTooltipOpen ? '' : 'rounded-b-xl'
+          }`}
+        >
           <button
             onClick={() => setIsTooltipOpen(!isTooltipOpen)}
-            className="w-full p-3 flex items-center justify-between text-blue-800 hover:bg-blue-100 transition-colors"
+            className="result-tooltip-trigger w-full p-3 flex items-center justify-between text-blue-800 hover:bg-blue-100 transition-colors"
           >
             <div className="flex items-center gap-2">
-              <Info className="w-4 h-4" />
-              <span className="text-xs font-bold">How is this calculated?</span>
+              <Info className="result-tooltip-icon w-4 h-4" />
+
+              <span className="result-tooltip-label text-xs font-bold">
+                How is this calculated?
+              </span>
             </div>
-            {isTooltipOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+
+            {isTooltipOpen ? (
+              <ChevronUp className="result-tooltip-chevron w-4 h-4" />
+            ) : (
+              <ChevronDown className="result-tooltip-chevron w-4 h-4" />
+            )}
           </button>
 
           {isTooltipOpen && (
-            <div className="p-4 pt-0 text-xs text-blue-700 leading-relaxed rounded-b-xl">
-              <p className="font-semibold mb-1">{tooltipData.title}</p>
+            <div className="result-tooltip-content p-4 pt-0 text-xs text-blue-700 leading-relaxed rounded-b-xl">
+              <p className="result-tooltip-title font-semibold mb-1">
+                {tooltipData.title}
+              </p>
+
               <div>{tooltipData.content}</div>
             </div>
           )}

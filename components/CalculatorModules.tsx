@@ -128,6 +128,7 @@ interface CalculatorCardProps {
   tooltipData?: { title: string; content: React.ReactNode };
   theme?: ThemeType;
   readOnly?: boolean;
+  pageClassName?: string;
 }
 
 const CalculatorCard: React.FC<CalculatorCardProps> = ({
@@ -141,7 +142,8 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
   projectionData,
   tooltipData,
   theme = 'foundation',
-  readOnly = false
+  readOnly = false,
+  pageClassName = ''
 }) => {
   const { saveSection } = useCalculator();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -156,18 +158,18 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto animate-in fade-in duration-500">
+    <div className={`${pageClassName} max-w-6xl mx-auto animate-in fade-in duration-500`}>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Input Panel */}
         <div className="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-0 flex flex-col overflow-hidden">
           {/* Themed Header */}
-          <div className={`flex items-center gap-3 px-6 py-4 border-b ${styles.headerBg} ${styles.headerBorder}`}>
-            <div className={`p-2 rounded-lg ${styles.iconContainer} ${styles.iconColor} shadow-sm`}>
+          <div className={`calculator-card-header flex items-center gap-3 px-6 py-4 border-b ${styles.headerBg} ${styles.headerBorder}`}>
+            <div className={`calculator-card-header-icon p-2 rounded-lg ${styles.iconContainer} ${styles.iconColor} shadow-sm`}>
               <Calculator className="w-5 h-5" />
             </div>
             <div className="flex-grow">
-              <h2 className={`text-lg font-bold ${styles.titleText}`}>{title}</h2>
-              {readOnly && <p className="text-xs text-slate-500">Analytics View • Managed in Settings</p>}
+              <h2 className={`calculator-card-header-title text-lg font-bold ${styles.titleText}`}>{title}</h2>
+              {readOnly && <p className="calculator-card-header-subtitle text-xs text-slate-500">Analytics View • Managed in Settings</p>}
             </div>
           </div>
 
@@ -709,6 +711,7 @@ export const OverheadCalculator = () => {
       tooltipData={tooltipData}
       theme="external"
       readOnly={true}
+      pageClassName="fixed-overhead-page"
     >
       <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 flex justify-between items-center">
         <span>Calculation Logic:</span>
@@ -716,9 +719,13 @@ export const OverheadCalculator = () => {
           {currencySymbol} {totalExpenses.toLocaleString()} ÷ {operatingHours.toFixed(1)} hrs = <span className="text-indigo-600 font-bold">{currencySymbol} {costPerHour.toFixed(2)}/hr</span>
         </span>
       </div>
-      <div className="mb-6 bg-blue-50 text-blue-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-blue-100">
-        <TrendingUp className="w-5 h-5 flex-shrink-0" />
-        <span>This is an Analytics View. Manage your overhead items in <strong>Clinic Settings</strong>.</span>
+      <div className="fixed-overhead-info-card mb-6 bg-blue-50 text-blue-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-blue-100">
+        <TrendingUp className="fixed-overhead-info-icon w-5 h-5 flex-shrink-0" />
+
+        <span className="fixed-overhead-info-text">
+          This is an Analytics View. Manage your overhead items in{' '}
+          <strong>Clinic Settings</strong>.
+        </span>
       </div>
 
       <div className="overflow-hidden border border-slate-200 rounded-lg">
