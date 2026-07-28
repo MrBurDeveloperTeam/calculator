@@ -383,13 +383,13 @@ body {
   color: #475569 !important;
 }
 
-/* Clinic Settings: make editable fields clearer in dark mode */
+/* Clinic Settings: stronger editable-field edges in dark mode */
 :root[data-theme="dark"]
   .clinic-settings-page
   .clinic-field-shell {
   box-shadow:
-    inset 0 0 0 1px rgba(110, 168, 255, 0.48),
-    0 2px 8px rgba(0, 0, 0, 0.18) !important;
+    inset 0 0 0 2px rgba(110, 168, 255, 0.78),
+    0 3px 10px rgba(0, 0, 0, 0.28) !important;
 }
 
 /* Stronger edge when hovering */
@@ -397,17 +397,18 @@ body {
   .clinic-settings-page
   .clinic-field-shell:hover {
   box-shadow:
-    inset 0 0 0 1px rgba(110, 168, 255, 0.72),
-    0 3px 10px rgba(0, 0, 0, 0.22) !important;
+    inset 0 0 0 2px rgba(147, 191, 255, 0.95),
+    0 4px 14px rgba(0, 0, 0, 0.34) !important;
 }
 
-/* Clear blue focus state when typing or selecting */
+/* Clear focus state when typing or selecting */
 :root[data-theme="dark"]
   .clinic-settings-page
   .clinic-field-shell:focus-within {
   box-shadow:
-    inset 0 0 0 1px var(--snabbb-primary),
-    0 0 0 3px rgba(110, 168, 255, 0.2) !important;
+    inset 0 0 0 2px var(--snabbb-primary-hover),
+    0 0 0 4px rgba(110, 168, 255, 0.28),
+    0 5px 16px rgba(0, 0, 0, 0.34) !important;
 }
 
 /* Clinic Settings capacity card: keep readable dark text on light background */
@@ -440,4 +441,24 @@ body {
   .clinic-settings-page
   .capacity-card-unit {
   color: #2563eb !important;
+}
+
+/* Confirmation modal warning: keep readable on its light warning background */
+:root[data-theme="dark"]
+  .confirmation-modal
+  .confirmation-warning {
+  background-color: #fffbeb !important;
+  border-color: #fcd34d !important;
+}
+
+:root[data-theme="dark"]
+  .confirmation-modal
+  .confirmation-warning-text {
+  color: #92400e !important;
+}
+
+:root[data-theme="dark"]
+  .confirmation-modal
+  .confirmation-warning-icon {
+  color: #d97706 !important;
 }
