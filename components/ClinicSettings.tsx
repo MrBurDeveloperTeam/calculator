@@ -43,7 +43,7 @@ const hoursOptions = Array.from({ length: 48 }, (_, i) => (i + 1) * 0.5);
 const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", selectClassName = "h-12" }: any) => (
     <div className={className}>
         {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
-        <div className={`relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-1`}>
+        <div className="clinic-field-shell relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-1">
             <select
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
@@ -248,7 +248,7 @@ const ClinicSettings: React.FC = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
+        <div className="clinic-settings-page max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
@@ -318,15 +318,15 @@ const ClinicSettings: React.FC = () => {
                 </div>
 
                 {/* Capacity Engine Result Bar */}
-                <div className="bg-blue-50 rounded-xl border border-blue-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
+                <div className="capacity-card bg-blue-50 rounded-xl border border-blue-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
                         <div className="bg-blue-600 p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-blue-900 font-bold text-base">Calculated Monthly Capacity</p>
+                            <p className="capacity-card-title text-blue-900 font-bold text-base">Calculated Monthly Capacity</p>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <p className="text-blue-600 text-xs">Used for hourly rate calculations.</p>
+                                <p className="capacity-card-description text-blue-600 text-xs">Used for hourly rate calculations.</p>
 
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
@@ -355,8 +355,11 @@ const ClinicSettings: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="text-3xl font-bold text-blue-800">
-                            ≈ {monthlyCapacityHours.toFixed(1)} <span className="text-sm font-medium text-blue-600">hrs/mo</span>
+                        <p className="capacity-card-value text-3xl font-bold text-blue-800">
+                            ≈ {monthlyCapacityHours.toFixed(1)}{' '}
+                            <span className="capacity-card-unit text-sm font-medium text-blue-600">
+                                hrs/mo
+                            </span>
                         </p>
                     </div>
                 </div>

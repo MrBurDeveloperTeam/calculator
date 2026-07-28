@@ -513,7 +513,13 @@ const LandingPage: React.FC = () => {
                                         <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${openFaqIndex === 0 ? 'rotate-90 text-blue-600' : 'text-slate-400 group-hover:text-blue-500'}`} />
                                     </div>
                                 </button>
-                                <div className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === 0 ? 'max-h-40 pb-6 lg:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div
+                                    className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                                        openFaqIndex === 0
+                                        ? 'max-h-[500px] pb-6 lg:pb-8 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                >
                                     <p className="text-slate-600 text-lg leading-relaxed">Not at all. Our intuitive interface is designed specifically for dentists and clinic managers, automating the complex financial formulas in the background so you can focus on making clinical decisions.</p>
                                 </div>
                             </div>
@@ -529,7 +535,13 @@ const LandingPage: React.FC = () => {
                                         <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${openFaqIndex === 1 ? 'rotate-90 text-blue-600' : 'text-slate-400 group-hover:text-blue-500'}`} />
                                     </div>
                                 </button>
-                                <div className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === 1 ? 'max-h-40 pb-6 lg:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div
+                                    className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                                        openFaqIndex === 1
+                                        ? 'max-h-[500px] pb-6 lg:pb-8 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                >
                                     <p className="text-slate-600 text-lg leading-relaxed">Yes. We use Supabase backend infrastructure with row-level security and bank-grade encryption to ensure your competitive financial models and pricing structures remain entirely private to your authorized accounts.</p>
                                 </div>
                             </div>
@@ -545,7 +557,13 @@ const LandingPage: React.FC = () => {
                                         <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${openFaqIndex === 2 ? 'rotate-90 text-blue-600' : 'text-slate-400 group-hover:text-blue-500'}`} />
                                     </div>
                                 </button>
-                                <div className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === 2 ? 'max-h-40 pb-6 lg:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div
+                                    className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                                        openFaqIndex === 2
+                                        ? 'max-h-[500px] pb-6 lg:pb-8 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                >
                                     <p className="text-slate-600 text-lg leading-relaxed">Snabbb acts as a standalone modeling tool but supports seamless Single Sign-On (SSO) with your existing Odoo infrastructure, meaning your clinic staff don't need to remember new passwords.</p>
                                 </div>
                             </div>
@@ -555,14 +573,14 @@ const LandingPage: React.FC = () => {
 
                 {/* Pricing / CTA Section */}
                 <div id="pricing" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10">
-                    <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-[3rem] p-8 md:p-16 lg:px-24 border border-blue-100/50 shadow-xl flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden">
+                    <div className="pricing-cta-panel bg-gradient-to-br from-blue-50 to-teal-50 rounded-[3rem] p-8 md:p-16 lg:px-24 border border-blue-100/50 shadow-xl flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-50 pointer-events-none" />
                         
                         <div className="flex-1 text-center lg:text-left relative z-10">
-                            <h2 className="text-3xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
+                            <h2 className="pricing-cta-heading text-3xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
                                 Ready to maximize your <br className="hidden lg:block"/> clinic's potential?
                             </h2>
-                            <ul className="space-y-4 mb-8 text-slate-700 font-medium max-w-md mx-auto lg:mx-0">
+                            <ul className="pricing-cta-list space-y-4 mb-8 text-slate-700 font-medium max-w-md mx-auto lg:mx-0">
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Unlimited Procedure Models</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Real-time Overhead Syncing</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Smart Forecasting Tools</li>

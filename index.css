@@ -373,3 +373,71 @@ body {
 :root[data-theme="dark"] .hover\:bg-teal-700:hover {
   background-color: var(--snabbb-primary-hover) !important;
 }
+
+/* Keep the light Pricing CTA readable in dark mode */
+:root[data-theme="dark"] .pricing-cta-panel .pricing-cta-heading {
+  color: #334155 !important;
+}
+
+:root[data-theme="dark"] .pricing-cta-panel .pricing-cta-list {
+  color: #475569 !important;
+}
+
+/* Clinic Settings: make editable fields clearer in dark mode */
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .clinic-field-shell {
+  box-shadow:
+    inset 0 0 0 1px rgba(110, 168, 255, 0.48),
+    0 2px 8px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Stronger edge when hovering */
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .clinic-field-shell:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(110, 168, 255, 0.72),
+    0 3px 10px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Clear blue focus state when typing or selecting */
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .clinic-field-shell:focus-within {
+  box-shadow:
+    inset 0 0 0 1px var(--snabbb-primary),
+    0 0 0 3px rgba(110, 168, 255, 0.2) !important;
+}
+
+/* Clinic Settings capacity card: keep readable dark text on light background */
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-title {
+  color: #1e3a8a !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-description {
+  color: #2563eb !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-value {
+  color: #1e40af !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-unit {
+  color: #2563eb !important;
+}
