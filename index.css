@@ -462,3 +462,136 @@ body {
   .confirmation-warning-icon {
   color: #d97706 !important;
 }
+
+/* Dashboard Time Engine note: readable text on light background in dark mode */
+:root[data-theme="dark"]
+  .dashboard-page
+  .dashboard-time-note {
+  background-color: #eef2ff !important;
+  border-color: #a5b4fc !important;
+  color: #312e81 !important;
+}
+
+:root[data-theme="dark"]
+  .dashboard-page
+  .dashboard-time-note-primary {
+  color: #312e81 !important;
+}
+
+:root[data-theme="dark"]
+  .dashboard-page
+  .dashboard-time-note-secondary {
+  color: #4338ca !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .dashboard-page
+  .dashboard-time-note strong {
+  color: #312e81 !important;
+}
+
+/* ResultVisuals educational tooltip: readable on light blue background in dark mode */
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-panel {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-trigger {
+  color: #1e3a8a !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-label {
+  color: #1e3a8a !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-icon,
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-chevron {
+  color: #2563eb !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-trigger:hover {
+  background-color: #dbeafe !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-content {
+  color: #1d4ed8 !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-title {
+  color: #1e3a8a !important;
+}
+
+/* Fixed Overhead: readable light cards in dark mode */
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .calculator-card-header {
+  background-color: #eef2ff !important;
+  border-color: #c7d2fe !important;
+}
+
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .calculator-card-header-title {
+  color: #312e81 !important;
+}
+
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .calculator-card-header-subtitle {
+  color: #475569 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .calculator-card-header-icon {
+  background-color: #ffffff !important;
+  color: #4f46e5 !important;
+}
+
+/* Fixed Overhead Analytics View note */
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .fixed-overhead-info-card {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1e3a8a !important;
+}
+
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .fixed-overhead-info-text {
+  color: #1e3a8a !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .fixed-overhead-info-text strong {
+  color: #1e3a8a !important;
+}
+
+:root[data-theme="dark"]
+  .fixed-overhead-page
+  .fixed-overhead-info-icon {
+  color: #2563eb !important;
+}
