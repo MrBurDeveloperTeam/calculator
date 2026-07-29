@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Menu } from 'lucide-react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -10,6 +10,8 @@ import ProfileMenu from './components/ProfileMenu';
 import { CalculatorProvider, useCalculator } from './context/CalculatorContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPage from './components/LandingPage';
+import LoginPage from './components/Auth/LoginPage';
+import RegisterPage from './components/Auth/RegisterPage';
 import ClinicSettings from './components/ClinicSettings';
 import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
@@ -29,7 +31,6 @@ import {
   OwnerCalculator,
   ProcedureBuilder
 } from './components/CalculatorModules';
-import { useSsoExchange } from './lib/ssoExchange';
 import {
   normalizeTheme,
   readStoredTheme,
@@ -47,9 +48,8 @@ import {
 
 const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
-  const { data, isLoading: isSsoLoading, error } = useSsoExchange();
 
-  if (isLoading || isSsoLoading) {
+  if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin border-opacity-50"></div>
@@ -310,7 +310,8 @@ const App: React.FC = () => {
       <CalculatorProvider>
         <Router>
           <Routes>
-            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route
               path="/*"
               element={

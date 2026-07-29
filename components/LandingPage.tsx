@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { ShieldCheck, TrendingUp, ChevronRight, Calculator, BarChart3, Clock, CheckCircle2, Quote, Star, Zap, XCircle, Check, MousePointerClick, ArrowRight } from 'lucide-react';
-import LoginModal from './Auth/LoginModal';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage: React.FC = () => {
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [defaultIsLogin, setDefaultIsLogin] = useState(true);
+    const navigate = useNavigate();
 
     const [demoVolume, setDemoVolume] = useState(50);
     const demoOverhead = 15000;
@@ -24,13 +23,11 @@ const LandingPage: React.FC = () => {
     };
 
     const openLogin = () => {
-        setDefaultIsLogin(true);
-        setIsLoginModalOpen(true);
+        navigate('/login');
     };
 
     const openSignUp = () => {
-        setDefaultIsLogin(false);
-        setIsLoginModalOpen(true);
+        navigate('/register');
     };
 
     return (
@@ -660,11 +657,6 @@ const LandingPage: React.FC = () => {
                 </footer>
             </main>
 
-            <LoginModal
-                isOpen={isLoginModalOpen}
-                onClose={() => setIsLoginModalOpen(false)}
-                defaultIsLogin={defaultIsLogin}
-            />
         </div>
     );
 };

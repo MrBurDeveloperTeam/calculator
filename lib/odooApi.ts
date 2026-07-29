@@ -27,47 +27,66 @@ odooApi.interceptors.response.use(
 interface SignUpParams {
     email: string;
     fullName: string;
-    password?: string;
+    password: string;
+    accountType: 'individual' | 'company';
+    companyName?: string;
+    phone: string;
+    position: string;
+    dob: string;
+    country: string;
+    agreedToTerms: boolean;
 }
 
 interface SignInParams {
     email: string;
-    password?: string;
+    password: string;
 }
 
 /**
  * Attempts to register a user in Odoo and mirrors the registration to Supabase.
  * Falls back to direct Supabase registration if the Odoo endpoint fails.
  */
-export async function signUpDual({ email, password, fullName }: SignUpParams) {
-    // We use the password provided by the form, rather than hardcoding it
-    const odooPayload = { email, name: fullName, password };
+export async function signUpDual({ email, password, fullName, accountType, companyName, phone, position, dob, country, agreedToTerms }: SignUpParams) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const name = fullName.trim();
+    const metadata = {
+        name,
+        full_name: name,
+        account_type: accountType,
+        phone: phone.trim(),
+        position: position.trim(),
+        company_name: accountType === 'company' ? companyName?.trim() || null : null,
+        dob,
+        country,
+        agreed_to_terms: agreedToTerms,
+    };
+    const odooPayload = {
+        email: normalizedEmail,
+        name,
+        password,
+        phone: metadata.phone,
+        position: metadata.position,
+        account_type: metadata.account_type,
+        company_name: metadata.company_name,
+        dob: metadata.dob,
+        country: metadata.country,
+    };
     const supaPayload = {
-        email,
-        password: password || 'defaultPassword123!', // Supabase requires >6 char password
-        options: { data: { full_name: fullName } },
+        email: normalizedEmail,
+        password,
+        options: { data: metadata },
     };
 
-    // 1. Try pushing to the primary Odoo API
-    const odooResponse = await odooApi.post('/calculator/sign-up', odooPayload).catch(async (err) => {
-        console.warn('Odoo fallback triggered during sign-up:', err);
-        return await supabase.auth.signUp(supaPayload);
-    });
-
-    const { data: odooData } = (odooResponse || {}) as any;
-
-    // 2. If Odoo succeeds, duplicate the registration into Supabase implicitly
-    let supaResult;
-    if (odooData?.data?.result?.ok) {
-        supaResult = await supabase.auth.signUp(supaPayload);
+    // Match E-learning: Odoo must succeed before Supabase registration starts.
+    const { data: odooData } = await odooApi.post('/calculator/sign-up', odooPayload);
+    const odooSucceeded = odooData?.ok === true || odooData?.result?.ok === true || odooData?.data?.result?.ok === true;
+    if (!odooSucceeded) {
+        throw new Error(odooData?.error?.message || odooData?.error || odooData?.data?.error?.message || 'Failed to create Calculator account');
     }
 
-    // Gracefully ignore "already registered" errors if mirroring to Supabase
-    if (supaResult?.error && !supaResult.error.message.includes('already registered')) {
-        throw supaResult.error;
-    }
-
-    return supaResult?.data || odooData;
+    const supaResult = await supabase.auth.signUp(supaPayload);
+    if (supaResult.error) throw supaResult.error;
+    return supaResult.data;
 }
 
 /**
@@ -75,7 +94,7 @@ export async function signUpDual({ email, password, fullName }: SignUpParams) {
  * Falls back to Supabase auth natively if Odoo is unreachable.
  */
 export async function signInDual({ email, password }: SignInParams) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: password || '' });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
 
     if (error) throw error;
     
