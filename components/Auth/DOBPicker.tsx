@@ -22,7 +22,7 @@ export default function DOBPicker({ value, onChange }: DOBPickerProps) {
 
   return (
     <div className="relative">
-      <button type="button" onClick={() => setOpen((current) => !current)} className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-800 transition focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20">
+      <button type="button" onClick={() => setOpen((current) => !current)} className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-800 transition focus:border-tiffany-600 focus:outline-none focus:ring-2 focus:ring-tiffany-600/20">
         <CalendarDays size={16} className="shrink-0 text-slate-300" />
         <span className={value ? '' : 'text-slate-400'}>{display}</span>
       </button>
@@ -37,7 +37,7 @@ export default function DOBPicker({ value, onChange }: DOBPickerProps) {
           {complete && <p className="mt-4 rounded-xl bg-slate-50 py-3 text-center text-sm font-bold text-slate-800">{day} {months[Number(month) - 1]} {year}</p>}
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl border border-slate-200 py-3 font-bold text-slate-600">Cancel</button>
-            <button type="button" disabled={!complete} onClick={() => { onChange(`${year}-${pad(Number(month))}-${pad(Number(day))}`); setOpen(false); }} className="rounded-xl bg-teal-600 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Confirm</button>
+            <button type="button" disabled={!complete} onClick={() => { onChange(`${year}-${pad(Number(month))}-${pad(Number(day))}`); setOpen(false); }} className="rounded-xl bg-tiffany-600 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Confirm</button>
           </div>
         </div>
       )}
@@ -50,10 +50,9 @@ function DateSelect({ label, value, onChange, children }: { label: string; value
     <label className="block text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
       {label}
       <span className="relative mt-2 block">
-        <select value={value} onChange={(event) => onChange(event.target.value)} className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium normal-case tracking-normal text-slate-700 focus:border-teal-600 focus:outline-none">{children}</select>
+        <select value={value} onChange={(event) => onChange(event.target.value)} className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium normal-case tracking-normal text-slate-700 focus:border-tiffany-600 focus:outline-none">{children}</select>
         <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
       </span>
     </label>
   );
 }
-
