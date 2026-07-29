@@ -2,13 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types';
-import { exchangeSsoToken } from '../lib/odooApi';
+import { exchangeSsoToken, signInDual, signUpDual } from '../lib/odooApi';
 import { api } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
     profile: Profile | null;
     isLoading: boolean;
+    signIn: (email: string, password: string) => Promise<void>;
+    signUp: typeof signUpDual;
     signOut: () => Promise<void>;
 }
 
@@ -16,6 +18,8 @@ const AuthContext = createContext<AuthContextType>({
     user: null,
     profile: null,
     isLoading: true,
+    signIn: async () => { },
+    signUp: signUpDual,
     signOut: async () => { },
 });
 
@@ -101,8 +105,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const signIn = async (email: string, password: string) => {
+        await signInDual({ email, password });
+    };
+
     return (
-        <AuthContext.Provider value={{ user, profile, isLoading, signOut }}>
+        <AuthContext.Provider value={{ user, profile, isLoading, signIn, signUp: signUpDual, signOut }}>
             {children}
         </AuthContext.Provider>
     );
