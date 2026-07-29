@@ -188,7 +188,7 @@ export default function MolarChat({ isOpen, onClose, chatHistory, isChatLoading,
             <div className="fixed inset-0 bg-slate-900/10 backdrop-blur-[2px] z-[9998] md:hidden" onClick={onClose} />
 
             {/* Main Capsule Container */}
-            <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-[90vw] md:w-[400px] h-[70vh] md:h-[600px] max-h-[85vh] flex flex-col font-sans z-[9999] overflow-hidden rounded-[1.5rem] shadow-2xl shadow-slate-400/60 border border-white/40 bg-white/80 backdrop-blur-2xl ring-1 ring-slate-900/5">
+            <div className="molar-chat-panel fixed bottom-4 right-4 md:bottom-6 md:right-6 w-[90vw] md:w-[400px] h-[70vh] md:h-[600px] max-h-[85vh] flex flex-col font-sans z-[9999] overflow-hidden rounded-[1.5rem] shadow-2xl shadow-slate-400/60 border border-white/40 bg-white/80 backdrop-blur-2xl ring-1 ring-slate-900/5">
 
                 {/* Background Ambience */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -240,16 +240,16 @@ export default function MolarChat({ isOpen, onClose, chatHistory, isChatLoading,
                 </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 scroll-smooth scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent relative z-10">
+                <div className="molar-chat-body flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 scroll-smooth scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent relative z-10">
                     {chatHistory.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-full text-center pt-5 pb-12 animate-in fade-in zoom-in-95 duration-700">
                             
                             {config.title && (
-                                <h3 className="text-slate-700 text-lg font-bold mb-2 max-w-[280px] leading-tight">
+                                <h3 className="molar-chat-welcome-title text-slate-700 text-lg font-bold mb-2 max-w-[280px] leading-tight">
                                     {config.title}
                                 </h3>
                             )}
-                            <p className="text-slate-600 text-sm max-w-[320px] leading-relaxed mb-6 font-normal">
+                            <p className="molar-chat-welcome-description text-slate-600 text-sm max-w-[320px] leading-relaxed mb-6 font-normal">
                                 {config.subtitle}
                             </p>
 
@@ -321,10 +321,11 @@ export default function MolarChat({ isOpen, onClose, chatHistory, isChatLoading,
                             <input
                                 ref={inputRef}
                                 className="
+                                molar-chat-input
                                 flex-1 bg-transparent border-0 px-3 py-2 text-sm text-slate-800
                                 placeholder:text-slate-400/70 font-medium tracking-wide
                                 focus:outline-none focus:ring-0
-                            "
+                                "
                                 placeholder="Ask SNAI..."
                                 value={chatInput}
                                 onChange={(e) => setChatInput(e.target.value)}
