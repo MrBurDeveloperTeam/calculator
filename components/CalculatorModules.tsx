@@ -1122,7 +1122,7 @@ export const SterilizationCalculator = () => {
   const costPerPack = instrumentsPerCycle > 0 ? totalCycleCost / instrumentsPerCycle : 0;
   const visualData = [{ name: 'Pouch', value: pouchCost, color: '#0f766e' }, { name: 'Chemicals', value: chemicalCost, color: '#14b8a6' }, { name: 'PPE', value: ppeCost, color: '#2dd4bf' }];
   return (
-    <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical">
+    <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical" pageClassName="sterilization-page">
       <StyledInput label="Autoclave Pouch Cost" value={pouchCost} onChange={(v) => updateSection('sterilization', { pouchCost: v })} type="currency" />
       <StyledInput label="Chemical Indicator Cost" value={chemicalCost} onChange={(v) => updateSection('sterilization', { chemicalCost: v })} type="currency" />
       <StyledInput label="PPE Cost (Gloves/Masks)" value={ppeCost} onChange={(v) => updateSection('sterilization', { ppeCost: v })} type="currency" />
@@ -1141,7 +1141,7 @@ export const LabCalculator = () => {
   const finalPrice = baseCost * (1 + (markupPercent / 100));
   const visualData = [{ name: 'Base Fee', value: labFee, color: '#0d9488' }, { name: 'Shipping', value: shippingCost, color: '#14b8a6' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#22c55e' }];
   return (
-    <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical">
+    <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical" pageClassName="lab-outsourcing-page">
       <StyledInput label="Lab Fee" value={labFee} onChange={(v) => updateSection('lab', { labFee: v })} type="currency" />
       <StyledInput label="Shipping" value={shippingCost} onChange={(v) => updateSection('lab', { shippingCost: v })} type="currency" />
       <div className="pt-2"><StyledInput label="Desired Markup %" value={markupPercent} onChange={(v) => updateSection('lab', { markupPercent: v })} type="percent" /></div>
@@ -1158,7 +1158,7 @@ export const MarketingCalculator = () => {
   const cac = newPatients > 0 ? totalSpend / newPatients : 0;
   const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#be123c' }, { name: 'Agency Fee', value: agencyFees, color: '#e11d48' }];
   return (
-    <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="growth">
+    <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="growth" pageClassName="marketing-page">
       <StyledInput label="Monthly Ad Spend" value={adSpend} onChange={(v) => updateSection('marketing', { adSpend: v })} type="currency" />
       <StyledInput label="Agency Fees" value={agencyFees} onChange={(v) => updateSection('marketing', { agencyFees: v })} type="currency" />
       <StyledInput label="Production Costs" value={productionCosts} onChange={(v) => updateSection('marketing', { productionCosts: v })} type="currency" />
@@ -1176,7 +1176,7 @@ export const RegulatoryCalculator = () => {
   const totalMonthly = monthlyAmortized + monthlyWaste;
   const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#e11d48' }, { name: 'Insurance', value: annualInsurance / 12, color: '#f43f5e' }];
   return (
-    <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="growth">
+    <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="growth" pageClassName="regulatory-page">
       <StyledInput label="Annual APC Fee" value={annualApc} onChange={(v) => updateSection('regulatory', { annualApc: v })} type="currency" />
       <StyledInput label="Annual X-Ray License" value={annualXray} onChange={(v) => updateSection('regulatory', { annualXray: v })} type="currency" />
       <StyledInput label="Annual Indemnity Insurance" value={annualInsurance} onChange={(v) => updateSection('regulatory', { annualInsurance: v })} type="currency" />
@@ -1195,7 +1195,7 @@ export const FinancialCalculator = () => {
   const totalFinancial = monthlyInterest + monthlyBankCharges + transFeeAmount + taxEstimate;
   const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#334155' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#475569' }];
   return (
-    <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="foundation">
+    <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="foundation" pageClassName="financial-tax-page">
       <StyledInput label="Monthly Loan Interest" value={monthlyInterest} onChange={(v) => updateSection('financial', { monthlyInterest: v })} type="currency" />
       <StyledInput label="Bank Charges / Software" value={monthlyBankCharges} onChange={(v) => updateSection('financial', { monthlyBankCharges: v })} type="currency" />
       <div className="grid grid-cols-2 gap-4"><StyledInput label="Est. Monthly Revenue" value={estMonthlyRevenue} onChange={(v) => updateSection('financial', { estMonthlyRevenue: v })} type="currency" /><StyledInput label="Trans. Fee %" value={transactionFeesPercent} onChange={(v) => updateSection('financial', { transactionFeesPercent: v })} type="percent" /></div>
@@ -1231,6 +1231,7 @@ export const OwnerCalculator = () => {
       section="owner"
       visualData={visualData}
       theme="foundation"
+      pageClassName="owner-comp-page"
       tooltipData={{ title: "Risk Buffer", content: `To safely take home ${currencySymbol} ${desiredNetIncome.toLocaleString()}, your clinic needs to generate an extra ${currencySymbol} ${riskBufferAmount.toLocaleString()} to cover unexpected downturns or taxes.` }}
     >
       <StyledInput
@@ -1250,7 +1251,7 @@ export const OwnerCalculator = () => {
         />
       </div>
 
-      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="owner-comp-table border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
           <h4 className="font-bold text-slate-700 text-sm flex items-center gap-2">
             Compensation Structure
@@ -1274,15 +1275,23 @@ export const OwnerCalculator = () => {
                 {currencySymbol} {annualNetIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
-            <tr className="bg-amber-50">
-              <td className="px-4 py-3 font-medium text-amber-700">
-                Business Risk Buffer <span className="text-xs opacity-75">(@ {riskBufferPercent}%)</span>
+            <tr className="owner-comp-risk-row bg-amber-50">
+              <td className="owner-comp-risk-label px-4 py-3 font-medium text-amber-700">
+                Business Risk Buffer <span className="owner-comp-risk-percent text-xs opacity-75">(@ {riskBufferPercent}%)</span>
               </td>
-              <td className="px-4 py-3 text-right font-bold text-amber-600">
-                {currencySymbol} {riskBufferAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+              <td className="owner-comp-risk-value px-4 py-3 text-right font-bold text-amber-600">
+                {currencySymbol} {riskBufferAmount.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </td>
-              <td className="px-4 py-3 text-right text-amber-600">
-                {currencySymbol} {annualRiskBuffer.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+              <td className="owner-comp-risk-value px-4 py-3 text-right text-amber-600">
+                {currencySymbol} {annualRiskBuffer.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </td>
             </tr>
             <tr className="bg-slate-50 border-t border-slate-200">

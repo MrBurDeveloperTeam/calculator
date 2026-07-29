@@ -37,12 +37,12 @@ const LandingPage: React.FC = () => {
         <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
             {/* Header / Navbar */}
             <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-20">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                    <div className="flex min-w-0 items-center justify-between gap-2 h-16 sm:h-20">
                         {/* Logo */}
                         <div className="flex items-center gap-3">
                             <a href="https://app.snabbb.com/">
-                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo " className="h-10 w-auto hover:opacity-80 transition-opacity" />
+                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo " className="h-8 sm:h-10 w-auto shrink-0 hover:opacity-80 transition-opacity" />
                             </a>
                         </div>
 
@@ -56,16 +56,17 @@ const LandingPage: React.FC = () => {
                         </nav>
 
                         {/* Navigation / Actions */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
                             <button
                                 onClick={openLogin}
-                                className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors hidden sm:block px-2"
+                                className="whitespace-nowrap px-1 sm:px-2 text-[11px] sm:text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
                             >
                                 Log in
                             </button>
+
                             <button
                                 onClick={openSignUp}
-                                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all hover:shadow-md transform hover:-translate-y-[1px]"
+                                className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-sm font-semibold py-2 px-2.5 sm:px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all hover:shadow-md transform hover:-translate-y-[1px]"
                             >
                                 Get Started
                             </button>
