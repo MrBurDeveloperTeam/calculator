@@ -5,6 +5,9 @@
 @theme {
   --font-sans: "Inter", sans-serif;
 
+  /* Shared authentication color used by E-learning and Appointment */
+  --color-tiffany-600: #14b8b8;
+
   --color-teal-50: #f0fdfa;
   --color-teal-100: #ccfbf1;
   --color-teal-600: #0d9488;
