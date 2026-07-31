@@ -25,12 +25,103 @@ const getInitials = (name: string) => {
 
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, triggerClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [creditBalance, setCreditBalance] =
+    useState<number | null>(null);
+
+  const [creditLoading, setCreditLoading] =
+    useState(true);
+
+  const [creditError, setCreditError] =
+    useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
     const { mutateAsync: createAppLink, isPending } = useGetUserId();
 
   const displayName = profile?.name || (user?.user_metadata as any)?.full_name || user?.email?.split('@')[0] || 'Account';
   const badgeLabel = profile?.position || profile?.company_name || profile?.account_type;
 
+  useEffect(() => {
+    if (!user) {
+      setCreditBalance(null);
+      setCreditError(null);
+      setCreditLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadCreditBalance() {
+      setCreditLoading(true);
+      setCreditError(null);
+
+      try {
+        const response = await fetch(
+          '/api/wallet',
+          {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              Accept: 'application/json',
+            },
+            cache: 'no-store',
+          }
+        );
+
+        const data = await response
+          .json()
+          .catch(() => null);
+
+        if (!response.ok || !data?.ok) {
+          throw new Error(
+            data?.error ||
+            'Unable to retrieve credit balance'
+          );
+        }
+
+        const rawBalance =
+          data?.data?.snabbb_balance ??
+          data?.data?.balance ??
+          data?.result?.snabbb_balance ??
+          data?.result?.balance ??
+          data?.snabbb_balance ??
+          data?.balance;
+
+        const balance = Number(rawBalance);
+
+        if (!Number.isFinite(balance)) {
+          throw new Error(
+            'Invalid credit balance'
+          );
+        }
+
+        if (!cancelled) {
+          setCreditBalance(balance);
+        }
+      } catch (error) {
+        console.error(
+          'Failed to load Snabbb Credit:',
+          error
+        );
+
+        if (!cancelled) {
+          setCreditBalance(null);
+          setCreditError(
+            'Unable to load balance'
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setCreditLoading(false);
+        }
+      }
+    }
+
+    void loadCreditBalance();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -131,7 +222,15 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Snabbb Credit</p>
-                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">View your balance & rewards</p>
+                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">
+                    {creditLoading
+                      ? 'Loading...'
+                      : creditError
+                        ? creditError
+                        : creditBalance !== null
+                          ? `${creditBalance.toLocaleString()} credits`
+                          : 'Balance unavailable'}
+                  </p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </button>
