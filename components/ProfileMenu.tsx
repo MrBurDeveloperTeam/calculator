@@ -52,10 +52,15 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
     async function loadCreditBalance() {
       setCreditLoading(true);
       setCreditError(null);
-
+        
       try {
+        const email = user?.email;
+        if (!email) {
+          throw new Error('No email on user session');
+        }
+      
         const response = await fetch(
-          '/api/wallet',
+          `/api/wallet?email=${encodeURIComponent(email)}`,
           {
             method: 'GET',
             credentials: 'include',
