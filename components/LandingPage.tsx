@@ -58,14 +58,14 @@ const LandingPage: React.FC = () => {
                                 onClick={openLogin}
                                 className="whitespace-nowrap px-1 sm:px-2 text-[11px] sm:text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
                             >
-                                Log in
+                                Log In
                             </button>
 
                             <button
                                 onClick={openSignUp}
                                 className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-sm font-semibold py-2 px-2.5 sm:px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all hover:shadow-md transform hover:-translate-y-[1px]"
                             >
-                                Get Started
+                                Sign Up
                             </button>
                         </div>
                     </div>
