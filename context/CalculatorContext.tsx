@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure } from '../types';
 import { useAuth } from './AuthContext';
 import * as api from '../data/api';
+import { logActivityToOdoo } from '../services/logActivityToOdoo';
 
 const INITIAL_STATE: GlobalState = {
   clinicSettings: { clinicName: '', workingDaysPerWeek: 0, hoursPerDay: 0, currencySymbol: '' },
@@ -26,8 +27,28 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
   const [modalState, setModalState] = useState<{ isOpen: boolean; type: 'ROI' | 'FORECAST' | null; initialData: SavedPlan | null }>({ isOpen: false, type: null, initialData: null });
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const { user } = useAuth(); // Hook into the authenticated session
+  const { user, profile } = useAuth(); // Hook into the authenticated session
   const isFetchingRef = useRef(false);
+
+  // Best-effort: every saved section/plan/procedure also gets pushed to
+  // Odoo (see services/logActivityToOdoo.ts +
+  // CALCULATOR_ACTIVITY_TRACKER_ODOO_SYNC.md), mirroring the same sync
+  // built for the inventory/appointment/todo/e-learning apps. Fire-and-
+  // forget so a slow/unreachable worker or Odoo instance never blocks or
+  // fails the local Supabase write, which stays the source of truth either
+  // way.
+  const logCalculatorActivity = (action: string, details: string) => {
+    if (!user) return;
+    logActivityToOdoo({
+      logId: crypto.randomUUID(),
+      actorEmail: user.email ?? null,
+      actorName: profile?.name ?? null,
+      supabaseUserId: user.id ?? null,
+      action,
+      details,
+      occurredAt: new Date().toISOString(),
+    });
+  };
 
   // 1. Central Data Fetching on Login
   useEffect(() => {
@@ -248,6 +269,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       setToast({ message: customMessage || 'Saved to Cloud Database', isVisible: true });
+      logCalculatorActivity('config_saved', `Saved ${section} settings`);
     } catch (e) {
       console.error("Failed to save section to Supabase", e);
       setToast({ message: 'Error saving data to cloud.', isVisible: true });
@@ -290,6 +312,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await api.upsertPlan(user!.id, plan);
       setSavedPlans(prev => [...prev.filter(p => p.id !== plan.id), plan]);
       setToast({ message: 'Plan saved to Cloud!', isVisible: true });
+      logCalculatorActivity('plan_saved', `Saved plan: ${plan.name}`);
     } catch (e) {
       console.error("Error saving plan:", e);
       setToast({ message: 'Error saving plan.', isVisible: true });
@@ -301,6 +324,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await api.upsertPlan(user!.id, plan);
       setSavedPlans(prev => prev.map(p => p.id === plan.id ? plan : p));
       setToast({ message: 'Plan updated in Cloud!', isVisible: true });
+      logCalculatorActivity('plan_updated', `Updated plan: ${plan.name}`);
     } catch (e) {
       console.error("Error updating plan:", e);
       setToast({ message: 'Error updating plan.', isVisible: true });
@@ -309,9 +333,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deletePlan = async (id: string) => {
     try {
+      const plan = savedPlans.find(p => p.id === id);
       await api.deletePlan(id);
       setSavedPlans(prev => prev.filter(p => p.id !== id));
       setToast({ message: 'Plan removed from Cloud.', isVisible: true });
+      logCalculatorActivity('plan_deleted', `Deleted plan: ${plan?.name || id}`);
     } catch (e) {
       console.error("Error deleting plan:", e);
       setToast({ message: 'Error deleting plan.', isVisible: true });
@@ -321,10 +347,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // --- Remote Procedure Management Functions ---
   const saveProcedure = async (procedure: SavedProcedure) => {
     try {
-      // In Supabase, upsert is driven by ID. 
+      // In Supabase, upsert is driven by ID.
       await api.upsertProcedure(user!.id, procedure);
       setSavedProcedures(prev => [...prev.filter(p => p.id !== procedure.id), procedure]);
       setToast({ message: 'Procedure saved to Cloud!', isVisible: true });
+      logCalculatorActivity('procedure_saved', `Saved procedure: ${procedure.name}`);
     } catch (e) {
       console.error("Error saving procedure:", e);
       setToast({ message: 'Error saving procedure.', isVisible: true });
@@ -336,6 +363,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await api.upsertProcedure(user!.id, procedure);
       setSavedProcedures(prev => prev.map(p => p.id === procedure.id ? procedure : p));
       setToast({ message: 'Procedure updated in Cloud!', isVisible: true });
+      logCalculatorActivity('procedure_updated', `Updated procedure: ${procedure.name}`);
     } catch (e) {
       console.error("Error updating procedure:", e);
       setToast({ message: 'Error updating procedure.', isVisible: true });
@@ -344,9 +372,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteProcedure = async (id: string) => {
     try {
+      const procedure = savedProcedures.find(p => p.id === id);
       await api.deleteProcedure(id);
       setSavedProcedures(prev => prev.filter(p => p.id !== id));
       setToast({ message: 'Procedure removed from Cloud.', isVisible: true });
+      logCalculatorActivity('procedure_deleted', `Deleted procedure: ${procedure?.name || id}`);
     } catch (e) {
       console.error("Error deleting procedure:", e);
       setToast({ message: 'Error deleting procedure.', isVisible: true });
