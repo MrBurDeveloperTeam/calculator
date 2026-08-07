@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface CoinIndicatorProps {
@@ -7,9 +6,34 @@ interface CoinIndicatorProps {
 
 const CoinIndicator: React.FC<CoinIndicatorProps> = ({ amount }) => {
   return (
-    <div className="absolute top-8 right-32 z-40 flex items-center gap-2 bg-white/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/40 shadow-lg text-slate-800 animate-in fade-in slide-in-from-right-8 duration-700 delay-100 transition-all hover:scale-105 hover:bg-white/40 cursor-default select-none">
-      <div className="text-2xl drop-shadow-sm filter">💰</div>
-      <span className="font-black text-xl tracking-wide">{amount}</span>
+    <div
+      className="
+        absolute
+        right-[calc(env(safe-area-inset-right)_+_5.5rem)]
+        top-[calc(env(safe-area-inset-top)_+_1.25rem)]
+        z-40
+        flex min-w-0 items-center gap-1.5
+        rounded-full border-0
+        bg-white/35 px-3 py-1.5
+        text-black
+        shadow-md shadow-slate-900/10
+        backdrop-blur-md
+        animate-in fade-in slide-in-from-right-8
+        select-none
+        transition-all duration-700
+        hover:scale-105 hover:bg-white/45
+        sm:gap-2 sm:px-4 sm:py-2
+        lg:right-[calc(env(safe-area-inset-right)_+_8rem)]
+        lg:top-[calc(env(safe-area-inset-top)_+_2rem)]
+      "
+    >
+      <span className="text-xl leading-none drop-shadow-sm sm:text-2xl">
+        💰
+      </span>
+
+      <span className="max-w-20 truncate text-base font-black tracking-wide text-black sm:text-xl">
+        {amount}
+      </span>
     </div>
   );
 };

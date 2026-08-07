@@ -23,13 +23,41 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
   const fillY = fillBottomY - (xpPercent * fillHeightRange);
 
   return (
-    <div className="absolute top-3 right-6 z-40 flex flex-col items-end animate-in fade-in slide-in-from-right-4 duration-700">
+    <div
+        className="
+            absolute
+            right-[calc(env(safe-area-inset-right)_+_0.75rem)])]
+            top-[calc(env(safe-area-inset-top)_+_0.5rem)]
+            z-40
+            flex flex-col items-end
+            animate-in fade-in slide-in-from-right-4 duration-700
+            lg:right-[calc(env(safe-area-inset-right)_+_1.5rem)]
+            lg:top-[calc(env(safe-area-inset-top)_+_0.75rem)]
+        "
+    >
         <button
+            type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="relative w-20 h-20 shrink-0 group transition-transform hover:scale-105 active:scale-95 duration-200 outline-none cursor-pointer"
+            className="
+                group relative
+                h-16 w-16 shrink-0
+                appearance-none border-0 bg-transparent p-0
+                outline-none ring-0
+                cursor-pointer
+                transition-transform duration-200
+                hover:scale-105 active:scale-95
+                focus:outline-none
+                focus-visible:ring-2
+                focus-visible:ring-amber-400/70
+                sm:h-20 sm:w-20
+            "
             title={`Level ${stats.level}`}
+            aria-expanded={isOpen}
         >
-            <svg viewBox="0 0 200 200" className="w-full h-full overflow-visible drop-shadow-xl">
+            <svg
+                viewBox="0 0 200 200"
+                className="h-full w-full overflow-visible drop-shadow-md"
+            >
                 <defs>
                     <clipPath id="body-mask-lvl">
                         <path d={bodyPath} />
@@ -40,7 +68,10 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
                     </linearGradient>
                 </defs>
 
-                <path d={bodyPath} className="fill-white/30 backdrop-blur-md stroke-white/60 stroke-[4]" />
+                <path
+                    d={bodyPath}
+                    className="fill-white/20 stroke-slate-800/20 stroke-[3]"
+                />
 
                 <g clipPath="url(#body-mask-lvl)">
                     <rect
@@ -52,8 +83,6 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
                         className="transition-all duration-700 ease-out"
                     />
                 </g>
-
-                <path d={bodyPath} className="fill-none stroke-slate-500/10 stroke-[4px]" />
                 <path d={bodyPath} className="fill-none stroke-black stroke-[4px] pointer-events-none" />
                 <path
                   d={whiskersPath}
@@ -86,7 +115,17 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
         </button>
 
         {isOpen && (
-            <div className="absolute top-24 right-0 bg-white/90 backdrop-blur-xl rounded-2xl p-5 shadow-2xl w-64 border border-white/50 animate-in fade-in zoom-in-95 origin-top-right">
+            <div
+                className="
+                    absolute right-0 top-20
+                    w-[min(16rem,calc(100vw_-_1.5rem))]
+                    rounded-2xl border border-white/50
+                    bg-white/90 p-5
+                    shadow-2xl backdrop-blur-xl
+                    animate-in fade-in zoom-in-95 origin-top-right
+                    lg:top-24
+                "
+            >
                 <div className="text-center">
                     <h3 className="text-xl font-bold text-slate-800">Level {stats.level}</h3>
                     <div className="text-sm font-semibold text-slate-500 mt-1">

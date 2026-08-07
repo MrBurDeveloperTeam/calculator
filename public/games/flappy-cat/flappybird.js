@@ -1,4 +1,3 @@
-
 //board
 let board;
 let boardWidth = 360;
@@ -53,6 +52,11 @@ let scoreValueEl;
 let highScoreValueEl;
 let highScore = 0;
 let sfxDie, sfxHit, sfxPoint, sfxWing;
+let animationFrameId = 0;
+let lastFrameTime = 0;
+let pipeElapsed = 0;
+const PIPE_DELAY = 1800;
+const MAX_DPR = 1.5;
 
 window.onload = function () {
     board = document.getElementById("board");
@@ -96,15 +100,21 @@ window.onload = function () {
     bottomPipeImg = new Image();
     bottomPipeImg.src = "./bottompipe.png";
 
-    requestAnimationFrame(update);
+    animationFrameId = requestAnimationFrame(update);
     document.addEventListener("keydown", moveBird);
     // Allow mouse/touch clicks anywhere on the page to flap (mobile-friendly)
     document.addEventListener("pointerdown", handlePointerFlap);
-    window.addEventListener("resize", () => setBoardSize(true));
+    window.addEventListener("resize", handleResize, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 }
 
-function update() {
-    requestAnimationFrame(update);
+function update(now) {
+    animationFrameId = requestAnimationFrame(update);
+
+    // Normalize movement to 60 fps. This prevents 120 Hz iPhones from doing
+    // twice the physics work/speed and caps long frames after interruptions.
+    const delta = lastFrameTime ? Math.min((now - lastFrameTime) / (1000 / 60), 2) : 1;
+    lastFrameTime = now;
     context.clearRect(0, 0, board.width, board.height);
 
     if (!started) {
@@ -119,33 +129,37 @@ function update() {
     }
 
     //bird
-    velocityY += gravity;
+    velocityY += gravity * delta;
     // bird.y += velocityY;
-    bird.y = Math.max(bird.y + velocityY, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
+    bird.y = Math.max(bird.y + velocityY * delta, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
 
-    if (bird.y > board.height) {
+    if (bird.y > boardHeight) {
         endGame();
     }
 
     //pipes
     for (let i = 0; i < pipeArray.length; i++) {
         let pipe = pipeArray[i];
-        pipe.x += velocityX;
+        pipe.x += velocityX * delta;
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
 
-        if (!pipe.passed && bird.x > pipe.x + pipe.width) {
-            score += 0.5; //0.5 because there are 2 pipes! so 0.5*2 = 1, 1 for each set of pipes
+        if (
+            pipe.countsForScore &&
+            !pipe.passed &&
+            bird.x > pipe.x + pipe.width
+        ) {
+            score += 1;
             pipe.passed = true;
             playSfx(sfxPoint);
 
-            // Sync score with virtual pet parent
-            // In Flappy, 1 point is much harder than 1 point in Tetris
-            // So we treat 1 Flappy point = 100 "Points" (which = 1 Coin)
-            window.parent.postMessage({
-                type: 'GAME_SCORE_UPDATE',
-                score: Math.floor(score * 100)
-            }, '*');
+            window.parent.postMessage(
+                {
+                    type: "GAME_SCORE_UPDATE",
+                    score: score * 100,
+                },
+                "*"
+            );
         }
 
         if (detectCollision(bird, pipe)) {
@@ -157,6 +171,12 @@ function update() {
     //clear pipes once they are fully off the left edge
     while (pipeArray.length > 0 && (pipeArray[0].x + pipeArray[0].width) < 0) {
         pipeArray.shift(); //removes first element from the array
+    }
+
+    pipeElapsed += delta * (1000 / 60);
+    if (pipeElapsed >= PIPE_DELAY) {
+        pipeElapsed %= PIPE_DELAY;
+        placePipes();
     }
 
     drawHUD();
@@ -171,7 +191,7 @@ function placePipes() {
     // 0 -> -128 (pipeHeight/4)
     // 1 -> -128 - 256 (pipeHeight/4 - pipeHeight/2) = -3/4 pipeHeight
     let randomPipeY = pipeY - pipeHeight / 4 - Math.random() * (pipeHeight / 2);
-    let openingSpace = board.height / 5;
+    let openingSpace = boardHeight / 5;
 
     let spawnX = boardWidth; // start at the right edge
 
@@ -181,8 +201,9 @@ function placePipes() {
         y: randomPipeY,
         width: pipeWidth,
         height: pipeHeight,
-        passed: false
-    }
+        passed: false,
+        countsForScore: true,
+    };
     pipeArray.push(topPipe);
 
     let bottomPipe = {
@@ -191,10 +212,10 @@ function placePipes() {
         y: randomPipeY + pipeHeight + openingSpace,
         width: pipeWidth,
         height: pipeHeight,
-        passed: false
-    }
+        passed: false,
+        countsForScore: false,
+    };
     pipeArray.push(bottomPipe);
-}
 
 function moveBird(e) {
     if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
@@ -261,7 +282,9 @@ function setBoardSize(reset = false) {
     // or too small on tall screens.
     scale = Math.min(boardWidth / BASE_WIDTH, boardHeight / BASE_HEIGHT);
 
-    const dpr = window.devicePixelRatio || 1;
+    // Full DPR 3 canvases are expensive on iPhones and provide little visual
+    // benefit for this pixel-art game. Limit the backing buffer size.
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     board.style.width = `${boardWidth}px`;
     board.style.height = `${boardHeight}px`;
     board.width = Math.round(boardWidth * dpr);
@@ -303,14 +326,31 @@ function startGame() {
     bird.y = boardHeight / 2;
     velocityY = 0;
     pipeArray = [];
+    pipeElapsed = 0;
+    lastFrameTime = performance.now();
 
     if (overlay) overlay.classList.add("hidden");
     if (gameOverModal) gameOverModal.classList.add("hidden");
 
-    if (pipeInterval) {
-        clearInterval(pipeInterval);
+    // Pipe spawning is driven by the same requestAnimationFrame loop.
+}
+
+function handleResize() {
+    setBoardSize(true);
+    lastFrameTime = performance.now();
+}
+
+function handleVisibilityChange() {
+    if (document.hidden) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = 0;
+        return;
     }
-    pipeInterval = setInterval(placePipes, 1800);
+
+    lastFrameTime = performance.now();
+    if (!animationFrameId) {
+        animationFrameId = requestAnimationFrame(update);
+    }
 }
 
 function drawHUD() {

@@ -22,7 +22,6 @@ const POOP_NEXT_SPAWN_KEY = 'virtual_pet_next_poop_at';
 const OUTSIDE_PET_SCALE = 0.75;
 const SLEEP_WAKE_DURATION_MS = 760;
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
-
 interface PetRoomProps {
   onNavigateToGame: (gameId: string) => void;
 }
@@ -66,6 +65,31 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
   const [showShopModal, setShowShopModal] = useState(false);
   const [isPoopVisible, setIsPoopVisible] = useState(false);
   const [showPoopReward, setShowPoopReward] = useState(false);
+  const [bedroomScale, setBedroomScale] = useState(1);
+
+  useEffect(() => {
+    const updateBedroomScale = () => {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      const availableWidth = Math.max(260, viewportWidth - 120);
+      const availableHeight = Math.max(280, viewportHeight - 220);
+
+      const widthScale = availableWidth / 560;
+      const heightScale = availableHeight / 480;
+
+      setBedroomScale(
+        Math.max(0.38, Math.min(1, widthScale, heightScale))
+      );
+    };
+
+    updateBedroomScale();
+    window.addEventListener('resize', updateBedroomScale);
+
+    return () => {
+      window.removeEventListener('resize', updateBedroomScale);
+    };
+  }, []);
 
 
   // Drag & Drop / Tool State
@@ -540,9 +564,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
           <div className="w-1 h-48 bg-slate-800/80" />
           {/* Lamp Bulb */}
           <button
+            type="button"
             onClick={() => setIsSleeping(!isSleeping)}
-            // Added 'rotate-180' to flip the emoji upside down
-            className="text-6xl -mt-2 transition-all duration-300 hover:scale-110 active:scale-95 outline-none rotate-180"
+            className="
+              -mt-2 rotate-180
+              appearance-none border-0 bg-transparent p-0
+              text-6xl shadow-none outline-none ring-0
+              transition-all duration-300
+              hover:scale-110 active:scale-95
+            "
             title={isSleeping ? "Turn On" : "Turn Off"}
           >
             <div className={`transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : 'filter drop-shadow-[0_0_25px_rgba(255,235,59,0.8)]'}`}>
@@ -624,38 +654,76 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             />
           </div>
         ) : currentRoom === RoomType.BEDROOM ? (
-          <div className="relative flex h-[430px] w-[min(92vw,560px)] items-center justify-center">
-            {activeBed && (
-              <img
-                src={activeBed.src}
-                alt=""
-                draggable={false}
-                className="pointer-events-none absolute -bottom-32 left-1/2 z-0 w-[min(85vw,550px)] -translate-x-1/2 select-none drop-shadow-2xl"
-              />
-            )}
-            <div className="relative z-10">
-              <Pet
-                ref={petRef}
-                stats={stats}
-                isSleeping={isSleeping}
-                isEating={isEating}
-                isPlaying={isPlaying}
-                isHoveredWithFood={isHoveringPet && !!draggedItem}
-                bubbles={bubbles}
-                lookAt={pointerState.isDown ? { x: pointerState.x, y: pointerState.y } : null}
-                sleepVisualOffsetY={72}
-                sleepLabelClassName="top-24 right-14"
-                spriteSheetUrl={activePet.spriteSheetUrl}
-                mouthPosition={activePet.mouthPosition}
-                idleFrames={activePet.idleFrames}
-                idleDuration={activePet.idleDuration}
-                sleepInFrames={activePet.sleepInFrames}
-                sleepHoldFrame={activePet.sleepHoldFrame}
-                clickRow={activePet.clickRow}
-                clickFrames={activePet.clickFrames}
-                clickDuration={activePet.clickDuration}
-                onClick={handlePetClick}
-              />
+          <div
+            className="
+              relative
+              ml-[clamp(1rem,6vw,6rem)]
+              flex shrink-0
+              items-end justify-center
+            "
+            style={{
+              width: 560 * bedroomScale,
+              height: 480 * bedroomScale,
+            }}
+          >
+            <div
+              className="absolute bottom-0 left-1/2 h-[480px] w-[560px]"
+              style={{
+                transform: `translateX(-50%) scale(${bedroomScale})`,
+                transformOrigin: 'center bottom',
+              }}
+            >
+              {activeBed && (
+                <img
+                  src={activeBed.src}
+                  alt=""
+                  draggable={false}
+                  className="
+                    pointer-events-none
+                    absolute bottom-0 left-1/2 z-0
+                    w-[550px] -translate-x-1/2
+                    select-none
+                    border-0 bg-transparent
+                    shadow-none
+                  "
+                />
+              )}
+
+              <div
+                className="
+                  absolute
+                  bottom-[82px] left-1/2 z-10
+                  -translate-x-1/2
+                  bg-transparent
+                "
+              >
+                <Pet
+                  ref={petRef}
+                  stats={stats}
+                  isSleeping={isSleeping}
+                  isEating={isEating}
+                  isPlaying={isPlaying}
+                  isHoveredWithFood={isHoveringPet && !!draggedItem}
+                  bubbles={bubbles}
+                  lookAt={
+                    pointerState.isDown
+                      ? { x: pointerState.x, y: pointerState.y }
+                      : null
+                  }
+                  sleepVisualOffsetY={72}
+                  sleepLabelClassName="top-24 right-14"
+                  spriteSheetUrl={activePet.spriteSheetUrl}
+                  mouthPosition={activePet.mouthPosition}
+                  idleFrames={activePet.idleFrames}
+                  idleDuration={activePet.idleDuration}
+                  sleepInFrames={activePet.sleepInFrames}
+                  sleepHoldFrame={activePet.sleepHoldFrame}
+                  clickRow={activePet.clickRow}
+                  clickFrames={activePet.clickFrames}
+                  clickDuration={activePet.clickDuration}
+                  onClick={handlePetClick}
+                />
+              </div>
             </div>
           </div>
         ) : (
@@ -685,31 +753,67 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
         {currentRoom === RoomType.BATHROOM && (
           <div className="absolute bottom-10 right-10 opacity-50 text-6xl animate-float">🦆</div>
         )}
-        {currentRoom === RoomType.BATHROOM && isPoopVisible && (
-          <button
-            type="button"
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
-            onClick={handlePoopClick}
-            className="absolute left-1/2 top-1/2 z-40 translate-x-[140px] translate-y-[110px] rounded-2xl p-2 transition-transform duration-200 hover:scale-110 active:scale-95"
-            aria-label="Collect poop for 5 coins"
-            title="+5 coins"
-          >
-            <img
-              src="/images/poop.png"
-              alt=""
-              draggable={false}
-              className="h-[80px] w-[80px] object-contain drop-shadow-xl"
-            />
-          </button>
-        )}
-        {currentRoom === RoomType.BATHROOM && showPoopReward && (
-          <div className="pointer-events-none absolute left-1/2 top-1/2 z-50 translate-x-[150px] translate-y-[78px]">
-            <div className="animate-poop-reward rounded-full bg-amber-400 px-3 py-1.5 text-[14px] font-black tracking-wider text-white">
-              +5 coins
+        {currentRoom === RoomType.BATHROOM &&
+          (isPoopVisible || showPoopReward) && (
+            <div
+              className="
+                pointer-events-none
+                absolute
+                z-40
+                flex flex-col items-center
+                right-[clamp(0.75rem,4vw,5rem)]
+                bottom-[calc(env(safe-area-inset-bottom)_+_clamp(8.5rem,22vh,13rem))]
+              "
+            >
+              {showPoopReward && (
+                <div className="pointer-events-none absolute bottom-full mb-1">
+                  <div
+                    className="
+                      animate-poop-reward
+                      whitespace-nowrap rounded-full
+                      bg-amber-400 px-3 py-1.5
+                      text-[14px] font-black
+                      tracking-wider text-white
+                    "
+                  >
+                    +5 coins
+                  </div>
+                </div>
+              )}
+
+              {isPoopVisible && (
+                <button
+                  type="button"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onPointerUp={(e) => e.stopPropagation()}
+                  onClick={handlePoopClick}
+                  className="
+                    pointer-events-auto
+                    appearance-none
+                    border-0 bg-transparent p-0
+                    shadow-none outline-none ring-0
+                    transition-transform duration-200
+                    hover:scale-110
+                    active:scale-95
+                  "
+                  aria-label="Collect poop for 5 coins"
+                  title="+5 coins"
+                >
+                  <img
+                    src="/images/poop.png"
+                    alt=""
+                    draggable={false}
+                    className="
+                      h-[clamp(3.5rem,9vw,5rem)]
+                      w-[clamp(3.5rem,9vw,5rem)]
+                      object-contain
+                      drop-shadow-md
+                    "
+                  />
+                </button>
+              )}
             </div>
-          </div>
-        )}
+          )}
         {currentRoom === RoomType.GAMES && (
           // Icon removed as requested
           null

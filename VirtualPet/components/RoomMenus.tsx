@@ -42,7 +42,7 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                 <div
                     ref={scrollRef}
                     onWheel={handleWheel}
-                    className="pet-food-scrollbar flex h-22 min-w-0 flex-1 snap-x items-center gap-4 overflow-x-auto overflow-y-hidden px-4 pt-3"
+                    className="hide-scrollbar flex h-22 min-w-0 flex-1 snap-x items-center gap-4 overflow-x-auto overflow-y-hidden px-4 pt-3"
                 >
                     {availableItems.length === 0 && (
                         <button
@@ -94,7 +94,13 @@ const BATHROOM_TOOL_ICONS: Record<ToolType, { src: string; alt: string }> = {
 
 export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoapedUp, isDirty }) => (
     <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
-        <div className="bg-white/60 backdrop-blur-xl p-4 rounded-2xl shadow-xl flex gap-6 border border-white/50 items-end">
+        <div
+            className="
+                flex items-end gap-6
+                border-0 bg-transparent p-0
+                shadow-none
+            "
+        >
             {(['soap'] as const).map((tool) => {
                 const disabled = !!isSoapedUp;
                 return (
