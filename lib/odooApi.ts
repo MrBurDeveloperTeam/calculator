@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { supabase } from './supabase';
+import applink from './app_link';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "https://sso.snabbb.com/api";
 
@@ -44,8 +45,8 @@ interface SignInParams {
 }
 
 /**
- * Attempts to register a user in Odoo and mirrors the registration to Supabase.
- * Falls back to direct Supabase registration if the Odoo endpoint fails.
+ * Registers new users only in the shared Snabbb/Odoo identity system.
+ * Calculator's SSO exchange creates/links the app-specific session later.
  */
 export async function signUpDual({ email, password, fullName, accountType, companyName, phone, position, dob, country, referralCode, agreedToTerms }: SignUpParams) {
     const normalizedEmail = email.trim().toLowerCase();
@@ -83,37 +84,72 @@ export async function signUpDual({ email, password, fullName, accountType, compa
         referral_code: metadata.referral_code,
         referralCode: metadata.referral_code,
     };
-    const supaPayload = {
-        email: normalizedEmail,
-        password,
-        options: { data: metadata },
-    };
-
-    // Match E-learning: Odoo must succeed before Supabase registration starts.
+    // Odoo owns account verification for new ecosystem registrations.
     const { data: odooData } = await odooApi.post('/calculator/sign-up', odooPayload);
     const odooResult = odooData?.data?.result ?? odooData?.result ?? odooData;
     if (odooData?.error || odooResult?.ok === false || odooResult?.created === false) {
         throw new Error(odooData?.error?.message || odooData?.error || odooData?.data?.error?.message || 'Failed to create Calculator account');
     }
 
-    const supaResult = await supabase.auth.signUp(supaPayload);
-    if (supaResult.error) throw supaResult.error;
-    return supaResult.data;
+    return { user: null, session: null, odoo: odooResult };
 }
 
 /**
- * Attempts to log in via Odoo, then synchronizes tokens with Supabase.
- * Falls back to Supabase auth natively if Odoo is unreachable.
+ * Uses the shared Odoo account first and redirects through Calculator SSO.
+ * Direct Supabase password auth remains only for historical Calculator users.
  */
-export async function signInDual({ email, password }: SignInParams) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+export async function signInDual({ email, password }: SignInParams): Promise<void> {
+    const normalizedEmail = email.trim().toLowerCase();
+    let odooError: unknown = null;
+    let odooAuthenticated = false;
 
-    if (error) throw error;
-    
-    // Explicitly note that this is a direct, non-SSO login
+    try {
+        const { data: odooData } = await odooApi.post('/web/session/authenticate', {
+            jsonrpc: '2.0',
+            method: 'call',
+            params: {
+                db: 'aht-systemadmin-mrbur-main-20994444',
+                login: normalizedEmail,
+                password,
+            },
+            id: 1,
+        });
+
+        if (odooData?.error) {
+            throw new Error(odooData.error?.message || 'Odoo login failed');
+        }
+
+        const odooUser = odooData?.result;
+
+        if (!odooUser?.uid) {
+            throw new Error('Invalid Odoo credentials');
+        }
+
+        odooAuthenticated = true;
+        await applink(odooUser);
+
+        // Keep the login page from navigating locally while the SSO redirect
+        // is leaving the current document.
+        await new Promise<void>(() => undefined);
+    } catch (error) {
+        odooError = error;
+    }
+
+    // Legacy fallback: users created only in Calculator's Supabase project
+    // can still log in even if they do not yet have a main Snabbb account.
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+    });
+
+    if (error) {
+        if (odooAuthenticated && odooError instanceof Error) throw odooError;
+        throw new Error('Invalid email or password');
+    }
+
+    if (!data.session) throw new Error('Calculator did not return a valid session');
+
     localStorage.setItem('is_sso_session', 'false');
-
-    return data;
 }
 
 /**
