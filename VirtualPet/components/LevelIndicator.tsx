@@ -41,7 +41,11 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
             className="
                 group relative
                 h-12 w-12 shrink-0
-                appearance-none border-0 bg-transparent p-0
+                appearance-none
+                !border-0
+                !bg-transparent
+                !shadow-none
+                p-0
                 outline-none ring-0
                 cursor-pointer
                 transition-transform duration-200
@@ -56,7 +60,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
         >
             <svg
                 viewBox="0 0 200 200"
-                className="h-full w-full overflow-visible drop-shadow-md"
+                className="h-full w-full overflow-visible !bg-transparent drop-shadow-md"
             >
                 <defs>
                     <clipPath id="body-mask-lvl">

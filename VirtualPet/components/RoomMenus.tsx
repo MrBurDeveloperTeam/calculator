@@ -76,7 +76,9 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                                 snap-center
                                 cursor-grab
                                 items-center justify-center
-                                bg-transparent
+                                !border-0
+                                !bg-transparent
+                                !shadow-none
                                 transition-all
                                 hover:-translate-y-0.5
                                 active:cursor-grabbing

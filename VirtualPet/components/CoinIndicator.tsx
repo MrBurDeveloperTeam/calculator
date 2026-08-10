@@ -23,7 +23,7 @@ const CoinIndicator: React.FC<CoinIndicatorProps> = ({ amount }) => {
       transition-all duration-700
       hover:scale-105 hover:bg-white/40
     ">
-      <div className="text-base drop-shadow-sm">
+      <div className="text-base !bg-transparent drop-shadow-sm">
         💰
       </div>
 
