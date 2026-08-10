@@ -559,7 +559,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
 
       {/* Bedroom Lamp Switch */}
       {currentRoom === RoomType.BEDROOM && (
-        <div className="absolute top-0 left-1/3 z-10 flex flex-col items-center">
+        <div className="absolute top-0 right-[clamp(1.5rem,8vw,6rem)] z-10 flex flex-col items-center">
           {/* Lamp Cord - Changed h-32 to h-48 */}
           <div className="w-1 h-48 bg-slate-800/80" />
           {/* Lamp Bulb */}
@@ -671,6 +671,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               relative
               pet-asset-no-tile
               ml-[clamp(1rem,6vw,6rem)]
+              translate-y-[clamp(1.25rem,4vh,2.5rem)]
               flex shrink-0
               items-end justify-center
             "
@@ -706,7 +707,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               <div
                 className="
                   absolute
-                  bottom-[82px] left-1/2 z-10
+                  bottom-[112px] left-1/2 z-10
                   -translate-x-1/2
                   bg-transparent
                 "
