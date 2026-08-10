@@ -51,16 +51,21 @@ let playAgainBtn;
 let scoreValueEl;
 let highScoreValueEl;
 let highScore = 0;
-let sfxDie, sfxHit, sfxPoint, sfxWing;
+let sfxDie, sfxHit, sfxWing;
+let pointAudioContext = null;
+let pointAudioBuffer = null;
+let pointAudioLoadPromise = null;
 let animationFrameId = 0;
 let lastFrameTime = 0;
 let pipeElapsed = 0;
 const PIPE_DELAY = 1800;
 const MAX_DPR = 1.5;
+const MOBILE_MAX_DPR = 1;
+let resizeFrameId = 0;
 
 window.onload = function () {
     board = document.getElementById("board");
-    context = board.getContext("2d"); //used for drawing on the board
+    context = board.getContext("2d", { alpha: true, desynchronized: true });
     overlay = document.getElementById("overlay");
     startBtn = document.getElementById("start-btn");
     gameOverModal = document.getElementById("gameover-modal");
@@ -72,7 +77,8 @@ window.onload = function () {
     // load sfx
     sfxDie = new Audio("./sfx_die.wav");
     sfxHit = new Audio("./sfx_hit.wav");
-    sfxPoint = new Audio("./sfx_point.wav");
+    // The score sound uses Web Audio below. Decoding starts on the first user
+    // gesture so it is ready before the player reaches the first pipe.
     sfxWing = new Audio("./sfx_wing.wav");
     setBoardSize(true);
 
@@ -103,19 +109,19 @@ window.onload = function () {
     animationFrameId = requestAnimationFrame(update);
     document.addEventListener("keydown", moveBird);
     // Allow mouse/touch clicks anywhere on the page to flap (mobile-friendly)
-    document.addEventListener("pointerdown", handlePointerFlap);
+    document.addEventListener("pointerdown", handlePointerFlap, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
 }
 
 function update(now) {
-    animationFrameId = requestAnimationFrame(update);
+    animationFrameId = 0;
 
     // Normalize movement to 60 fps. This prevents 120 Hz iPhones from doing
     // twice the physics work/speed and caps long frames after interruptions.
     const delta = lastFrameTime ? Math.min((now - lastFrameTime) / (1000 / 60), 2) : 1;
     lastFrameTime = now;
-    context.clearRect(0, 0, board.width, board.height);
+    context.clearRect(0, 0, boardWidth, boardHeight);
 
     if (!started) {
         context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
@@ -151,7 +157,7 @@ function update(now) {
         ) {
             score += 1;
             pipe.passed = true;
-            playSfx(sfxPoint);
+            playPointSfx();
 
             window.parent.postMessage(
                 {
@@ -180,6 +186,10 @@ function update(now) {
     }
 
     drawHUD();
+
+    if (started && !gameOver && !document.hidden) {
+        animationFrameId = requestAnimationFrame(update);
+    }
 }
 
 function placePipes() {
@@ -220,6 +230,7 @@ function placePipes() {
 
 function moveBird(e) {
     if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
+        preparePointSfx();
         flap();
     }
 }
@@ -232,6 +243,7 @@ function detectCollision(a, b) {
 }
 
 function handlePointerFlap() {
+    preparePointSfx();
     // Ignore clicks when game over and modal is showing unless they hit Play
     if (gameOver && !gameOverModal.classList.contains("hidden")) return;
     flap();
@@ -285,12 +297,15 @@ function setBoardSize(reset = false) {
 
     // Full DPR 3 canvases are expensive on iPhones and provide little visual
     // benefit for this pixel-art game. Limit the backing buffer size.
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const isMobile = window.matchMedia("(pointer: coarse)").matches;
+    const dprLimit = isMobile ? MOBILE_MAX_DPR : MAX_DPR;
+    const dpr = Math.min(window.devicePixelRatio || 1, dprLimit);
     board.style.width = `${boardWidth}px`;
     board.style.height = `${boardHeight}px`;
     board.width = Math.round(boardWidth * dpr);
     board.height = Math.round(boardHeight * dpr);
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.imageSmoothingEnabled = false;
 
     // Update game element sizes based on the new scale
     birdWidth = 34 * scale * BIRD_SCALE;
@@ -334,11 +349,27 @@ function startGame() {
     if (gameOverModal) gameOverModal.classList.add("hidden");
 
     // Pipe spawning is driven by the same requestAnimationFrame loop.
+    if (!animationFrameId && !document.hidden) {
+        animationFrameId = requestAnimationFrame(update);
+    }
 }
 
 function handleResize() {
-    setBoardSize(true);
-    lastFrameTime = performance.now();
+    // iOS Safari fires many resize events while its address bar expands or
+    // collapses. Rebuild the canvas at most once per rendered frame.
+    if (resizeFrameId) return;
+    resizeFrameId = requestAnimationFrame(() => {
+        resizeFrameId = 0;
+        const widthChanged = Math.abs(window.innerWidth - boardWidth) > 2;
+        // Ignore small height-only changes caused by Safari's collapsing URL
+        // bar. They are not real layout changes and must not reset gameplay.
+        const heightChanged = Math.abs(window.innerHeight - boardHeight) > Math.max(120, boardHeight * 0.2);
+        if (!widthChanged && !heightChanged) return;
+
+        setBoardSize(true);
+        lastFrameTime = performance.now();
+        if (!animationFrameId) animationFrameId = requestAnimationFrame(update);
+    });
 }
 
 function handleVisibilityChange() {
@@ -349,7 +380,9 @@ function handleVisibilityChange() {
     }
 
     lastFrameTime = performance.now();
-    if (!animationFrameId) {
+    if (!animationFrameId && started && !gameOver) {
+        animationFrameId = requestAnimationFrame(update);
+    } else if (!started || gameOver) {
         animationFrameId = requestAnimationFrame(update);
     }
 }
@@ -414,4 +447,45 @@ function playSfx(audioEl) {
     } catch (e) {
         // ignore playback errors (e.g., user gesture not granted)
     }
+}
+
+function preparePointSfx() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return Promise.resolve();
+
+    if (!pointAudioContext) {
+        pointAudioContext = new AudioContextClass({ latencyHint: "interactive" });
+    }
+
+    if (pointAudioContext.state === "suspended") {
+        pointAudioContext.resume().catch(() => {});
+    }
+
+    if (!pointAudioLoadPromise) {
+        pointAudioLoadPromise = fetch("./sfx_point.wav")
+            .then((response) => {
+                if (!response.ok) throw new Error("Unable to load score sound");
+                return response.arrayBuffer();
+            })
+            .then((audioData) => pointAudioContext.decodeAudioData(audioData))
+            .then((buffer) => {
+                pointAudioBuffer = buffer;
+            })
+            .catch(() => {
+                // Sound is optional; never let an audio failure affect gameplay.
+            });
+    }
+
+    return pointAudioLoadPromise;
+}
+
+function playPointSfx() {
+    // Do not fall back to HTMLAudio while the buffer is loading: on iOS that
+    // synchronous seek/play path is exactly what can hitch the scoring frame.
+    if (!pointAudioContext || !pointAudioBuffer || pointAudioContext.state !== "running") return;
+
+    const source = pointAudioContext.createBufferSource();
+    source.buffer = pointAudioBuffer;
+    source.connect(pointAudioContext.destination);
+    source.start(0);
 }
