@@ -597,7 +597,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
       </div>
 
       {/* Stats HUD (Top Center) */}
-      <StatsBar stats={stats} />
+      <div
+        className="
+          relative
+          z-30
+          max-[420px]:mt-12
+        "
+      >
+        <StatsBar stats={stats} />
+      </div>
 
       {/* Soap/Shower Progress (Bathroom) */}
       {currentRoom === RoomType.BATHROOM && (bubbles.length > 0 || isSoapedUp) && (
