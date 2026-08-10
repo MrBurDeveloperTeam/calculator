@@ -26,7 +26,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
     <div
         className="
             absolute
-            right-[calc(env(safe-area-inset-right)_+_0.75rem)])]
+            right-[calc(env(safe-area-inset-right)_+_0.75rem)]
             top-[calc(env(safe-area-inset-top)_+_0.5rem)]
             z-40
             flex flex-col items-end
@@ -40,7 +40,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
             onClick={() => setIsOpen(!isOpen)}
             className="
                 group relative
-                h-16 w-16 shrink-0
+                h-12 w-12 shrink-0
                 appearance-none border-0 bg-transparent p-0
                 outline-none ring-0
                 cursor-pointer
@@ -70,7 +70,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
 
                 <path
                     d={bodyPath}
-                    className="fill-white/20 stroke-slate-800/20 stroke-[3]"
+                    className="fill-white/30 backdrop-blur-md stroke-white/60 stroke-[4]"
                 />
 
                 <g clipPath="url(#body-mask-lvl)">
