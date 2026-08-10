@@ -15,10 +15,8 @@ const applink = async (param: any) => {
                     "id": 1
                   });
       if(data && data.result.url){
-              window.location.assign(data.result.url);
-              return data;
+              window.open(data.result.url, "_self");
     }
-      throw new Error("Calculator SSO did not return a launch URL");
     } catch (err: any) {
       console.error("Redirection error:", err);
       throw new Error(err.message || "SSO redirection failed");
