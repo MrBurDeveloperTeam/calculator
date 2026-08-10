@@ -216,6 +216,7 @@ function placePipes() {
         countsForScore: false,
     };
     pipeArray.push(bottomPipe);
+}
 
 function moveBird(e) {
     if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {

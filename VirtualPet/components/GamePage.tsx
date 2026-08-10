@@ -67,9 +67,14 @@ const AnimatedCounter: React.FC<{ value: number }> = ({ value }) => {
 interface GamePageProps {
     gameId: string;
     onClose: () => void;
+    onExitPet: () => void;
 }
 
-export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
+export const GamePage: React.FC<GamePageProps> = ({
+    gameId,
+    onClose,
+    onExitPet,
+}) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isPortrait, setIsPortrait] = useState(false);
     const { stats, setStats } = useGameState();
@@ -163,12 +168,35 @@ export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
                 {/* Same back control used by the main cat page */}
                 <button
                     type="button"
-                    onClick={onClose}
-                    className="absolute left-[calc(env(safe-area-inset-left)+1.5rem)] top-[calc(env(safe-area-inset-top)+1.5rem)] z-[60] flex h-16 w-16 appearance-none items-center justify-center rounded-2xl border border-white/60 bg-white/75 p-0 text-slate-700 shadow-xl shadow-slate-900/10 backdrop-blur-md transition-all hover:-translate-x-0.5 hover:scale-105 hover:bg-white active:scale-95"
-                    title="Back"
-                    aria-label="Back"
+                    onClick={onExitPet}
+                    className="
+                        absolute
+                        left-[calc(env(safe-area-inset-left)+1.5rem)]
+                        top-[calc(env(safe-area-inset-top)+1.5rem)]
+                        z-[60]
+                        flex h-16 w-16
+                        appearance-none
+                        items-center justify-center
+                        rounded-2xl
+                        border border-white/60
+                        bg-white/75
+                        p-0
+                        text-black
+                        shadow-xl shadow-slate-900/10
+                        backdrop-blur-md
+                        transition-all
+                        hover:-translate-x-0.5
+                        hover:scale-105
+                        hover:bg-white
+                        active:scale-95
+                    "
+                    title="Back to main page"
+                    aria-label="Back to main page"
                 >
-                    <TiArrowBack className="h-12 w-12" strokeWidth={0} />
+                    <TiArrowBack
+                        className="h-12 w-12 text-black"
+                        strokeWidth={0}
+                    />
                 </button>
 
                 {/* Landscape orientation notice */}
@@ -208,6 +236,34 @@ export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
                                 <AnimatedCounter value={stats.coins || 0} />
                             </span>
                         </div>
+
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="
+                                flex h-14 w-14
+                                shrink-0
+                                appearance-none
+                                items-center justify-center
+                                rounded-full
+                                border border-white/10
+                                bg-black/40
+                                p-0
+                                text-white
+                                shadow-lg
+                                backdrop-blur-md
+                                transition-all
+                                hover:scale-105
+                                hover:bg-black/60
+                                active:scale-95
+                            "
+                            title="Back to cat"
+                            aria-label="Back to cat"
+                        >
+                            <span className="text-3xl font-black leading-none">
+                                ×
+                            </span>
+                        </button>
 
                     </div>
                 </div>
