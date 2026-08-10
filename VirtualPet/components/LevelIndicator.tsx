@@ -26,7 +26,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
     <div
         className="
             absolute
-            right-[calc(env(safe-area-inset-right)_+_0.75rem)])]
+            right-[calc(env(safe-area-inset-right)_+_0.75rem)]
             top-[calc(env(safe-area-inset-top)_+_0.5rem)]
             z-40
             flex flex-col items-end
