@@ -65,6 +65,7 @@ function initHome() {
     PACMAN_DEAD = false;
 
     $("#panel").hide();
+    $("#mobile-controls").hide();
     $("#home").show();
     $("#home h3 em").append( " - " + new Date().getFullYear() );
     

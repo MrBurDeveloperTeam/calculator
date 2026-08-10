@@ -70,6 +70,10 @@ const overlayClose = document.getElementById('overlay-close');
 const leaderboardContainer = document.getElementById('leaderboard');
 const gameTitle = document.querySelector('.game-title');
 const btnPause = document.getElementById('btn-pause');
+const helpButton = document.getElementById('help-button');
+const helpModal = document.getElementById('help-modal');
+const helpClose = document.getElementById('help-close');
+const holdButton = document.getElementById('hold-button');
 
 // ==================== TETROMINO DEFINITIONS ====================
 const colors = [null, '#00f0f0', '#0050f0', '#f0a000', '#f0f000', '#00f000', '#a000f0', '#f04040'];
@@ -868,6 +872,16 @@ function moveDown() {
     return true;
 }
 
+function hardDrop() {
+    if (!gameState.running || gameState.paused || gameState.isCountingDown || !player.matrix) return;
+    while (!collide(gameState.arena, player)) player.pos.y++;
+    player.pos.y--;
+    merge(gameState.arena, player);
+    sweepLines();
+    spawnNext();
+    gameState.dropCounter = 0;
+}
+
 /**
  * Start new game
  */
@@ -899,6 +913,7 @@ function startGame() {
         btnPause.style.display = 'flex';
         btnPause.innerHTML = '<i class="fas fa-pause"></i>';
     }
+    if (holdButton) holdButton.style.display = 'flex';
 
     if (!gameState.running) {
         gameState.running = true;
@@ -921,6 +936,7 @@ function stopGame(sendReward = true) {
     }
     gameState.running = false;
     if (btnPause) btnPause.style.display = 'none';
+    if (holdButton) holdButton.style.display = 'none';
 }
 
 /**
@@ -997,12 +1013,7 @@ function handleKey(e) {
         playerRotate(1);
     } else if (e.code === 'Space') {
         e.preventDefault();
-        while (!collide(gameState.arena, player)) player.pos.y++;
-        player.pos.y--;
-        merge(gameState.arena, player);
-        sweepLines();
-        spawnNext();
-        gameState.dropCounter = 0;
+        hardDrop();
     } else if (e.key.toLowerCase() === 'c') {
         e.preventDefault();
         holdCurrentPiece();
@@ -1021,6 +1032,92 @@ function handleKeyUp(e) {
 window.addEventListener('keydown', handleKey);
 window.addEventListener('keyup', handleKeyUp);
 
+// ==================== TOUCH CONTROLS ====================
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let longPressTimer = 0;
+let longPressActive = false;
+let pendingTapTimer = 0;
+let lastTapTime = 0;
+
+function isTouchGameTarget(target) {
+    return target instanceof Element &&
+        !target.closest('button, .overlay, .help-modal') &&
+        gameState.running && !gameState.paused && !gameState.isCountingDown;
+}
+
+document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch' || !isTouchGameTarget(e.target)) return;
+    e.preventDefault();
+    ensureAudio();
+    touchStartX = e.clientX;
+    touchStartY = e.clientY;
+    touchStartTime = performance.now();
+    longPressActive = false;
+
+    longPressTimer = window.setTimeout(() => {
+        longPressActive = true;
+        gameState.input.down = true;
+    }, 420);
+}, { passive: false });
+
+document.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'touch' || !touchStartTime) return;
+    e.preventDefault();
+    if (Math.abs(e.clientX - touchStartX) > 14 || Math.abs(e.clientY - touchStartY) > 14) {
+        clearTimeout(longPressTimer);
+    }
+}, { passive: false });
+
+function finishTouchGesture(e) {
+    if (e.pointerType !== 'touch' || !touchStartTime) return;
+    e.preventDefault();
+    clearTimeout(longPressTimer);
+    gameState.input.down = false;
+
+    const deltaX = e.clientX - touchStartX;
+    const deltaY = e.clientY - touchStartY;
+    const elapsed = performance.now() - touchStartTime;
+    touchStartTime = 0;
+
+    if (longPressActive || elapsed >= 420) {
+        longPressActive = false;
+        return;
+    }
+
+    if (Math.abs(deltaX) >= 36 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        deltaX < 0 ? moveLeft() : moveRight();
+        return;
+    }
+
+    if (Math.hypot(deltaX, deltaY) > 18) return;
+
+    const now = performance.now();
+    if (now - lastTapTime <= 280) {
+        clearTimeout(pendingTapTimer);
+        pendingTapTimer = 0;
+        lastTapTime = 0;
+        playerRotate(1);
+    } else {
+        lastTapTime = now;
+        pendingTapTimer = window.setTimeout(() => {
+            pendingTapTimer = 0;
+            lastTapTime = 0;
+            hardDrop();
+        }, 280);
+    }
+}
+
+document.addEventListener('pointerup', finishTouchGesture, { passive: false });
+document.addEventListener('pointercancel', (e) => {
+    if (e.pointerType !== 'touch') return;
+    clearTimeout(longPressTimer);
+    touchStartTime = 0;
+    longPressActive = false;
+    gameState.input.down = false;
+}, { passive: false });
+
 // ==================== OVERLAY BUTTONS ====================
 overlayStart.addEventListener('click', () => {
     startGame();
@@ -1036,6 +1133,30 @@ overlayClose.addEventListener('click', () => {
 
 if (btnPause) {
     btnPause.addEventListener('click', togglePause);
+}
+
+if (holdButton) {
+    holdButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!gameState.running || gameState.paused || gameState.isCountingDown) return;
+        ensureAudio();
+        holdCurrentPiece();
+    });
+}
+
+if (helpButton && helpModal && helpClose) {
+    helpButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (gameState.running && !gameState.paused && !gameState.isCountingDown) togglePause();
+        helpModal.hidden = false;
+    });
+    helpClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        helpModal.hidden = true;
+    });
+    helpModal.addEventListener('click', (e) => {
+        if (e.target === helpModal) helpModal.hidden = true;
+    });
 }
 
 const btnSettings = document.getElementById('btn-settings-toggle');
@@ -1123,6 +1244,26 @@ window.addEventListener('load', () => {
     document.body.focus();
 });
 
+let layoutFrame = 0;
+function fitTetrisLayout() {
+    layoutFrame = 0;
+    const viewport = window.visualViewport;
+    const width = viewport ? viewport.width : window.innerWidth;
+    const height = viewport ? viewport.height : window.innerHeight;
+    const scale = Math.min((width - 24) / 904, (height - 24) / 620, 1);
+    document.documentElement.style.setProperty('--tetris-scale', Math.max(0.25, scale));
+}
+
+function scheduleTetrisFit() {
+    if (layoutFrame) return;
+    layoutFrame = requestAnimationFrame(fitTetrisLayout);
+}
+
+window.addEventListener('resize', scheduleTetrisFit, { passive: true });
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', scheduleTetrisFit, { passive: true });
+}
+
 document.body.addEventListener('click', () => {
     document.body.focus();
     if (!audioCtx) ensureAudio();
@@ -1132,6 +1273,7 @@ document.body.addEventListener('click', () => {
  * Initialize game
  */
 function init() {
+    fitTetrisLayout();
     canvas.width = CONFIG.COLS * CONFIG.CELL_SIZE;
     canvas.height = CONFIG.ROWS * CONFIG.CELL_SIZE;
     nextCanvas.width = 6 * 28;
@@ -1143,6 +1285,7 @@ function init() {
     loadHighscore();
 
     gameState.arena = createMatrix(CONFIG.COLS, CONFIG.ROWS);
+    if (holdButton) holdButton.style.display = 'none';
     draw();
 
     // Show initial welcome overlay with settings enabled

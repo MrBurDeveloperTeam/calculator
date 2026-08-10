@@ -193,6 +193,36 @@
         </div>
       </div>
     </div>
+	</div>
+
+	<button id="help-button" type="button" aria-label="How to play"><i class="fas fa-book-open"></i></button>
+	<button id="hold-button" type="button" aria-label="Hold piece"><span>HOLD</span><small>C</small></button>
+
+	<div id="help-modal" class="help-modal" hidden>
+	  <div class="help-dialog" role="dialog" aria-modal="true" aria-labelledby="help-title">
+		<button id="help-close" type="button" aria-label="Close instructions">×</button>
+		<h2 id="help-title">How to Play</h2>
+		<div class="help-columns">
+		  <section>
+			<h3>Touch Controls</h3>
+			<div><span>Swipe Left / Right</span><strong>Move</strong></div>
+			<div><span>Single Tap</span><strong>Hard Drop</strong></div>
+			<div><span>Double Tap</span><strong>Rotate</strong></div>
+			<div><span>Press &amp; Hold</span><strong>Soft Drop</strong></div>
+			<div><span>HOLD Button</span><strong>Store / Swap</strong></div>
+		  </section>
+		  <section>
+			<h3>Keyboard Controls</h3>
+			<div><span>← / →</span><strong>Move</strong></div>
+			<div><span>↓</span><strong>Soft Drop</strong></div>
+			<div><span>↑</span><strong>Rotate</strong></div>
+			<div><span>Space</span><strong>Hard Drop</strong></div>
+			<div><span>C</span><strong>Hold / Swap</strong></div>
+			<div><span>P</span><strong>Pause</strong></div>
+		  </section>
+		</div>
+	  </div>
+	</div>
 
     <script src="game.js"></script>
 </body>

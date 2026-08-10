@@ -253,11 +253,12 @@ body {
 }
 
 #mobile-controls {
+	display: none;
 	position: fixed;
 	right: max(12px, env(safe-area-inset-right));
 	bottom: max(12px, env(safe-area-inset-bottom));
 	width: 174px;
-	height: 114px;
+	height: 174px;
 	z-index: 1000001;
 }
 
@@ -292,7 +293,7 @@ body {
 }
 
 #mobile-controls #control-down-big {
-	top: 56px;
+	top: 116px;
 	left: 58px;
 	right: auto;
 	bottom: auto;
