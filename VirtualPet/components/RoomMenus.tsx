@@ -137,12 +137,17 @@ const BATHROOM_TOOL_ICONS: Record<ToolType, { src: string; alt: string }> = {
 };
 
 export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoapedUp, isDirty }) => (
-    <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
+    <div className="pointer-events-none absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
         <div
             className="
+                pointer-events-auto
                 flex items-end gap-6
-                border-0 bg-transparent p-0
-                shadow-none
+                rounded-2xl
+                border border-white/50
+                bg-white/60
+                px-6 pb-3 pt-4
+                shadow-2xl shadow-cyan-900/10
+                backdrop-blur-xl
             "
         >
             {(['soap'] as const).map((tool) => {
