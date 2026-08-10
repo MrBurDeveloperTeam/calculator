@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import { PetRoom } from './PetRoom';
 import { GamePage } from './components/GamePage';
 import { GameStateProvider } from './context/GameStateContext';
@@ -7,7 +6,6 @@ import PetAdoptionModal from './components/PetAdoptionModal';
 import { RoomType } from './types';
 import { useGameState } from './hooks/useGameState';
 import { supabase } from '../lib/supabase';
-import { TiArrowBackOutline } from "react-icons/ti";
 import { TiArrowBack } from "react-icons/ti";
 
 // Inner component to access context
@@ -32,11 +30,28 @@ const VirtualPetContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             {/* Close Overlay Button (Global) */}
             <button
                 onClick={onClose}
-                className="absolute left-6 top-6 z-50 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/60 bg-white/75 text-slate-700 shadow-xl shadow-slate-900/10 backdrop-blur-md transition-all hover:-translate-x-0.5 hover:scale-105 hover:bg-white active:scale-95"
+                className="
+                    absolute
+                    left-[calc(env(safe-area-inset-left)_+_0.75rem)]
+                    top-[calc(env(safe-area-inset-top)_+_0.75rem)]
+                    z-50
+                    flex h-12 w-12 items-center justify-center
+                    rounded-xl
+                    border-0 bg-white/75 p-0
+                    text-black shadow-lg shadow-slate-900/10
+                    backdrop-blur-md appearance-none
+                    transition-all
+                    hover:-translate-x-0.5 hover:scale-105 hover:bg-white
+                    active:scale-95
+                    sm:h-14 sm:w-14
+                    lg:left-[calc(env(safe-area-inset-left)_+_1.5rem)]
+                    lg:top-[calc(env(safe-area-inset-top)_+_1.5rem)]
+                    lg:h-16 lg:w-16 lg:rounded-2xl
+                    "
                 title="Back"
                 aria-label="Back"
             >
-                <TiArrowBack className="h-12 w-12" strokeWidth={0} />
+                <TiArrowBack className="h-9 w-9 sm:h-10 sm:w-10 lg:h-12 lg:w-12" strokeWidth={0} />
             </button>
 
             {view === 'ROOM' ? (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useGameState } from '../hooks/useGameState';
+import { TiArrowBack } from 'react-icons/ti';
 
 const GAME_CONFIG: Record<string, { title: string; url: string; icon: string; gradient: string }> = {
     flappy: {
@@ -70,6 +71,7 @@ interface GamePageProps {
 
 export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
     const [isLoading, setIsLoading] = useState(true);
+    const [isPortrait, setIsPortrait] = useState(false);
     const { stats, setStats } = useGameState();
     const [sessionCoins, setSessionCoins] = useState(0);
 
@@ -110,6 +112,42 @@ export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
         };
     }, []);
 
+    // Pac-Cat and Tetris need a landscape play area. Chromium/Android can
+    // lock the real screen orientation; iOS Safari cannot, so portrait iPhones
+    // use the rotated viewport below as a visual fallback.
+    const requiresLandscape = gameId === 'paccat' || gameId === 'tetris';
+
+    useEffect(() => {
+        if (!requiresLandscape) {
+            setIsPortrait(false);
+            return;
+        }
+
+        const updateOrientation = () => {
+            setIsPortrait(window.innerHeight > window.innerWidth);
+        };
+
+        updateOrientation();
+        window.addEventListener('resize', updateOrientation);
+        window.addEventListener('orientationchange', updateOrientation);
+
+        const orientation = screen.orientation as ScreenOrientation & {
+            lock?: (orientation: 'landscape') => Promise<void>;
+            unlock?: () => void;
+        };
+
+        orientation?.lock?.('landscape').catch(() => {
+            // Expected on iOS Safari and when fullscreen is not active.
+            // The CSS rotation fallback handles those browsers.
+        });
+
+        return () => {
+            window.removeEventListener('resize', updateOrientation);
+            window.removeEventListener('orientationchange', updateOrientation);
+            orientation?.unlock?.();
+        };
+    }, [requiresLandscape]);
+
     if (!gameId || !GAME_CONFIG[gameId]) {
         onClose();
         return null;
@@ -118,12 +156,42 @@ export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
     const config = GAME_CONFIG[gameId];
 
     return (
-        <div className="fixed inset-0 z-50 bg-black" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black" style={{ fontFamily: "'Fredoka', sans-serif" }}>
             {/* Container - Full Screen */}
             <div className="relative w-full h-full animate-in zoom-in-95 fade-in duration-300">
 
+                {/* Same back control used by the main cat page */}
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="absolute left-[calc(env(safe-area-inset-left)+1.5rem)] top-[calc(env(safe-area-inset-top)+1.5rem)] z-[60] flex h-16 w-16 appearance-none items-center justify-center rounded-2xl border border-white/60 bg-white/75 p-0 text-slate-700 shadow-xl shadow-slate-900/10 backdrop-blur-md transition-all hover:-translate-x-0.5 hover:scale-105 hover:bg-white active:scale-95"
+                    title="Back"
+                    aria-label="Back"
+                >
+                    <TiArrowBack className="h-12 w-12" strokeWidth={0} />
+                </button>
+
+                {/* Landscape orientation notice */}
+                {requiresLandscape && isPortrait && (
+                <div className="absolute inset-0 z-[55] flex items-center justify-center bg-slate-950/95 px-8 text-white backdrop-blur-md">
+                    <div className="flex max-w-sm flex-col items-center text-center">
+                    <div className="mb-5 rotate-90 animate-pulse text-7xl">
+                        📱
+                    </div>
+
+                    <h2 className="text-2xl font-black">
+                        Rotate your device
+                    </h2>
+
+                    <p className="mt-3 text-sm leading-6 text-white/70">
+                        {config.title} requires landscape mode to play.
+                    </p>
+                    </div>
+                </div>
+                )}
+
                 {/* Top UI Area */}
-                <div className="absolute top-6 right-6 z-50 flex flex-col items-end gap-2">
+                <div className="absolute right-[calc(env(safe-area-inset-right)+1.5rem)] top-[calc(env(safe-area-inset-top)+1.5rem)] z-50 flex flex-col items-end gap-2">
                     <div className="flex items-center gap-3">
                         {/* Session Progress (Pending Coins) */}
                         {sessionCoins > 0 && (
@@ -141,14 +209,6 @@ export const GamePage: React.FC<GamePageProps> = ({ gameId, onClose }) => {
                             </span>
                         </div>
 
-                        {/* Floating Close Button */}
-                        <button
-                            onClick={onClose}
-                            className="w-12 h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/80 text-white/70 hover:text-white border-2 border-white/10 backdrop-blur-sm transition-all hover:scale-110 active:scale-95 shadow-lg"
-                            title="Exit Game"
-                        >
-                            <span className="text-2xl font-bold leading-none mb-1">×</span>
-                        </button>
                     </div>
                 </div>
 
