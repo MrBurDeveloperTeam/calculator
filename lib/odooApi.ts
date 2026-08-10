@@ -34,6 +34,7 @@ interface SignUpParams {
     position: string;
     dob: string;
     country: string;
+    referralCode?: string;
     agreedToTerms: boolean;
 }
 
@@ -46,9 +47,10 @@ interface SignInParams {
  * Attempts to register a user in Odoo and mirrors the registration to Supabase.
  * Falls back to direct Supabase registration if the Odoo endpoint fails.
  */
-export async function signUpDual({ email, password, fullName, accountType, companyName, phone, position, dob, country, agreedToTerms }: SignUpParams) {
+export async function signUpDual({ email, password, fullName, accountType, companyName, phone, position, dob, country, referralCode, agreedToTerms }: SignUpParams) {
     const normalizedEmail = email.trim().toLowerCase();
     const name = fullName.trim();
+    const normalizedReferralCode = referralCode?.trim() || null;
     const metadata = {
         name,
         full_name: name,
@@ -58,18 +60,28 @@ export async function signUpDual({ email, password, fullName, accountType, compa
         company_name: accountType === 'company' ? companyName?.trim() || null : null,
         dob,
         country,
+        referral_code: normalizedReferralCode,
         agreed_to_terms: agreedToTerms,
     };
     const odooPayload = {
         email: normalizedEmail,
+        login: normalizedEmail,
         name,
+        fullName: name,
         password,
         phone: metadata.phone,
         position: metadata.position,
         account_type: metadata.account_type,
         company_name: metadata.company_name,
+        companyName: metadata.company_name,
+        company_email: accountType === 'company' ? normalizedEmail : null,
+        companyEmail: accountType === 'company' ? normalizedEmail : null,
+        contact_name: accountType === 'company' ? name : null,
+        company_type: accountType === 'company' ? 'company' : 'person',
         dob: metadata.dob,
         country: metadata.country,
+        referral_code: metadata.referral_code,
+        referralCode: metadata.referral_code,
     };
     const supaPayload = {
         email: normalizedEmail,
@@ -79,8 +91,8 @@ export async function signUpDual({ email, password, fullName, accountType, compa
 
     // Match E-learning: Odoo must succeed before Supabase registration starts.
     const { data: odooData } = await odooApi.post('/calculator/sign-up', odooPayload);
-    const odooSucceeded = odooData?.ok === true || odooData?.result?.ok === true || odooData?.data?.result?.ok === true;
-    if (!odooSucceeded) {
+    const odooResult = odooData?.data?.result ?? odooData?.result ?? odooData;
+    if (odooData?.error || odooResult?.ok === false || odooResult?.created === false) {
         throw new Error(odooData?.error?.message || odooData?.error || odooData?.data?.error?.message || 'Failed to create Calculator account');
     }
 

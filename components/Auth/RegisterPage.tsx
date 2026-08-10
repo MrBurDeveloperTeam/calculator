@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, Briefcase, ChevronDown, Globe2, Mail, Phone, ShieldCheck, User } from 'lucide-react';
+import { Building2, Briefcase, ChevronDown, Globe2, Mail, Phone, Share2, ShieldCheck, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { COUNTRIES, DENTAL_POSITIONS } from '../../constants/signupOptions';
 import AuthShell, { AuthLogo } from './AuthShell';
@@ -17,6 +17,10 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
+  const [referralCode, setReferralCode] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('referral') || params.get('referral_code') || params.get('ref') || '';
+  });
   const [phone, setPhone] = useState('');
   const [dob, setDob] = useState('');
   const [position, setPosition] = useState('');
@@ -44,7 +48,7 @@ export default function RegisterPage() {
     setLoading(true);
     setMessage(null);
     try {
-      const result = await signUp({ email, password, fullName: name, accountType, companyName, phone, position: effectivePosition, dob, country, agreedToTerms });
+      const result = await signUp({ email, password, fullName: name, accountType, companyName, phone, position: effectivePosition, dob, country, referralCode, agreedToTerms });
       if (result.session) {
         setMessage({ type: 'success', text: 'Your account has been created.' });
         navigate('/', { replace: true });
@@ -73,6 +77,7 @@ export default function RegisterPage() {
         {company && <AuthField label="Company Email" icon={<Mail className={iconClass} />}><input type="email" className={inputClass} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="e.g. hello@denta.tech" required /></AuthField>}
         <AuthField label={company ? 'Name' : 'Your Name'} icon={<User className={iconClass} />}><input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} placeholder={company ? 'Contact Name' : 'e.g. Nour AYACHE'} required autoComplete="name" /></AuthField>
         {!company && <AuthField label="Your Email" icon={<Mail className={iconClass} />} help="This will be your login email."><input type="email" className={inputClass} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="e.g. nur@email.com" required autoComplete="email" /></AuthField>}
+        <AuthField label="Referred by (optional)" icon={<Share2 className={iconClass} />} help="Referred by a doctor already on Snabbb? Enter their code, email, or share their link to auto-fill this."><input className={inputClass} value={referralCode} onChange={(event) => setReferralCode(event.target.value)} placeholder="Referral code" autoComplete="off" /></AuthField>
         <AuthField label={company ? 'Phone' : 'Phone (WhatsApp)'} icon={<Phone className={iconClass} />}><input type="tel" className={inputClass} value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="e.g. +60123456789" required autoComplete="tel" /></AuthField>
         <div><label className={labelClass}>Date of Birth</label><DOBPicker value={dob} onChange={setDob} />{company && <p className="mt-1 text-[10px] text-slate-400">Date of birth of the company representative.</p>}</div>
         <AuthField label="Job Position" icon={<Briefcase className={iconClass} />}><span className="relative block"><select className={`${inputClass} appearance-none pr-10`} value={position} onChange={(event) => setPosition(event.target.value)} required><option value="">-- Select Position --</option>{DENTAL_POSITIONS.map((item) => <option key={item} value={item}>{item}</option>)}<option value="OTHER">Other</option></select><ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" /></span></AuthField>
