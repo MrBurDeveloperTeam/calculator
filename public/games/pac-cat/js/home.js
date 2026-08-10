@@ -170,7 +170,8 @@ function ensureTrailerCatElement() {
 // ---------------------------------------
 
 function startPresentation() { 
-    $("#presentation *").hide();
+    $("#presentation *").not("#start-hint").hide();
+    $("#start-hint").show();
     
     if (HOME_PRESENTATION_TIMER === -1) { 
         HOME_PRESENTATION_STATE = 0;

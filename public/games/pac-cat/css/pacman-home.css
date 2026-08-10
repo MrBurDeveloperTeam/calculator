@@ -253,11 +253,11 @@ body {
 }
 
 #mobile-controls {
-	position: absolute;
-	right: 14px;
-	bottom: 10px;
-	width: 150px;
-	height: 92px;
+	position: fixed;
+	right: max(12px, env(safe-area-inset-right));
+	bottom: max(12px, env(safe-area-inset-bottom));
+	width: 174px;
+	height: 114px;
 	z-index: 1000001;
 }
 
@@ -266,42 +266,41 @@ body {
 #mobile-controls #control-left-big,
 #mobile-controls #control-right-big {
 	display: block !important;
-	box-sizing: border-box;
-	width: 44px;
-	height: 44px;
+	width: 58px;
+	height: 58px;
 	margin: 0;
 	padding: 0;
 	opacity: 1;
-	border: 3px solid #292929;
-	border-radius: 12px;
-	background-color: #f2f2f2;
-	background-size: 34px 34px;
-	box-shadow: 0 4px 0 #777;
+	border: 0;
+	border-radius: 0;
+	background-color: transparent;
+	background-size: 58px 58px;
+	box-shadow: none;
 }
 
 #mobile-controls #control-up-big {
 	top: 0;
-	left: 53px;
+	left: 58px;
 	right: auto;
 	bottom: auto;
 }
 
 #mobile-controls #control-left-big {
-	top: 48px;
-	left: 5px;
+	top: 56px;
+	left: 0;
 	bottom: auto;
 }
 
 #mobile-controls #control-down-big {
-	top: 48px;
-	left: 53px;
+	top: 56px;
+	left: 58px;
 	right: auto;
 	bottom: auto;
 }
 
 #mobile-controls #control-right-big {
-	top: 48px;
-	left: 101px;
+	top: 56px;
+	left: 116px;
 	right: auto;
 	bottom: auto;
 }
