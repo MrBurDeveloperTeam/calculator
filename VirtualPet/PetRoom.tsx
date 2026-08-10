@@ -671,7 +671,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               relative
               pet-asset-no-tile
               ml-[clamp(1rem,6vw,6rem)]
-              translate-y-[clamp(1.25rem,4vh,2.5rem)]
+              translate-y-[clamp(2rem,6vh,4rem)]
               flex shrink-0
               items-end justify-center
             "
