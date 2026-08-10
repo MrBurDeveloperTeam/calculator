@@ -60,7 +60,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
         >
             <svg
                 viewBox="0 0 200 200"
-                className="h-full w-full overflow-visible !bg-transparent drop-shadow-md"
+                className="pet-icon-no-tile h-full w-full overflow-visible"
             >
                 <defs>
                     <clipPath id="body-mask-lvl">
@@ -74,7 +74,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
 
                 <path
                     d={bodyPath}
-                    className="fill-white/30 backdrop-blur-md stroke-white/60 stroke-[4]"
+                    className="fill-transparent stroke-black stroke-[4]"
                 />
 
                 <g clipPath="url(#body-mask-lvl)">
@@ -99,7 +99,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
                     y="110"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    className="text-5xl font-black fill-slate-800 drop-shadow-sm pointer-events-none select-none"
+                    className="text-5xl font-black fill-slate-800 pointer-events-none select-none"
                     style={{ fontFamily: 'Fredoka, sans-serif' }}
                 >
                     {stats.level}

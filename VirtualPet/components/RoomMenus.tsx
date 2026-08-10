@@ -86,10 +86,9 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                             "
                             >
                             <div className="
+                                pet-icon-no-tile
                                 select-none touch-none
-                                bg-transparent
                                 text-4xl
-                                drop-shadow-sm
                             ">
                                 {item.icon}
                             </div>
