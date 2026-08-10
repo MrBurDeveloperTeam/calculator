@@ -126,14 +126,14 @@ const BottomControls: React.FC<BottomControlsProps> = ({
         <div className="absolute left-4 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center">
             <button
               onClick={onOpenShop}
-              className="relative group flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-xl bg-gradient-to-br from-orange-300 to-orange-500 text-white shadow-lg shadow-orange-900/20 transition-all duration-300 hover:scale-105 active:scale-95"
+              className="pet-asset-no-tile relative group flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center text-orange-500 transition-all duration-300 hover:scale-105 active:scale-95"
               title="Shop"
             >
                <AiOutlineShop
-                    className="pet-asset-no-tile mb-0.5 h-8 w-8 drop-shadow-sm transition-transform duration-300 group-hover:-rotate-6"
+                    className="pet-asset-no-tile mb-0.5 h-8 w-8 transition-transform duration-300 group-hover:-rotate-6"
                     strokeWidth={10}
                 />
-               <span className="text-[11px] font-bold uppercase tracking-widest text-white">Shop</span>
+               <span className="text-[11px] font-bold uppercase tracking-widest">Shop</span>
             </button>
 
             <div className="flex flex-col gap-3 p-3 bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl scale-95 origin-left">

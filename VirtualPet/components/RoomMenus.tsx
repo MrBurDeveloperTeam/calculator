@@ -168,7 +168,7 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
                                 src={BATHROOM_TOOL_ICONS[tool].src}
                                 alt={BATHROOM_TOOL_ICONS[tool].alt}
                                 draggable={false}
-                                className="pet-asset-no-tile h-[72px] w-[72px] object-contain drop-shadow-md"
+                                className="pet-asset-no-tile h-[72px] w-[72px] object-contain"
                             />
                         </div>
                         <span className={`text-[13px] tracking-wider font-bold uppercase transition-colors ${!disabled ? 'text-pink-500' : 'text-slate-400'}`}>
@@ -197,7 +197,7 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
                         src={BATHROOM_TOOL_ICONS.shower.src}
                         alt={BATHROOM_TOOL_ICONS.shower.alt}
                         draggable={false}
-                        className="pet-asset-no-tile h-16 w-16 object-contain drop-shadow-md"
+                        className="pet-asset-no-tile h-16 w-16 object-contain"
                     />
                 </div>
                 <span className={`text-[13px] pt-1 tracking-wider font-bold uppercase transition-colors ${isSoapedUp ? 'text-cyan-600' : 'text-slate-400'}`}>

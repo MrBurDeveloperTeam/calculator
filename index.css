@@ -63,6 +63,20 @@ body {
   background-color: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
+  filter: none !important;
+  outline: none !important;
+}
+
+/* Keep pet assets transparent even when later theme utilities add shadows. */
+:root body .pet-icon-no-tile,
+:root body .pet-asset-no-tile,
+:root[data-theme="dark"] body .pet-icon-no-tile,
+:root[data-theme="dark"] body .pet-asset-no-tile {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
   outline: none !important;
 }
 

@@ -576,7 +576,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             "
             title={isSleeping ? "Turn On" : "Turn Off"}
           >
-            <div className={`pet-asset-no-tile transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : 'filter drop-shadow-[0_0_25px_rgba(255,235,59,0.8)]'}`}>
+            <div className={`pet-asset-no-tile transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : ''}`}>
               💡
             </div>
           </button>
@@ -823,7 +823,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                       h-[clamp(3.5rem,9vw,5rem)]
                       w-[clamp(3.5rem,9vw,5rem)]
                       object-contain
-                      drop-shadow-md
                     "
                   />
                 </button>
