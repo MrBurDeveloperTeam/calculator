@@ -567,6 +567,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             type="button"
             onClick={() => setIsSleeping(!isSleeping)}
             className="
+              pet-asset-no-tile
               -mt-2 rotate-180
               appearance-none border-0 bg-transparent p-0
               text-6xl shadow-none outline-none ring-0
@@ -575,7 +576,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             "
             title={isSleeping ? "Turn On" : "Turn Off"}
           >
-            <div className={`transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : 'filter drop-shadow-[0_0_25px_rgba(255,235,59,0.8)]'}`}>
+            <div className={`pet-asset-no-tile transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : 'filter drop-shadow-[0_0_25px_rgba(255,235,59,0.8)]'}`}>
               💡
             </div>
           </button>
@@ -668,6 +669,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
           <div
             className="
               relative
+              pet-asset-no-tile
               ml-[clamp(1rem,6vw,6rem)]
               flex shrink-0
               items-end justify-center
@@ -678,7 +680,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             }}
           >
             <div
-              className="absolute bottom-0 left-1/2 h-[480px] w-[560px]"
+              className="pet-asset-no-tile absolute bottom-0 left-1/2 h-[480px] w-[560px]"
               style={{
                 transform: `translateX(-50%) scale(${bedroomScale})`,
                 transformOrigin: 'center bottom',
@@ -695,6 +697,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                     w-[550px] -translate-x-1/2
                     select-none
                     border-0 bg-transparent
+                    pet-asset-no-tile
                     shadow-none
                   "
                 />
@@ -799,6 +802,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                   onPointerUp={(e) => e.stopPropagation()}
                   onClick={handlePoopClick}
                   className="
+                    pet-asset-no-tile
                     pointer-events-auto
                     appearance-none
                     border-0 bg-transparent p-0
@@ -815,6 +819,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                     alt=""
                     draggable={false}
                     className="
+                      pet-asset-no-tile
                       h-[clamp(3.5rem,9vw,5rem)]
                       w-[clamp(3.5rem,9vw,5rem)]
                       object-contain

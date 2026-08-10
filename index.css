@@ -58,6 +58,14 @@ body {
   filter: none !important;
 }
 
+.pet-asset-no-tile {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 /* Custom sleek scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
