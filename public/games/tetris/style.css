@@ -773,8 +773,8 @@ body {
     z-index: 1200;
 }
 
-#help-button,
-#hold-button {
+#mobile-guide-button,
+#mobile-hold-button {
     position: fixed;
     z-index: 3000;
     width: 58px;
@@ -787,14 +787,14 @@ body {
     touch-action: manipulation;
 }
 
-#help-button {
+#mobile-guide-button {
     left: max(14px, env(safe-area-inset-left));
     bottom: max(14px, env(safe-area-inset-bottom));
     background: #0ea5e9;
     font-size: 25px;
 }
 
-#hold-button {
+#mobile-hold-button {
     right: max(14px, env(safe-area-inset-right));
     bottom: max(14px, env(safe-area-inset-bottom));
     display: none;
@@ -806,8 +806,9 @@ body {
     line-height: 1;
 }
 
-#hold-button span { font-size: 13px; }
-#hold-button small { margin-top: 4px; font-size: 10px; }
+#mobile-hold-button span { font-size: 13px; }
+#mobile-hold-button small { margin-top: 4px; font-size: 10px; }
+#mobile-hold-button.is-gameplay-visible { display: flex; }
 
 .help-modal {
     position: fixed;
@@ -819,7 +820,7 @@ body {
     background: rgba(2, 6, 23, 0.88);
 }
 
-.help-modal[hidden] { display: none; }
+.help-modal[aria-hidden="true"] { display: none; }
 
 .help-dialog {
     position: relative;
@@ -839,7 +840,7 @@ body {
 .help-columns section { padding: 12px; border-radius: 14px; background: rgba(255,255,255,.04); }
 .help-columns section div { display: flex; justify-content: space-between; gap: 18px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 13px; }
 .help-columns section div:last-child { border-bottom: 0; }
-#help-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%; font-size: 24px; }
+#mobile-guide-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%; font-size: 24px; }
 
 @media (max-width: 560px) {
     .help-columns { grid-template-columns: 1fr; }
