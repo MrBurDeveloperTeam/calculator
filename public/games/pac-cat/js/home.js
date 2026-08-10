@@ -213,6 +213,7 @@ function nextSequencePresentation() {
         $("#presentation-character-clyde").show();
     } else if (HOME_PRESENTATION_STATE === 17) { 
         $("#presentation-name-clyde").show();
+        $("#start-hint").show();
     }
     
     if (HOME_PRESENTATION_STATE === 17) { 

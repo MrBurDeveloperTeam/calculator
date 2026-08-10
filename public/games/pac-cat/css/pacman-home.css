@@ -157,3 +157,151 @@
 	font-size: 1em;
 	top: -0.05em;
 }
+
+/* Unified responsive game layout. All HUD and controls share one scale so
+   compact screens cannot push individual elements into the maze. */
+html,
+body {
+	overflow: hidden !important;
+	overscroll-behavior: none;
+	touch-action: none;
+}
+
+#panel,
+#home {
+	zoom: 1 !important;
+	margin: 0 !important;
+	left: 50% !important;
+	top: 50% !important;
+	transform: translate(-50%, -50%) scale(var(--pac-cat-scale, 1));
+	transform-origin: center center;
+}
+
+#panel {
+	box-sizing: border-box;
+	width: 570px;
+	height: 790px;
+	padding: 0 10px;
+}
+
+#panel .pac-cat-title {
+	position: absolute;
+	top: 8px;
+	left: 0;
+	width: 100%;
+	margin: 0;
+	text-align: center;
+}
+
+#canvas-panel-title-pacman {
+	display: none !important;
+}
+
+#score,
+#highscore {
+	top: 42px !important;
+	width: 170px;
+}
+
+#score {
+	left: 105px;
+}
+
+#highscore {
+	left: 295px;
+}
+
+#score h2,
+#score span,
+#highscore h2,
+#highscore span {
+	text-align: center;
+	padding-right: 0;
+}
+
+#board {
+	position: absolute;
+	top: 90px;
+	left: 10px;
+	width: 550px;
+	height: 550px;
+}
+
+#canvas-lifes,
+#canvas-level-fruits {
+	top: 652px !important;
+	height: 30px;
+}
+
+#canvas-lifes {
+	left: 12px;
+}
+
+#canvas-level-fruits {
+	right: 12px;
+}
+
+#message,
+#message.red {
+	top: 385px !important;
+	left: 180px;
+	z-index: 1000000;
+}
+
+#control {
+	display: none !important;
+}
+
+#mobile-controls {
+	position: absolute;
+	right: 14px;
+	bottom: 10px;
+	width: 150px;
+	height: 92px;
+	z-index: 1000001;
+}
+
+#mobile-controls #control-up-big,
+#mobile-controls #control-down-big,
+#mobile-controls #control-left-big,
+#mobile-controls #control-right-big {
+	display: block !important;
+	box-sizing: border-box;
+	width: 44px;
+	height: 44px;
+	margin: 0;
+	padding: 0;
+	opacity: 1;
+	border: 3px solid #292929;
+	border-radius: 12px;
+	background-color: #f2f2f2;
+	background-size: 34px 34px;
+	box-shadow: 0 4px 0 #777;
+}
+
+#mobile-controls #control-up-big {
+	top: 0;
+	left: 53px;
+	right: auto;
+	bottom: auto;
+}
+
+#mobile-controls #control-left-big {
+	top: 48px;
+	left: 5px;
+	bottom: auto;
+}
+
+#mobile-controls #control-down-big {
+	top: 48px;
+	left: 53px;
+	right: auto;
+	bottom: auto;
+}
+
+#mobile-controls #control-right-big {
+	top: 48px;
+	left: 101px;
+	right: auto;
+	bottom: auto;
+}

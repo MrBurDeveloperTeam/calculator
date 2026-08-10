@@ -262,6 +262,8 @@
 			<canvas id="canvas-ghost-pinky"></canvas>
 			<canvas id="canvas-ghost-inky"></canvas>
 			<canvas id="canvas-ghost-clyde"></canvas>
+		</div>
+		<div id="mobile-controls" aria-label="Direction controls">
 			<div id="control-up-big"></div>
 			<div id="control-down-big"></div>
 			<div id="control-left-big"></div>
@@ -281,6 +283,34 @@
 		<div class="help-button">- help -</div>
 		<a class="sound" href="javascript:void(0);" data-sound="on"><img src="img/sound-on.png" alt="" border="0"></a>
 	</div>
+
+	<script>
+		(function () {
+			var DESIGN_WIDTH = 570;
+			var DESIGN_HEIGHT = 790;
+			var resizeFrame = 0;
+
+			function fitPacCatLayout() {
+				resizeFrame = 0;
+				var viewport = window.visualViewport;
+				var width = viewport ? viewport.width : window.innerWidth;
+				var height = viewport ? viewport.height : window.innerHeight;
+				var scale = Math.min((width - 20) / DESIGN_WIDTH, (height - 20) / DESIGN_HEIGHT, 1);
+				document.documentElement.style.setProperty('--pac-cat-scale', Math.max(0.2, scale));
+			}
+
+			function scheduleFit() {
+				if (resizeFrame) return;
+				resizeFrame = window.requestAnimationFrame(fitPacCatLayout);
+			}
+
+			fitPacCatLayout();
+			window.addEventListener('resize', scheduleFit, { passive: true });
+			if (window.visualViewport) {
+				window.visualViewport.addEventListener('resize', scheduleFit, { passive: true });
+			}
+		}());
+	</script>
 
 </body>
 
