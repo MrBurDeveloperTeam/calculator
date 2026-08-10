@@ -559,7 +559,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
 
       {/* Bedroom Lamp Switch */}
       {currentRoom === RoomType.BEDROOM && (
-        <div className="absolute top-0 left-1/3 z-10 flex flex-col items-center">
+        <div className="absolute top-0 left-[72%] -translate-x-1/2 z-10 flex flex-col items-center">
           {/* Lamp Cord - Changed h-32 to h-48 */}
           <div className="w-1 h-48 bg-slate-800/80" />
           {/* Lamp Bulb */}
@@ -583,15 +583,25 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
       )}
 
       {/* Top Right UI */}
-      <LevelIndicator stats={stats} />
-      <CoinIndicator amount={stats.coins || 0} />
+      <div
+        className="
+          absolute
+          right-[calc(env(safe-area-inset-right)_+_0.75rem)]
+          top-[calc(env(safe-area-inset-top)_+_0.5rem)]
+          z-40
+          flex items-start gap-2
+        "
+      >
+        <CoinIndicator amount={stats.coins || 0} />
+        <LevelIndicator stats={stats} />
+      </div>
 
       {/* Stats HUD (Top Center) */}
       <StatsBar stats={stats} />
 
       {/* Soap/Shower Progress (Bathroom) */}
       {currentRoom === RoomType.BATHROOM && (bubbles.length > 0 || isSoapedUp) && (
-        <div className="absolute top-48 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 pointer-events-none select-none">
+        <div className="absolute top-[clamp(13rem,30vh,14rem)] left-1/2 -translate-x-1/2 z-50 flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 pointer-events-none select-none">
 
           {/* Progress Bar Container */}
           <div className={`w-48 h-2.5 bg-white/40 backdrop-blur-md rounded-full overflow-hidden shadow-lg ring-2 transition-all duration-500
@@ -658,6 +668,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             className="
               relative
               ml-[clamp(1rem,6vw,6rem)]
+              translate-y-[clamp(12px,2vh,20px)]
               flex shrink-0
               items-end justify-center
             "
@@ -692,7 +703,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               <div
                 className="
                   absolute
-                  bottom-[82px] left-1/2 z-10
+                  bottom-[105px] left-1/2 z-10
                   -translate-x-1/2
                   bg-transparent
                 "
@@ -759,21 +770,34 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               className="
                 pointer-events-none
                 absolute
-                z-40
+                z-[70]
                 flex flex-col items-center
                 right-[clamp(0.75rem,4vw,5rem)]
                 bottom-[calc(env(safe-area-inset-bottom)_+_clamp(8.5rem,22vh,13rem))]
               "
             >
               {showPoopReward && (
-                <div className="pointer-events-none absolute bottom-full mb-1">
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    bottom-full
+                    right-0
+                    z-[80]
+                    mb-2
+                    max-w-[calc(100vw-1.5rem)]
+                  "
+                >
                   <div
                     className="
                       animate-poop-reward
-                      whitespace-nowrap rounded-full
-                      bg-amber-400 px-3 py-1.5
+                      whitespace-nowrap
+                      rounded-full
+                      bg-amber-400
+                      px-3 py-1.5
                       text-[14px] font-black
                       tracking-wider text-white
+                      shadow-lg
                     "
                   >
                     +5 coins

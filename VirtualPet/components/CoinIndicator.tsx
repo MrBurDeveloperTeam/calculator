@@ -7,10 +7,6 @@ interface CoinIndicatorProps {
 const CoinIndicator: React.FC<CoinIndicatorProps> = ({ amount }) => {
   return (
     <div className="
-      absolute
-      right-[calc(env(safe-area-inset-right)_+_5.5rem)]
-      top-[calc(env(safe-area-inset-top)_+_1.25rem)]
-      z-40
       flex cursor-default select-none
       items-center gap-1
       rounded-full

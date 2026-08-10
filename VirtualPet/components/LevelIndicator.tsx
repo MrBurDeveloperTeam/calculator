@@ -25,14 +25,11 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
   return (
     <div
         className="
-            absolute
-            right-[calc(env(safe-area-inset-right)_+_0.75rem)]
-            top-[calc(env(safe-area-inset-top)_+_0.5rem)]
-            z-40
+            relative
             flex flex-col items-end
-            animate-in fade-in slide-in-from-right-4 duration-700
-            lg:right-[calc(env(safe-area-inset-right)_+_1.5rem)]
-            lg:top-[calc(env(safe-area-inset-top)_+_0.75rem)]
+            animate-in fade-in
+            slide-in-from-right-4
+            duration-700
         "
     >
         <button

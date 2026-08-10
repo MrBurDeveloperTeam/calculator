@@ -140,8 +140,13 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
         <div
             className="
                 flex items-end gap-6
-                border-0 bg-transparent p-0
-                shadow-none
+                rounded-2xl
+                border border-white/50
+                bg-white/60
+                backdrop-blur-xl
+                px-5 py-3
+                shadow-2xl
+                shadow-cyan-900/10
             "
         >
             {(['soap'] as const).map((tool) => {
