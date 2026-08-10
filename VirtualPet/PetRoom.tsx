@@ -707,7 +707,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               <div
                 className="
                   absolute
-                  bottom-[122px] left-1/2 z-10
+                  bottom-[142px] left-1/2 z-10
                   -translate-x-1/2
                   bg-transparent
                 "
