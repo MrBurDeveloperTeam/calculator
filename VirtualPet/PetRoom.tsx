@@ -583,8 +583,19 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
       )}
 
       {/* Top Right UI */}
-      <LevelIndicator stats={stats} />
-      <CoinIndicator amount={stats.coins || 0} />
+      <div
+        className="
+          absolute
+          right-[calc(env(safe-area-inset-right)_+_0.75rem)]
+          top-[calc(env(safe-area-inset-top)_+_0.5rem)]
+          z-40
+          flex items-center
+          gap-2 sm:gap-3
+        "
+      >
+        <CoinIndicator amount={stats.coins || 0} />
+        <LevelIndicator stats={stats} />
+      </div>
 
       {/* Stats HUD (Top Center) */}
       <StatsBar stats={stats} />
