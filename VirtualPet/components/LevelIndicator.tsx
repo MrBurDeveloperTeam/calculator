@@ -70,7 +70,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
 
                 <path
                     d={bodyPath}
-                    className="fill-white/20 stroke-slate-800/20 stroke-[3]"
+                    className="fill-transparent stroke-slate-800/20 stroke-[3]"
                 />
 
                 <g clipPath="url(#body-mask-lvl)">

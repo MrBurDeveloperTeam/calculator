@@ -38,7 +38,7 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
 
     return (
         <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 pointer-events-none">
-            <div className="pointer-events-auto flex max-w-[min(92vw,430px)] items-center gap-3 rounded-2xl border border-white/50 bg-white/60 backdrop-blur-xl p-2 shadow-2xl shadow-orange-900/10 backdrop-blur-xl">
+            <div className="pointer-events-auto flex max-w-[min(92vw,430px)] items-center gap-3 bg-transparent p-2">
                 <div
                     ref={scrollRef}
                     onWheel={handleWheel}
