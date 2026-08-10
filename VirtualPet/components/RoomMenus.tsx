@@ -76,7 +76,9 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                                 snap-center
                                 cursor-grab
                                 items-center justify-center
-                                bg-transparent
+                                !border-0
+                                !bg-transparent
+                                !shadow-none
                                 transition-all
                                 hover:-translate-y-0.5
                                 active:cursor-grabbing
@@ -84,10 +86,9 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                             "
                             >
                             <div className="
+                                pet-icon-no-tile
                                 select-none touch-none
-                                bg-transparent
                                 text-4xl
-                                drop-shadow-sm
                             ">
                                 {item.icon}
                             </div>
@@ -136,17 +137,17 @@ const BATHROOM_TOOL_ICONS: Record<ToolType, { src: string; alt: string }> = {
 };
 
 export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoapedUp, isDirty }) => (
-    <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
+    <div className="pointer-events-none absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
         <div
             className="
+                pointer-events-auto
                 flex items-end gap-6
                 rounded-2xl
                 border border-white/50
                 bg-white/60
+                px-6 pb-3 pt-4
+                shadow-2xl shadow-cyan-900/10
                 backdrop-blur-xl
-                px-5 py-3
-                shadow-2xl
-                shadow-cyan-900/10
             "
         >
             {(['soap'] as const).map((tool) => {
@@ -161,12 +162,18 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
                                 : 'cursor-grab active:cursor-grabbing hover:scale-110'
                         }`}
                     >
-                        <div className={`select-none touch-none ${isDirty && !isSoapedUp ? 'animate-breathe [animation-duration:800ms] ease-in-out' : ''}`}>
+                        <div
+                            className={`pet-asset-no-tile select-none touch-none ${
+                                isDirty && !isSoapedUp
+                                ? 'animate-breathe [animation-duration:800ms] ease-in-out'
+                                : ''
+                            }`}
+                        >
                             <img
                                 src={BATHROOM_TOOL_ICONS[tool].src}
                                 alt={BATHROOM_TOOL_ICONS[tool].alt}
                                 draggable={false}
-                                className="h-[72px] w-[72px] object-contain drop-shadow-md"
+                                className="pet-asset-no-tile h-[72px] w-[72px] object-contain"
                             />
                         </div>
                         <span className={`text-[13px] tracking-wider font-bold uppercase transition-colors ${!disabled ? 'text-pink-500' : 'text-slate-400'}`}>
@@ -184,12 +191,18 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
                         : 'opacity-30 grayscale cursor-not-allowed'
                 }`}
             >
-                <div className={`select-none touch-none transition-all ${isSoapedUp ? 'animate-breathe [animation-duration:800ms] ease-in-out' : ''}`}>
+                <div
+                    className={`pet-asset-no-tile select-none touch-none transition-all ${
+                        isSoapedUp
+                        ? 'animate-breathe [animation-duration:800ms] ease-in-out'
+                        : ''
+                    }`}
+                >
                     <img
                         src={BATHROOM_TOOL_ICONS.shower.src}
                         alt={BATHROOM_TOOL_ICONS.shower.alt}
                         draggable={false}
-                        className="h-16 w-16 object-contain drop-shadow-md"
+                        className="pet-asset-no-tile h-16 w-16 object-contain"
                     />
                 </div>
                 <span className={`text-[13px] pt-1 tracking-wider font-bold uppercase transition-colors ${isSoapedUp ? 'text-cyan-600' : 'text-slate-400'}`}>

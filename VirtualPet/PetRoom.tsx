@@ -559,7 +559,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
 
       {/* Bedroom Lamp Switch */}
       {currentRoom === RoomType.BEDROOM && (
-        <div className="absolute top-0 left-[72%] -translate-x-1/2 z-10 flex flex-col items-center">
+        <div className="absolute top-0 right-[clamp(1.5rem,8vw,6rem)] z-10 flex flex-col items-center">
           {/* Lamp Cord - Changed h-32 to h-48 */}
           <div className="w-1 h-48 bg-slate-800/80" />
           {/* Lamp Bulb */}
@@ -567,6 +567,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             type="button"
             onClick={() => setIsSleeping(!isSleeping)}
             className="
+              pet-asset-no-tile
               -mt-2 rotate-180
               appearance-none border-0 bg-transparent p-0
               text-6xl shadow-none outline-none ring-0
@@ -575,7 +576,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             "
             title={isSleeping ? "Turn On" : "Turn Off"}
           >
-            <div className={`transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : 'filter drop-shadow-[0_0_25px_rgba(255,235,59,0.8)]'}`}>
+            <div className={`pet-asset-no-tile transition-all duration-500 ${isSleeping ? 'grayscale opacity-50 blur-[1px]' : ''}`}>
               💡
             </div>
           </button>
@@ -589,7 +590,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
           right-[calc(env(safe-area-inset-right)_+_0.75rem)]
           top-[calc(env(safe-area-inset-top)_+_0.5rem)]
           z-40
-          flex items-start gap-2
+          flex items-center
+          gap-2 sm:gap-3
         "
       >
         <CoinIndicator amount={stats.coins || 0} />
@@ -597,19 +599,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
       </div>
 
       {/* Stats HUD (Top Center) */}
-      <div
-        className="
-          relative
-          z-30
-          max-[420px]:mt-12
-        "
-      >
-        <StatsBar stats={stats} />
-      </div>
+      <StatsBar stats={stats} />
 
       {/* Soap/Shower Progress (Bathroom) */}
       {currentRoom === RoomType.BATHROOM && (bubbles.length > 0 || isSoapedUp) && (
-        <div className="absolute top-[clamp(13rem,30vh,14rem)] left-1/2 -translate-x-1/2 z-50 flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 pointer-events-none select-none">
+        <div className="absolute top-48 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 pointer-events-none select-none">
 
           {/* Progress Bar Container */}
           <div className={`w-48 h-2.5 bg-white/40 backdrop-blur-md rounded-full overflow-hidden shadow-lg ring-2 transition-all duration-500
@@ -675,8 +669,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
           <div
             className="
               relative
+              pet-asset-no-tile
               ml-[clamp(1rem,6vw,6rem)]
-              translate-y-[clamp(12px,2vh,20px)]
+              translate-y-[clamp(2rem,6vh,4rem)]
               flex shrink-0
               items-end justify-center
             "
@@ -686,7 +681,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
             }}
           >
             <div
-              className="absolute bottom-0 left-1/2 h-[480px] w-[560px]"
+              className="pet-asset-no-tile absolute bottom-0 left-1/2 h-[480px] w-[560px]"
               style={{
                 transform: `translateX(-50%) scale(${bedroomScale})`,
                 transformOrigin: 'center bottom',
@@ -703,6 +698,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                     w-[550px] -translate-x-1/2
                     select-none
                     border-0 bg-transparent
+                    pet-asset-no-tile
                     shadow-none
                   "
                 />
@@ -711,7 +707,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               <div
                 className="
                   absolute
-                  bottom-[105px] left-1/2 z-10
+                  bottom-[182px] left-1/2 z-10
                   -translate-x-1/2
                   bg-transparent
                 "
@@ -778,34 +774,21 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
               className="
                 pointer-events-none
                 absolute
-                z-[70]
+                z-40
                 flex flex-col items-center
                 right-[clamp(0.75rem,4vw,5rem)]
                 bottom-[calc(env(safe-area-inset-bottom)_+_clamp(8.5rem,22vh,13rem))]
               "
             >
               {showPoopReward && (
-                <div
-                  className="
-                    pointer-events-none
-                    absolute
-                    bottom-full
-                    right-0
-                    z-[80]
-                    mb-2
-                    max-w-[calc(100vw-1.5rem)]
-                  "
-                >
+                <div className="pointer-events-none absolute bottom-full mb-1">
                   <div
                     className="
                       animate-poop-reward
-                      whitespace-nowrap
-                      rounded-full
-                      bg-amber-400
-                      px-3 py-1.5
+                      whitespace-nowrap rounded-full
+                      bg-amber-400 px-3 py-1.5
                       text-[14px] font-black
                       tracking-wider text-white
-                      shadow-lg
                     "
                   >
                     +5 coins
@@ -820,6 +803,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                   onPointerUp={(e) => e.stopPropagation()}
                   onClick={handlePoopClick}
                   className="
+                    pet-asset-no-tile
                     pointer-events-auto
                     appearance-none
                     border-0 bg-transparent p-0
@@ -836,10 +820,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({ onNavigateToGame }) => {
                     alt=""
                     draggable={false}
                     className="
+                      pet-asset-no-tile
                       h-[clamp(3.5rem,9vw,5rem)]
                       w-[clamp(3.5rem,9vw,5rem)]
                       object-contain
-                      drop-shadow-md
                     "
                   />
                 </button>

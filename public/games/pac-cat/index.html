@@ -220,7 +220,7 @@
 	</div>
 
 	<div id="home">
-		<h1>PAC-CAT</h1>
+		<h1 class="pac-cat-title">PAC-CAT <span class="cat-emoji" aria-hidden="true">🐱</span></h1>
 		<canvas id="canvas-home-title-pacman"></canvas>
 		<div id="presentation">
 			<div id="presentation-titles">character &nbsp;/&nbsp; nickname</div>
@@ -236,6 +236,7 @@
 			<canvas id="canvas-presentation-clyde"></canvas>
 			<div id="presentation-character-clyde">- pokey</div>
 			<div id="presentation-name-clyde">"clyde"</div>
+			<div id="start-hint">Click or tap anywhere to start</div>
 		</div>
 		<canvas id="trailer"></canvas>
 		<div class="help-button">- help -</div>
@@ -243,7 +244,7 @@
 	</div>
 
 	<div id="panel">
-		<h1>PAC-CAT</h1>
+		<h1 class="pac-cat-title">PAC-CAT <span class="cat-emoji" aria-hidden="true">🐱</span></h1>
 		<canvas id="canvas-panel-title-pacman"></canvas>
 		<div id="score">
 			<h2>1UP</h2><span>00</span>
@@ -261,10 +262,6 @@
 			<canvas id="canvas-ghost-pinky"></canvas>
 			<canvas id="canvas-ghost-inky"></canvas>
 			<canvas id="canvas-ghost-clyde"></canvas>
-			<div id="control-up-big"></div>
-			<div id="control-down-big"></div>
-			<div id="control-left-big"></div>
-			<div id="control-right-big"></div>
 		</div>
 		<div id="control">
 			<div id="control-up"></div>
@@ -280,6 +277,40 @@
 		<div class="help-button">- help -</div>
 		<a class="sound" href="javascript:void(0);" data-sound="on"><img src="img/sound-on.png" alt="" border="0"></a>
 	</div>
+	<div id="mobile-controls" aria-label="Direction controls">
+		<div id="control-up-big"></div>
+		<div id="control-down-big"></div>
+		<div id="control-left-big"></div>
+		<div id="control-right-big"></div>
+	</div>
+
+	<script>
+		(function () {
+			var DESIGN_WIDTH = 570;
+			var DESIGN_HEIGHT = 790;
+			var resizeFrame = 0;
+
+			function fitPacCatLayout() {
+				resizeFrame = 0;
+				var viewport = window.visualViewport;
+				var width = viewport ? viewport.width : window.innerWidth;
+				var height = viewport ? viewport.height : window.innerHeight;
+				var scale = Math.min((width - 20) / DESIGN_WIDTH, (height - 20) / DESIGN_HEIGHT, 1);
+				document.documentElement.style.setProperty('--pac-cat-scale', Math.max(0.2, scale));
+			}
+
+			function scheduleFit() {
+				if (resizeFrame) return;
+				resizeFrame = window.requestAnimationFrame(fitPacCatLayout);
+			}
+
+			fitPacCatLayout();
+			window.addEventListener('resize', scheduleFit, { passive: true });
+			if (window.visualViewport) {
+				window.visualViewport.addEventListener('resize', scheduleFit, { passive: true });
+			}
+		}());
+	</script>
 
 </body>
 

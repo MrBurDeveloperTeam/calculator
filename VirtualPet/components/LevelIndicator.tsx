@@ -25,11 +25,9 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
   return (
     <div
         className="
-            relative
             flex flex-col items-end
-            animate-in fade-in
-            slide-in-from-right-4
-            duration-700
+            animate-in fade-in slide-in-from-right-4 duration-700
+            relative
         "
     >
         <button
@@ -38,7 +36,11 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
             className="
                 group relative
                 h-12 w-12 shrink-0
-                appearance-none border-0 bg-transparent p-0
+                appearance-none
+                !border-0
+                !bg-transparent
+                !shadow-none
+                p-0
                 outline-none ring-0
                 cursor-pointer
                 transition-transform duration-200
@@ -46,14 +48,14 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
                 focus:outline-none
                 focus-visible:ring-2
                 focus-visible:ring-amber-400/70
-                sm:h-20 sm:w-20
+                sm:h-14 sm:w-14
             "
             title={`Level ${stats.level}`}
             aria-expanded={isOpen}
         >
             <svg
                 viewBox="0 0 200 200"
-                className="h-full w-full overflow-visible drop-shadow-md"
+                className="pet-icon-no-tile h-full w-full overflow-visible"
             >
                 <defs>
                     <clipPath id="body-mask-lvl">
@@ -67,7 +69,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
 
                 <path
                     d={bodyPath}
-                    className="fill-white/30 backdrop-blur-md stroke-white/60 stroke-[4]"
+                    className="fill-transparent stroke-black stroke-[4]"
                 />
 
                 <g clipPath="url(#body-mask-lvl)">
@@ -92,7 +94,7 @@ const LevelIndicator: React.FC<LevelIndicatorProps> = ({ stats }) => {
                     y="110"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    className="text-5xl font-black fill-slate-800 drop-shadow-sm pointer-events-none select-none"
+                    className="text-5xl font-black fill-slate-800 pointer-events-none select-none"
                     style={{ fontFamily: 'Fredoka, sans-serif' }}
                 >
                     {stats.level}

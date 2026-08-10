@@ -47,6 +47,7 @@ function initGame(newgame) {
 		clearMessage();
 		$("#home").hide();
 		$("#panel").show();
+		$("#mobile-controls").show();
 
 		var ctx = null;
 		var canvas = document.getElementById('canvas-panel-title-pacman');

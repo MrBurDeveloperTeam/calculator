@@ -65,6 +65,7 @@ function initHome() {
     PACMAN_DEAD = false;
 
     $("#panel").hide();
+    $("#mobile-controls").hide();
     $("#home").show();
     $("#home h3 em").append( " - " + new Date().getFullYear() );
     
@@ -170,7 +171,8 @@ function ensureTrailerCatElement() {
 // ---------------------------------------
 
 function startPresentation() { 
-    $("#presentation *").hide();
+    $("#presentation *").not("#start-hint").hide();
+    $("#start-hint").show();
     
     if (HOME_PRESENTATION_TIMER === -1) { 
         HOME_PRESENTATION_STATE = 0;
@@ -213,6 +215,7 @@ function nextSequencePresentation() {
         $("#presentation-character-clyde").show();
     } else if (HOME_PRESENTATION_STATE === 17) { 
         $("#presentation-name-clyde").show();
+        $("#start-hint").show();
     }
     
     if (HOME_PRESENTATION_STATE === 17) { 

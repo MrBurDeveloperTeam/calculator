@@ -27,32 +27,38 @@ const VirtualPetContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     return (
         <div className="relative w-full h-full overflow-hidden pet-interface">
-            {/* Close Overlay Button (Global) */}
-            <button
-                onClick={onClose}
-                className="
-                    absolute
-                    left-[calc(env(safe-area-inset-left)_+_0.75rem)]
-                    top-[calc(env(safe-area-inset-top)_+_0.75rem)]
-                    z-50
-                    flex h-12 w-12 items-center justify-center
-                    rounded-xl
-                    border-0 bg-white/75 p-0
-                    text-black shadow-lg shadow-slate-900/10
-                    backdrop-blur-md appearance-none
-                    transition-all
-                    hover:-translate-x-0.5 hover:scale-105 hover:bg-white
-                    active:scale-95
-                    sm:h-14 sm:w-14
-                    lg:left-[calc(env(safe-area-inset-left)_+_1.5rem)]
-                    lg:top-[calc(env(safe-area-inset-top)_+_1.5rem)]
-                    lg:h-16 lg:w-16 lg:rounded-2xl
+            {/* Close Overlay Button - Cat Room Only */}
+            {view === 'ROOM' && (
+                <button
+                    onClick={onClose}
+                    className="
+                        absolute
+                        left-[calc(env(safe-area-inset-left)_+_0.75rem)]
+                        top-[calc(env(safe-area-inset-top)_+_0.75rem)]
+                        z-50
+                        flex h-12 w-12 items-center justify-center
+                        rounded-xl
+                        border-0 bg-white/75 p-0
+                        text-black
+                        shadow-lg shadow-slate-900/10
+                        backdrop-blur-md appearance-none
+                        transition-all
+                        hover:-translate-x-0.5 hover:scale-105 hover:bg-white
+                        active:scale-95
+                        sm:h-14 sm:w-14
+                        lg:left-[calc(env(safe-area-inset-left)_+_1.5rem)]
+                        lg:top-[calc(env(safe-area-inset-top)_+_1.5rem)]
+                        lg:h-16 lg:w-16 lg:rounded-2xl
                     "
-                title="Back"
-                aria-label="Back"
-            >
-                <TiArrowBack className="h-9 w-9 sm:h-10 sm:w-10 lg:h-12 lg:w-12" strokeWidth={0} />
-            </button>
+                    title="Back"
+                    aria-label="Back"
+                >
+                    <TiArrowBack
+                        className="h-9 w-9 text-black sm:h-10 sm:w-10 lg:h-12 lg:w-12"
+                        strokeWidth={0}
+                    />
+                </button>
+            )}
 
             {view === 'ROOM' ? (
                 <PetRoom onNavigateToGame={handleNavigateToGame} />
@@ -60,6 +66,7 @@ const VirtualPetContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <GamePage
                     gameId={activeGameId || ''}
                     onClose={handleCloseGame}
+                    onExitPet={onClose}
                 />
             )}
             <PetAdoptionModal />
