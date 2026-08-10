@@ -38,7 +38,18 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
 
     return (
         <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 pointer-events-none">
-            <div className="pointer-events-auto flex max-w-[min(92vw,430px)] items-center gap-3 bg-transparent p-2">
+            <div className="
+                pointer-events-auto
+                flex max-w-[min(92vw,430px)]
+                items-center gap-3
+                rounded-2xl
+                border border-white/50
+                bg-white/60
+                backdrop-blur-xl
+                p-2
+                shadow-2xl
+                shadow-orange-900/10
+            ">
                 <div
                     ref={scrollRef}
                     onWheel={handleWheel}
@@ -56,14 +67,46 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                     {availableItems.map((item) => (
                         <div
                             key={item.id}
-                            onPointerDown={(e) => onDragStart(e, item)}
-                            className="relative flex h-16 w-16 shrink-0 snap-center cursor-grab items-center justify-center transition-all hover:-translate-y-0.5 active:cursor-grabbing active:scale-95"
-                        >
-                            <div className="select-none touch-none text-4xl drop-shadow-sm">{item.icon}</div>
-                            <div className="pointer-events-none absolute -right-0 -top-0 z-10 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 text-[11px] font-black text-white shadow">
+                            onPointerDown={(e) =>
+                                onDragStart(e, item)
+                            }
+                            className="
+                                relative flex
+                                h-16 w-16 shrink-0
+                                snap-center
+                                cursor-grab
+                                items-center justify-center
+                                bg-transparent
+                                transition-all
+                                hover:-translate-y-0.5
+                                active:cursor-grabbing
+                                active:scale-95
+                            "
+                            >
+                            <div className="
+                                select-none touch-none
+                                bg-transparent
+                                text-4xl
+                                drop-shadow-sm
+                            ">
+                                {item.icon}
+                            </div>
+
+                            <div className="
+                                pointer-events-none
+                                absolute -right-0 -top-0
+                                z-10
+                                flex h-5 min-w-5
+                                items-center justify-center
+                                rounded-full
+                                bg-orange-500
+                                text-[11px]
+                                font-black text-white
+                                shadow
+                            ">
                                 {inventory[item.id]}
                             </div>
-                        </div>
+                            </div>
                     ))}
                     {availableItems.length > 0 && (
                         <button
