@@ -181,8 +181,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
               user={user}
               profile={profile}
               onSignOut={logOut}
-              triggerClassName="p-2 text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full border border-[var(--app-border)] transition-colors"
-            />
+              triggerClassName="w-10 h-10 p-1 flex items-center justify-center overflow-hidden text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full bg-[var(--app-surface)] border border-[var(--app-border)] shadow-sm transition-colors"            />
             <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
               <Menu className="w-6 h-6" />
             </button>
