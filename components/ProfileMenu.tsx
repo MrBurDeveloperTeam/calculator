@@ -148,11 +148,10 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
         aria-label="Account menu"
         className={
           triggerClassName ||
-          'p-2 text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full bg-[var(--app-surface)] border border-[var(--app-border)] shadow-sm transition-colors'
-        }
+          'w-10 h-10 p-1 flex items-center justify-center text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full bg-[var(--app-surface)] border border-[var(--app-border)] shadow-sm transition-colors overflow-hidden'        }
       >
         {avatarSrc ? (
-          <img src={avatarSrc} alt={displayName} className="w-5 h-5 rounded-full object-cover" />
+          <img src={avatarSrc} alt={displayName} className="w-full h-full rounded-full object-cover" />
         ) : (
           <UserIcon className="w-5 h-5" />
         )}
@@ -175,8 +174,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-11 h-11 rounded-full bg-[var(--snabbb-primary)] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
-                  {profile?.avatar_url ? (
-                    <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
+                  {avatarSrc ? (
+                    <img src={avatarSrc} alt={displayName} className="w-full h-full object-cover" />
                   ) : (
                     getInitials(displayName)
                   )}
