@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useProfileImage } from "../hooks/useProfileImage";
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Mail, Phone, Settings as SettingsIcon, User as UserIcon, ChevronRight, Wallet, Tv } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -24,6 +25,8 @@ const getInitials = (name: string) => {
 };
 
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, triggerClassName }) => {
+  const { profileImageUrl } = useProfileImage(Boolean(user));
+  const avatarSrc = profileImageUrl || profile?.avatar_url;
   const [isOpen, setIsOpen] = useState(false);
   const [creditBalance, setCreditBalance] =
     useState<number | null>(null);
@@ -148,8 +151,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
           'p-2 text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full bg-[var(--app-surface)] border border-[var(--app-border)] shadow-sm transition-colors'
         }
       >
-        {profile?.avatar_url ? (
-          <img src={profile.avatar_url} alt={displayName} className="w-5 h-5 rounded-full object-cover" />
+        {avatarSrc ? (
+          <img src={avatarSrc} alt={displayName} className="w-5 h-5 rounded-full object-cover" />
         ) : (
           <UserIcon className="w-5 h-5" />
         )}
