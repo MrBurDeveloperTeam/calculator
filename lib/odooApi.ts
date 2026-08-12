@@ -68,10 +68,20 @@ export async function signUpDual({
         referral_code: referralCode?.trim() || undefined,
         agreed_to_terms: agreedToTerms,
     };
-    const { data } = await odooApi.post('/calculator/sign-up', odooPayload);
+    // Reuse the deployed central registration gateway used by Inventory.
+    // The route creates the shared Snabbb/Odoo account; it is not an
+    // Inventory-specific Supabase registration.
+    const response = await odooApi.post('/inventory/sign-up', odooPayload);
+    const contentType = String(response.headers?.['content-type'] || '');
+    const data = response.data;
+
+    if (!contentType.includes('application/json') || !data || typeof data !== 'object') {
+        throw new Error('The registration service returned an invalid response.');
+    }
+
     const result = data?.data?.result ?? data?.result ?? data;
 
-    if (data?.error || result?.ok === false) {
+    if (data?.ok !== true || data?.error || result?.ok === false) {
         throw new Error(
             data?.error?.data?.message ||
             data?.error?.message ||
