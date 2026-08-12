@@ -1,4 +1,10 @@
-import {odooApi as api} from "./odooApi";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "https://app.snabbb.com/api",
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
 
 
 export const loginOdoo = async (email: string, password: string) => {
@@ -18,7 +24,11 @@ export const loginOdoo = async (email: string, password: string) => {
     });
 
     if (response.data.error) {
-      throw new Error(response.data.error.message);
+      throw new Error(
+        response.data.error?.data?.message ||
+        response.data.error?.message ||
+        "Odoo login failed"
+      );
     }
     return response.data; 
   } catch (err: any) {

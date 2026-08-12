@@ -32,7 +32,6 @@ export default function LoginPage() {
       if (rememberMe) localStorage.setItem('snabbb_remembered_email', email.trim());
       else localStorage.removeItem('snabbb_remembered_email');
       await signIn(email, password);
-      navigate('/', { replace: true });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Login failed.');
     } finally {

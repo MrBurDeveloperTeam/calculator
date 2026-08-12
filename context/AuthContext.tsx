@@ -2,8 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types';
-import { exchangeSsoToken, signInDual, signUpDual } from '../lib/odooApi';
+import { exchangeSsoToken, signUpDual } from '../lib/odooApi';
 import { api } from '@/lib/api';
+import { loginOdoo } from '@/lib/loginOdoo';
+import applink from '@/lib/app_link';
 
 interface AuthContextType {
     user: User | null;
@@ -106,7 +108,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const signIn = async (email: string, password: string) => {
-        await signInDual({ email, password });
+        const response = await loginOdoo(email.trim(), password);
+        const odooUser = response?.data?.result ?? response?.result ?? response?.sessionInfo;
+
+        if (!odooUser?.uid) {
+            throw new Error('Invalid login credentials');
+        }
+
+        await applink(odooUser);
     };
 
     return (

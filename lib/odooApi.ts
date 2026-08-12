@@ -27,93 +27,71 @@ odooApi.interceptors.response.use(
 interface SignUpParams {
     email: string;
     fullName: string;
-    password: string;
-    accountType: 'individual' | 'company';
+    password?: string;
+    accountType?: 'individual' | 'company';
     companyName?: string;
-    phone: string;
-    position: string;
-    dob: string;
-    country: string;
+    phone?: string;
+    position?: string;
+    dob?: string;
+    country?: string;
     referralCode?: string;
-    agreedToTerms: boolean;
+    agreedToTerms?: boolean;
 }
 
-interface SignInParams {
-    email: string;
-    password: string;
-}
-
-/**
- * Attempts to register a user in Odoo and mirrors the registration to Supabase.
- * Falls back to direct Supabase registration if the Odoo endpoint fails.
+/** Register only in the central Odoo account system.
+ * Supabase is hydrated later through SSO, so signing up here as well would
+ * create a second account and send a second verification email.
  */
-export async function signUpDual({ email, password, fullName, accountType, companyName, phone, position, dob, country, referralCode, agreedToTerms }: SignUpParams) {
-    const normalizedEmail = email.trim().toLowerCase();
-    const name = fullName.trim();
-    const normalizedReferralCode = referralCode?.trim() || null;
-    const metadata = {
-        name,
-        full_name: name,
+export async function signUpDual({
+    email,
+    password,
+    fullName,
+    accountType = 'individual',
+    companyName,
+    phone,
+    position,
+    dob,
+    country,
+    referralCode,
+    agreedToTerms,
+}: SignUpParams) {
+    const odooPayload = {
+        email: email.trim().toLowerCase(),
+        name: fullName.trim(),
+        password,
         account_type: accountType,
-        phone: phone.trim(),
-        position: position.trim(),
-        company_name: accountType === 'company' ? companyName?.trim() || null : null,
+        company_name: companyName?.trim() || undefined,
+        phone: phone?.trim() || undefined,
+        position: position?.trim() || undefined,
         dob,
         country,
-        referral_code: normalizedReferralCode,
+        referral_code: referralCode?.trim() || undefined,
         agreed_to_terms: agreedToTerms,
     };
-    const odooPayload = {
-        email: normalizedEmail,
-        login: normalizedEmail,
-        name,
-        fullName: name,
-        password,
-        phone: metadata.phone,
-        position: metadata.position,
-        account_type: metadata.account_type,
-        company_name: metadata.company_name,
-        companyName: metadata.company_name,
-        company_email: accountType === 'company' ? normalizedEmail : null,
-        companyEmail: accountType === 'company' ? normalizedEmail : null,
-        contact_name: accountType === 'company' ? name : null,
-        company_type: accountType === 'company' ? 'company' : 'person',
-        dob: metadata.dob,
-        country: metadata.country,
-        referral_code: metadata.referral_code,
-        referralCode: metadata.referral_code,
-    };
-    const supaPayload = {
-        email: normalizedEmail,
-        password,
-        options: { data: metadata },
-    };
+    // Reuse the deployed central registration gateway used by Inventory.
+    // The route creates the shared Snabbb/Odoo account; it is not an
+    // Inventory-specific Supabase registration.
+    const response = await odooApi.post('/inventory/sign-up', odooPayload);
+    const contentType = String(response.headers?.['content-type'] || '');
+    const data = response.data;
 
-    // Match E-learning: Odoo must succeed before Supabase registration starts.
-    const { data: odooData } = await odooApi.post('/calculator/sign-up', odooPayload);
-    const odooResult = odooData?.data?.result ?? odooData?.result ?? odooData;
-    if (odooData?.error || odooResult?.ok === false || odooResult?.created === false) {
-        throw new Error(odooData?.error?.message || odooData?.error || odooData?.data?.error?.message || 'Failed to create Calculator account');
+    if (!contentType.includes('application/json') || !data || typeof data !== 'object') {
+        throw new Error('The registration service returned an invalid response.');
     }
 
-    const supaResult = await supabase.auth.signUp(supaPayload);
-    if (supaResult.error) throw supaResult.error;
-    return supaResult.data;
-}
+    const result = data?.data?.result ?? data?.result ?? data;
 
-/**
- * Attempts to log in via Odoo, then synchronizes tokens with Supabase.
- * Falls back to Supabase auth natively if Odoo is unreachable.
- */
-export async function signInDual({ email, password }: SignInParams) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+    if (data?.ok !== true || data?.error || result?.ok === false) {
+        throw new Error(
+            data?.error?.data?.message ||
+            data?.error?.message ||
+            result?.message ||
+            result?.error ||
+            'Failed to create account'
+        );
+    }
 
-    if (error) throw error;
-    
-    // Explicitly note that this is a direct, non-SSO login
-    localStorage.setItem('is_sso_session', 'false');
-
-    return data;
+    return result;
 }
 
 /**
@@ -121,7 +99,10 @@ export async function signInDual({ email, password }: SignInParams) {
  */
 export async function exchangeSsoToken() {
     try {
-        const sso = await odooApi.get('/sso/exchange');
+        const token = new URLSearchParams(window.location.search).get('token');
+        const sso = await odooApi.get('/sso/exchange', token ? {
+            headers: { Authorization: `Bearer ${token}` },
+        } : undefined);
         if (sso?.data?.access_token && sso?.data?.refresh_token) {
             const { error } = await supabase.auth.setSession({
                 access_token: sso.data.access_token,
@@ -129,6 +110,7 @@ export async function exchangeSsoToken() {
             });
             if (error) throw error;
             localStorage.setItem('is_sso_session', 'true');
+            if (token) window.history.replaceState({}, '', '/');
             return true;
         }
     } catch (err: any) {
@@ -143,4 +125,4 @@ export async function exchangeSsoToken() {
         return false;
     }
     return false;
-}  
+}
