@@ -7,8 +7,8 @@ const applink = async (param: any) => {
                     "method": "call",
                     "params": {
                       "app_code": "calculator",
-                      "email": param.username,
-                      "name": param.name,
+                      "email": param.username || param.email,
+                      "name": param.name || param.partner_display_name,
                       "company_id": 2,
                       "portal": true
                     },

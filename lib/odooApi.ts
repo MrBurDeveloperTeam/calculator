@@ -28,14 +28,46 @@ interface SignUpParams {
     email: string;
     fullName: string;
     password?: string;
+    accountType?: 'individual' | 'company';
+    companyName?: string;
+    phone?: string;
+    position?: string;
+    dob?: string;
+    country?: string;
+    referralCode?: string;
+    agreedToTerms?: boolean;
 }
 
 /** Register only in the central Odoo account system.
  * Supabase is hydrated later through SSO, so signing up here as well would
  * create a second account and send a second verification email.
  */
-export async function signUpDual({ email, password, fullName }: SignUpParams) {
-    const odooPayload = { email, name: fullName, password };
+export async function signUpDual({
+    email,
+    password,
+    fullName,
+    accountType = 'individual',
+    companyName,
+    phone,
+    position,
+    dob,
+    country,
+    referralCode,
+    agreedToTerms,
+}: SignUpParams) {
+    const odooPayload = {
+        email: email.trim().toLowerCase(),
+        name: fullName.trim(),
+        password,
+        account_type: accountType,
+        company_name: companyName?.trim() || undefined,
+        phone: phone?.trim() || undefined,
+        position: position?.trim() || undefined,
+        dob,
+        country,
+        referral_code: referralCode?.trim() || undefined,
+        agreed_to_terms: agreedToTerms,
+    };
     const { data } = await odooApi.post('/calculator/sign-up', odooPayload);
     const result = data?.data?.result ?? data?.result ?? data;
 
@@ -83,4 +115,4 @@ export async function exchangeSsoToken() {
         return false;
     }
     return false;
-} 
+}

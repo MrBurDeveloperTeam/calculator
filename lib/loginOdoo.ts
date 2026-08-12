@@ -24,7 +24,11 @@ export const loginOdoo = async (email: string, password: string) => {
     });
 
     if (response.data.error) {
-      throw new Error(response.data.error.message);
+      throw new Error(
+        response.data.error?.data?.message ||
+        response.data.error?.message ||
+        "Odoo login failed"
+      );
     }
     return response.data; 
   } catch (err: any) {
