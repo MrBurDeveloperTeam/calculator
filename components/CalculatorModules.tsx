@@ -1075,7 +1075,12 @@ export const ConsumablesCalculator = () => {
 
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
   const sortedItems = [...items].sort((a, b) => b.cost - a.cost);
-  const visualData = sortedItems.slice(0, 4).map(i => ({ name: i.name, value: i.cost, color: '#0d9488' }));
+  const consumablesChartColors = ['#115e59', '#0f766e', '#0d9488', '#2dd4bf'];
+  const visualData = sortedItems.slice(0, 4).map((item, index) => ({
+    name: item.name,
+    value: item.cost,
+    color: consumablesChartColors[index]
+  }));
 
   return (
     <CalculatorCard
