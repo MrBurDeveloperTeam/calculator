@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const COLORS=['#d98f9f','#e8b477','#d6c45f','#85bd91','#72abc8','#9b82c4','#c875a6','#58b4aa','#7565b5'];
+  const COLORS=['#a96572','#bd8656','#b5a052','#6f9b80','#5f88a0','#7d6b9d','#9d6685','#528d88','#5d648d'];
   const SAVE_KEY='meowdoku_progress_v1';
   const state={level:1,lives:3,marks:new Set(),found:new Set(),seconds:0,timer:null,wallet:0,pending:new Map(),levels:[],save:loadSave(),coachStep:-1,coachTarget:null,catActions:new Map(),catActionTimers:new Map()};
   const $=id=>document.getElementById(id);

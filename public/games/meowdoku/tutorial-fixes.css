@@ -1059,3 +1059,106 @@ body::after {
 }
 
 .cell.marked::after { color:rgba(42,42,46,.62);text-shadow:0 1px rgba(255,255,255,.25); }
+
+/* Premium enamel tiles: muted jewel pigments set into the gunmetal board. */
+.cell {
+  background-image:
+    linear-gradient(155deg,rgba(255,255,255,.31) 0%,rgba(255,255,255,.08) 27%,transparent 46%,rgba(11,15,18,.16) 100%),
+    radial-gradient(ellipse at 24% 12%,rgba(255,255,255,.16),transparent 45%),
+    var(--tile-pattern);
+  background-blend-mode:soft-light,screen,normal;
+  border-color:rgba(235,239,240,.30);
+  box-shadow:
+    inset 1px 1px 1px rgba(255,255,255,.40),
+    inset 0 0 0 1px rgba(23,27,30,.09),
+    inset -2px -3px 4px rgba(18,21,24,.18),
+    0 3px 5px rgba(10,12,14,.34);
+}
+
+.cell:hover {
+  filter:saturate(1.04) brightness(1.055);
+}
+
+.cell::before {
+  opacity:.075;
+  background-image:
+    radial-gradient(circle at 20% 22%,rgba(255,255,255,.50) 0 .45px,transparent .72px),
+    radial-gradient(circle at 74% 68%,rgba(12,15,18,.28) 0 .4px,transparent .7px);
+  background-size:8px 8px,11px 11px;
+}
+
+/* Monochrome brand treatment and an internally scrolling level board. */
+#level-screen.screen.active {
+  display:flex;
+  flex-direction:column;
+  height:100dvh;
+  overflow:hidden;
+  scrollbar-width:none;
+}
+
+#level-screen::-webkit-scrollbar { display:none; }
+#level-screen .hero { flex:0 0 auto;padding-top:14px;padding-bottom:14px; }
+#level-screen .rules-card { flex:0 0 auto; }
+#level-screen .level-board {
+  display:flex;
+  flex:1 1 auto;
+  min-height:0;
+  flex-direction:column;
+  margin-top:18px;
+  margin-bottom:0;
+  padding-bottom:12px;
+}
+
+#level-screen .level-board .level-heading { flex:0 0 auto; }
+#level-screen .level-board .level-grid {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  align-content:start;
+  padding:2px 8px 8px 2px;
+  scrollbar-width:thin;
+  scrollbar-color:#929297 rgba(255,255,255,.07);
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar { display:block;width:7px; }
+#level-screen .level-board .level-grid::-webkit-scrollbar-track { margin:2px 0 6px;border-radius:999px;background:rgba(255,255,255,.06); }
+#level-screen .level-board .level-grid::-webkit-scrollbar-thumb { border:1px solid transparent;border-radius:999px;background:linear-gradient(#bcbcc0,#727278) padding-box; }
+#level-screen .level-board .level-grid::-webkit-scrollbar-thumb:hover { background:linear-gradient(#d0d0d2,#85858a) padding-box; }
+
+.brand-copy h1 span { color:#343438; }
+.brand-copy h1 em { color:#77777d; }
+.brand-copy h1 em::after { color:#929297; }
+.brand-copy .eyebrow { color:#77777c!important; }
+.brand-tagline { color:#66666b!important; }
+.brand-tagline strong { color:#3f3f44; }
+
+.color-rule,
+.line-rule,
+.touch-rule { --rule-accent:#666a70; }
+
+#level-screen .rule-card {
+  border-color:rgba(50,50,54,.09);
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.94),rgba(229,229,228,.80));
+}
+
+#level-screen .rule-card::after {
+  background:linear-gradient(145deg,#8e9094,#d7d7d8);
+  opacity:.08;
+}
+
+#level-screen .rule-icon {
+  color:#f8f8f8;
+  background:linear-gradient(145deg,#8f9196,#55585d);
+  box-shadow:0 7px 14px rgba(39,40,43,.18),inset 0 1px rgba(255,255,255,.32);
+}
+
+#level-screen .rule-card small { color:#74767b; }
+#level-screen .rule-card strong { color:#414147; }
+#level-screen .rule-card p { color:#77777c; }
+
+@media (max-width:620px) {
+  #level-screen .hero { padding-top:8px;padding-bottom:9px; }
+  #level-screen .level-board { margin-top:10px; }
+}
