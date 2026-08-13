@@ -49,6 +49,7 @@
 #game-screen.active {
   display: grid;
   grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  row-gap: clamp(5px, 1vh, 11px);
   overflow: hidden;
 }
 
@@ -190,11 +191,7 @@ body {
 }
 
 .cell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(145deg, rgba(255,255,255,.16), transparent 45%);
+  content: none;
 }
 
 .cell.marked::after {
@@ -211,7 +208,41 @@ body {
   object-fit: contain;
   transform-origin: 50% 82%;
   filter: drop-shadow(0 4px 4px rgba(67,39,46,.2));
-  animation: catIdle 3.4s ease-in-out infinite;
+  animation: catIdle 4.2s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.cat-sprite {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 94%;
+  height: 94%;
+  background-image: url('cat-idle-spritesheet.png');
+  background-repeat: no-repeat;
+  background-size: 800% 100%;
+  background-position: 0 0;
+  filter: drop-shadow(0 4px 4px rgba(67,39,46,.2));
+  animation: catSpriteIdle 4.8s steps(7) infinite;
+}
+
+.cell:nth-child(3n) .cat-sprite {
+  animation-delay: -1.1s;
+}
+
+.cell:nth-child(4n) .cat-sprite {
+  animation-delay: -2.3s;
+}
+
+.just-found .cat-sprite {
+  animation: catSpriteArrive .52s cubic-bezier(.2,1.65,.4,1), catSpriteIdle 4.8s .52s steps(7) infinite;
+}
+
+.cat-sprite.grooming,
+.just-found .cat-sprite.grooming {
+  background-image: url('cat-groom-spritesheet.png');
+  background-size: 1200% 100%;
+  background-position: 0 0;
+  animation: catGroom 2.8s steps(11) 1 both;
 }
 
 .cell:nth-child(3n) .cat-token {
@@ -223,7 +254,7 @@ body {
 }
 
 .just-found .cat-token {
-  animation: catArrive .55s cubic-bezier(.2,1.7,.4,1), catIdle 3.4s .55s ease-in-out infinite;
+  animation: catArrive .55s cubic-bezier(.2,1.7,.4,1), catIdle 4.2s .55s cubic-bezier(.45,0,.55,1) infinite;
 }
 
 .round-btn,
@@ -244,12 +275,37 @@ body {
 
 @keyframes catIdle {
   0%, 100% { transform: translateY(0) scale(1); }
-  45% { transform: translateY(-3%) scale(1.015, .985); }
-  52% { transform: translateY(-3%) scale(.985, 1.015); }
+  50% { transform: translateY(-2%) scale(1.008); }
 }
 
 @keyframes catArrive {
   0% { transform: translateY(24%) scale(.25) rotate(-8deg); opacity: 0; }
   70% { transform: translateY(-4%) scale(1.08) rotate(2deg); opacity: 1; }
   100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes catSpriteIdle {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
+}
+
+@keyframes catSpriteArrive {
+  0% { transform: translateY(20%) scale(.3); opacity: 0; }
+  72% { transform: translateY(-3%) scale(1.07); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes catGroom {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-sprite,
+  .just-found .cat-sprite,
+  .cat-sprite.grooming,
+  .just-found .cat-sprite.grooming {
+    animation: none;
+    background-position: 0 0;
+  }
 }
