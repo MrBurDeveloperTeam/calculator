@@ -224,9 +224,10 @@ export const GamesMenu: React.FC<GamesMenuProps> = ({ onStartGame }) => (
                 onClick={() => onStartGame('meowdoku')}
                 className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95 shrink-0"
             >
-                <div className="w-20 h-20 rounded-2xl shadow-lg flex items-center justify-center text-5xl bg-gradient-to-br from-fuchsia-300 via-violet-400 to-indigo-500 group-hover:-rotate-12 transition-transform border-4 border-white/50">
-                    🐱
-                </div>
+                <div
+                    className="w-20 h-20 bg-cover bg-center rounded-2xl shadow-lg group-hover:-rotate-6 transition-transform border-4 border-white/70"
+                    style={{ backgroundImage: "url('/games/meowdoku/cover.png')" }}
+                />
                 <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Meowdoku</span>
             </button>
             <button

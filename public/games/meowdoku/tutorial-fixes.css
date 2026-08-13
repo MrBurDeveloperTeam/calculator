@@ -1,0 +1,255 @@
+.coach {
+  width: 300px;
+}
+
+.coach.show {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.coach b {
+  display: block;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.coach span {
+  display: block;
+  line-height: 1.55;
+}
+
+.coach button {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
+
+@media (max-width: 1050px) {
+  .coach.show {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .coach b,
+  .coach span {
+    grid-column: 1;
+  }
+
+  .coach button {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    width: auto;
+    margin: 0;
+  }
+}
+
+/* Keep the entire play interface inside one viewport at every screen height. */
+#game-screen.active {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+#game-screen .game-header,
+#game-screen .status-row,
+#game-screen .rules-strip,
+#game-screen .board-wrap,
+#game-screen .bottom-bar {
+  height: auto;
+}
+
+#game-screen .board-wrap {
+  min-height: 0;
+  padding: 6px;
+}
+
+#game-screen .board {
+  width: auto;
+  height: min(100%, 76vw);
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#game-screen .bottom-bar {
+  min-height: 70px;
+  padding: 5px 0 2px;
+  align-items: center;
+}
+
+#game-screen .tool-btn {
+  position: static;
+  display: flex;
+  width: 82px;
+  height: 58px;
+  flex: 0 0 82px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border-radius: 18px;
+  padding: 4px 8px;
+}
+
+#game-screen .tool-btn span {
+  font-size: 23px;
+  line-height: 1;
+}
+
+#game-screen .tool-btn b {
+  position: static;
+  transform: none;
+  font-size: 10px;
+  line-height: 1.1;
+}
+
+@media (max-height: 720px) {
+  #game-screen.active {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  #game-screen .game-header {
+    min-height: 42px;
+  }
+
+  #game-screen .round-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  #game-screen .status-row {
+    min-height: 38px;
+  }
+
+  #game-screen .rules-strip {
+    min-height: 64px;
+    padding: 5px;
+  }
+
+  #game-screen .bottom-bar {
+    min-height: 58px;
+  }
+
+  #game-screen .tool-btn {
+    height: 50px;
+  }
+}
+
+@media (max-width: 620px) {
+  #game-screen .board {
+    width: min(100%, 58vh);
+    height: auto;
+  }
+
+  #game-screen .bottom-bar {
+    gap: 12px;
+  }
+}
+
+/* Premium Meowdoku art direction */
+body {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(217, 163, 170, .18), transparent 31%),
+    radial-gradient(circle at 84% 76%, rgba(145, 183, 200, .17), transparent 34%),
+    linear-gradient(145deg, #fbf7f1, #f5eee8);
+}
+
+.logo-cat {
+  overflow: hidden;
+  background: linear-gradient(145deg, #f5ded7, #d7c9dc);
+}
+
+.logo-cat img {
+  width: 92%;
+  height: 92%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 7px rgba(74,43,51,.2));
+  animation: catIdle 3.4s ease-in-out infinite;
+}
+
+.board {
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.92);
+  background: linear-gradient(145deg, #70424c, #4f3038);
+  box-shadow:
+    0 22px 55px rgba(73, 42, 49, .22),
+    inset 0 1px 0 rgba(255,255,255,.35),
+    0 0 0 6px rgba(255,255,255,.78);
+}
+
+.cell {
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.24);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.42),
+    inset 0 -2px 4px rgba(73,42,49,.09);
+}
+
+.cell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(145deg, rgba(255,255,255,.16), transparent 45%);
+}
+
+.cell.marked::after {
+  color: rgba(82, 50, 58, .58);
+  text-shadow: 0 1px rgba(255,255,255,.34);
+}
+
+.cat-token {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 84%;
+  height: 84%;
+  object-fit: contain;
+  transform-origin: 50% 82%;
+  filter: drop-shadow(0 4px 4px rgba(67,39,46,.2));
+  animation: catIdle 3.4s ease-in-out infinite;
+}
+
+.cell:nth-child(3n) .cat-token {
+  animation-delay: -.9s;
+}
+
+.cell:nth-child(4n) .cat-token {
+  animation-delay: -1.7s;
+}
+
+.just-found .cat-token {
+  animation: catArrive .55s cubic-bezier(.2,1.7,.4,1), catIdle 3.4s .55s ease-in-out infinite;
+}
+
+.round-btn,
+.pill,
+.wallet,
+.tool-btn,
+.rules-strip {
+  border: 1px solid rgba(255,255,255,.82);
+  background: rgba(255,252,248,.82);
+  box-shadow: 0 10px 28px rgba(92,55,64,.11), inset 0 1px rgba(255,255,255,.85);
+  backdrop-filter: blur(16px);
+}
+
+.rules-strip > div {
+  background: linear-gradient(145deg, rgba(255,250,244,.92), rgba(242,229,218,.8));
+  border: 1px solid rgba(121,75,86,.08);
+}
+
+@keyframes catIdle {
+  0%, 100% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-3%) scale(1.015, .985); }
+  52% { transform: translateY(-3%) scale(.985, 1.015); }
+}
+
+@keyframes catArrive {
+  0% { transform: translateY(24%) scale(.25) rotate(-8deg); opacity: 0; }
+  70% { transform: translateY(-4%) scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
