@@ -880,3 +880,82 @@ body::after { right: 8vw; top: 15vh; transform: rotate(22deg) scale(.72); }
 
 .level-board .level-btn.done i { color:#68401f; }
 .level-board .level-btn.current i { color:#713526; }
+
+/* Quiet monochrome metal edition: brushed gunmetal, silver and platinum. */
+.level-board {
+  border-color:#a8a8aa;
+  background:
+    linear-gradient(110deg,rgba(255,255,255,.07),transparent 22%,rgba(0,0,0,.10) 57%,rgba(255,255,255,.035) 82%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 5px),
+    linear-gradient(145deg,#4a4a4d 0%,#303033 52%,#222225 100%);
+  box-shadow:
+    0 20px 44px rgba(20,20,23,.24),
+    inset 0 0 0 3px #77777b,
+    inset 0 0 0 6px rgba(220,220,222,.30),
+    inset 0 0 30px rgba(0,0,0,.30);
+}
+
+.level-board::before {
+  border-color:rgba(255,255,255,.16);
+  background:
+    repeating-linear-gradient(0deg,transparent 0 45px,rgba(0,0,0,.10) 45px 46px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.017) 0 1px,transparent 1px 15px);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.24);
+}
+
+.level-board .level-heading { border-bottom-color:rgba(255,255,255,.14);text-shadow:0 2px 2px rgba(0,0,0,.32); }
+.level-board .level-heading small { color:#bdbdc1; }
+.level-board .level-heading>span { color:#d2d2d5; }
+
+.level-board .level-btn {
+  border-color:rgba(255,255,255,.16);
+  color:#ededee;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.13),transparent 42%,rgba(0,0,0,.12)),
+    repeating-linear-gradient(0deg,transparent 0 5px,rgba(255,255,255,.018) 5px 6px),
+    linear-gradient(145deg,#66666a,#48484c);
+  box-shadow:
+    inset 1px 1px 1px rgba(255,255,255,.18),
+    inset -2px -2px 3px rgba(0,0,0,.22),
+    0 4px 6px rgba(0,0,0,.30);
+}
+
+.level-board .level-btn.done {
+  color:#303034;
+  border-color:rgba(255,255,255,.72);
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.44),transparent 44%),
+    repeating-linear-gradient(0deg,transparent 0 4px,rgba(70,70,74,.025) 4px 5px),
+    linear-gradient(145deg,#eeeeef,#b9b9bc);
+  box-shadow:inset 1px 1px rgba(255,255,255,.72),inset -2px -2px rgba(58,58,62,.12),0 4px 7px rgba(0,0,0,.28);
+}
+
+.level-board .level-btn.current {
+  color:#202025;
+  outline-color:#f1f1f2;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.56),transparent 46%),
+    repeating-linear-gradient(0deg,transparent 0 4px,rgba(75,75,78,.022) 4px 5px),
+    linear-gradient(145deg,#fafafa,#d6d6d8);
+  box-shadow:0 0 0 1px rgba(255,255,255,.35),inset 1px 1px rgba(255,255,255,.9),inset -2px -2px rgba(65,65,68,.11),0 6px 12px rgba(0,0,0,.34);
+}
+
+.level-board .level-btn.locked,
+.level-board .level-btn:disabled {
+  color:#929297;
+  border-color:rgba(255,255,255,.07);
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),transparent 42%),
+    repeating-linear-gradient(0deg,transparent 0 5px,rgba(255,255,255,.012) 5px 6px),
+    linear-gradient(145deg,#38383b,#29292c);
+  box-shadow:inset 2px 3px 5px rgba(0,0,0,.30),inset -1px -1px rgba(255,255,255,.035),0 2px 3px rgba(0,0,0,.25);
+}
+
+.level-board .level-btn.done i,
+.level-board .level-btn.current i { color:#404044; }
+
+#level-screen {
+  scrollbar-color:rgba(115,115,120,.78) rgba(225,225,227,.52);
+}
+#level-screen::-webkit-scrollbar-thumb { background:linear-gradient(#aaa,#666) padding-box; }
+#level-screen::-webkit-scrollbar-thumb:hover { background:linear-gradient(#929297,#4e4e52) padding-box; }
