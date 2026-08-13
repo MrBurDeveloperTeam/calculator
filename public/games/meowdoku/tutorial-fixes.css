@@ -217,7 +217,7 @@ body {
   display: block;
   width: 94%;
   height: 94%;
-  background-image: url('cat-idle-spritesheet.png');
+  background-image: url('cat-idle-spritesheet-fixed.png');
   background-repeat: no-repeat;
   background-size: 800% 100%;
   background-position: 0 0;
@@ -239,7 +239,7 @@ body {
 
 .cat-sprite.grooming,
 .just-found .cat-sprite.grooming {
-  background-image: url('cat-groom-spritesheet.png');
+  background-image: url('cat-groom-spritesheet-fixed.png');
   background-size: 1200% 100%;
   background-position: 0 0;
   animation: catGroom 2.8s steps(11) 1 both;
