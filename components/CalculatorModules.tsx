@@ -1075,12 +1075,25 @@ export const ConsumablesCalculator = () => {
 
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
   const sortedItems = [...items].sort((a, b) => b.cost - a.cost);
-  const consumablesChartColors = ['#115e59', '#0f766e', '#0d9488', '#2dd4bf'];
-  const visualData = sortedItems.slice(0, 4).map((item, index) => ({
-    name: item.name,
-    value: item.cost,
-    color: consumablesChartColors[index]
-  }));
+  const getConsumableChartColor = (index: number, itemCount: number) => {
+    const darkestLightness = 20;
+    const lightestLightness = 72;
+    const lightness = itemCount > 1
+      ? darkestLightness + (index / (itemCount - 1)) * (lightestLightness - darkestLightness)
+      : 42;
+
+    return `hsl(174 72% ${Math.round(lightness)}%)`;
+  };
+  const visualData = sortedItems.map((item, index) => {
+    const color = getConsumableChartColor(index, sortedItems.length);
+
+    return {
+      name: item.name,
+      value: item.cost,
+      color,
+      fill: color
+    };
+  });
 
   return (
     <CalculatorCard
