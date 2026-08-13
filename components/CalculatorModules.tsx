@@ -1076,13 +1076,14 @@ export const ConsumablesCalculator = () => {
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
   const sortedItems = [...items].sort((a, b) => b.cost - a.cost);
   const getConsumableChartColor = (index: number, itemCount: number) => {
-    const darkestLightness = 20;
-    const lightestLightness = 72;
-    const lightness = itemCount > 1
-      ? darkestLightness + (index / (itemCount - 1)) * (lightestLightness - darkestLightness)
-      : 42;
+    const darkest = [19, 78, 74];
+    const lightest = [153, 246, 228];
+    const ratio = itemCount > 1 ? index / (itemCount - 1) : 0.5;
+    const channels = darkest.map((channel, channelIndex) =>
+      Math.round(channel + (lightest[channelIndex] - channel) * ratio)
+    );
 
-    return `hsl(174 72% ${Math.round(lightness)}%)`;
+    return `#${channels.map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
   };
   const visualData = sortedItems.map((item, index) => {
     const color = getConsumableChartColor(index, sortedItems.length);

@@ -211,6 +211,15 @@ body {
   color: var(--app-text);
 }
 
+/* Preserve each chart item's own color even when a global theme styles SVG fills. */
+.result-visuals .result-chart-segment {
+  fill: var(--result-segment-color) !important;
+}
+
+.result-visuals .result-chart-legend-dot {
+  background-color: var(--result-segment-color) !important;
+}
+
 :root[data-theme="dark"] ::-webkit-scrollbar-track {
   background: var(--app-bg);
 }

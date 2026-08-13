@@ -33,6 +33,10 @@ const COLORS = ['#94a3b8', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444'];
 const getSegmentColor = (item: BreakdownItem, index: number) =>
   item.fill || item.color || COLORS[index % COLORS.length];
 
+const colorVariable = (color: string) => ({
+  '--result-segment-color': color
+} as React.CSSProperties);
+
 const ResultVisuals: React.FC<ResultVisualsProps> = ({
   title,
   mainValue,
@@ -91,12 +95,19 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
               paddingAngle={5}
               dataKey="value"
               stroke="none"
-              shape={(props: any) => (
-                <Sector
-                  {...props}
-                  fill={getSegmentColor(data[props.index], props.index)}
-                />
-              )}
+              shape={(props: any) => {
+                const index = props.index ?? 0;
+                const color = getSegmentColor(props.payload || data[index], index);
+
+                return (
+                  <Sector
+                    {...props}
+                    className="result-chart-segment"
+                    fill={color}
+                    style={colorVariable(color)}
+                  />
+                );
+              }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend
@@ -108,8 +119,8 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
                   {data.map((item, index) => (
                     <div key={`${item.name}-${index}`} className="flex items-center gap-1.5">
                       <span
-                        className="inline-block h-3 w-3 rounded-full"
-                        style={{ backgroundColor: getSegmentColor(item, index) }}
+                        className="result-chart-legend-dot inline-block h-3 w-3 rounded-full"
+                        style={colorVariable(getSegmentColor(item, index))}
                       />
                       <span className="text-xs font-medium text-slate-600">{item.name}</span>
                     </div>
