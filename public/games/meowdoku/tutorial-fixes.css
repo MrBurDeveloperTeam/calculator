@@ -237,10 +237,10 @@ body {
 
 .cat-sprite.grooming,
 .just-found .cat-sprite.grooming {
-  background-image: url('cat-groom-spritesheet-v2.png');
-  background-size: 1200% 100%;
+  background-image: url('cat-groom-spritesheet-v3.png');
+  background-size: 2300% 100%;
   background-position: 0 0;
-  animation: catGroom 1.65s steps(11, end) 1 both;
+  animation: catGroom 2.2s steps(22, end) 1 both;
 }
 
 /* Hide stray pixels left at the edges of generated sprite frames. */
