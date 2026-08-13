@@ -183,6 +183,7 @@ body {
 
 .cell {
   overflow: hidden;
+  container-type: size;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,.24);
   box-shadow:
@@ -1026,38 +1027,53 @@ body::after {
 
 .cell.marked::after { color:rgba(42,42,46,.62);text-shadow:0 1px rgba(255,255,255,.25); }
 
-/* Sculpted X marker: the mark itself is dimensional, with no surrounding badge. */
+/* Silver-blue enamel X: dimensional mark with no surrounding badge. */
 .cell.marked::after {
   content: '×';
   position: relative;
   z-index: 3;
-  display: block;
-  width: auto;
-  height: auto;
+  display: grid;
+  place-items: center;
+  width: 80%;
+  height: 80%;
   border: 0;
   border-radius: 0;
-  color: #536478;
-  font-family: Inter, ui-rounded, system-ui, sans-serif;
-  font-size: clamp(32px, 66%, 48px);
+  color: #536b86;
+  font-family: "Arial Rounded MT Bold", Inter, ui-rounded, system-ui, sans-serif;
+  font-size: 72cqh;
   font-weight: 900;
   line-height: .82;
-  background: none;
+  letter-spacing: -.08em;
+  padding-right: .08em;
+  background: linear-gradient(
+    145deg,
+    #f8fcff 4%,
+    #b9cee2 22%,
+    #7894b2 48%,
+    #405a76 70%,
+    #263d57 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   box-shadow: none;
   text-shadow:
-    -1px -1px 0 rgba(255,255,255,.82),
-    1px 1px 0 rgba(31,43,59,.38),
-    2px 3px 2px rgba(20,30,44,.26),
-    0 6px 8px rgba(18,28,42,.18);
-  transform: translateZ(0);
-  transition: transform .16s ease, text-shadow .16s ease;
+    0 1px 0 rgba(255,255,255,.86),
+    1px 2px 0 rgba(39,57,78,.48),
+    2px 3px 1px rgba(25,39,57,.32);
+  filter:
+    drop-shadow(0 4px 3px rgba(25,39,58,.24))
+    drop-shadow(0 8px 7px rgba(38,57,82,.12));
+  transform: translateZ(0) rotate(-1deg);
+  transition: transform .16s ease, filter .16s ease;
 }
 
 .cell.marked:active::after {
-  transform: translateY(1px) scale(.96);
+  transform: translateY(2px) scale(.965) rotate(-1deg);
   text-shadow:
-    -1px -1px 0 rgba(255,255,255,.58),
-    1px 1px 0 rgba(31,43,59,.3),
-    1px 2px 1px rgba(20,30,44,.22);
+    0 1px 0 rgba(255,255,255,.68),
+    1px 1px 0 rgba(39,57,78,.38);
+  filter: drop-shadow(0 2px 2px rgba(25,39,58,.2));
 }
 
 /* Premium enamel tiles: muted jewel pigments set into the gunmetal board. */
