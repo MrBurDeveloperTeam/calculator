@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fff7ed">
+  <title>Meowdoku</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <section id="level-screen" class="screen active">
+      <header class="hero">
+        <div class="logo-cat">🐱</div>
+        <div><p class="eyebrow">A cozy logic puzzle</p><h1>Meowdoku</h1><p>Find one cat in every color. No guessing needed.</p></div>
+      </header>
+      <div class="rules-card">
+        <span><b>🎨</b> Exactly 1 cat per color</span>
+        <span><b>↔️</b> At most 1 per row or column</span>
+        <span><b>✨</b> Cats never touch, even diagonally</span>
+      </div>
+      <div class="level-heading"><h2>Choose a level</h2><span id="progress-label"></span></div>
+      <div id="level-grid" class="level-grid"></div>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <header class="game-header">
+        <button id="back-btn" class="round-btn" aria-label="Back to levels">‹</button>
+        <div class="level-title"><small id="difficulty"></small><strong id="level-title"></strong></div>
+        <div class="wallet">🪙 <b id="wallet-count">0</b></div>
+      </header>
+      <div class="status-row">
+        <div class="pill">❤️ <b id="lives"></b></div>
+        <div class="pill">🐱 <b id="found-count"></b></div>
+        <div class="pill">⏱️ <b id="timer">0:00</b></div>
+      </div>
+      <div id="tutorial" class="tutorial"></div>
+      <div class="board-wrap"><div id="board" class="board" aria-label="Meowdoku puzzle board"></div></div>
+      <p class="control-help"><b>Tap</b> to mark × &nbsp;•&nbsp; <b>Double-tap</b> to place a cat</p>
+      <div class="actions">
+        <button id="restart-btn" class="secondary-btn">↻ Restart</button>
+        <button id="hint-btn" class="primary-btn">💡 Hint <span id="hint-cost"></span></button>
+      </div>
+      <div id="message" class="message" role="status"></div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <div id="modal-icon" class="modal-icon">🎉</div>
+      <h2 id="modal-title"></h2><p id="modal-copy"></p>
+      <div id="modal-stats" class="modal-stats"></div>
+      <button id="modal-primary" class="primary-btn"></button>
+      <button id="modal-secondary" class="text-btn"></button>
+    </div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

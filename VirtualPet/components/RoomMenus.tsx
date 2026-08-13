@@ -219,7 +219,16 @@ interface GamesMenuProps {
 
 export const GamesMenu: React.FC<GamesMenuProps> = ({ onStartGame }) => (
     <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
-        <div className="bg-violet-900/60 backdrop-blur-xl p-4 rounded-3xl shadow-xl border border-violet-500/50 flex gap-4">
+        <div className="bg-violet-900/60 backdrop-blur-xl p-4 rounded-3xl shadow-xl border border-violet-500/50 flex gap-4 max-w-[94vw] overflow-x-auto">
+            <button
+                onClick={() => onStartGame('meowdoku')}
+                className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95 shrink-0"
+            >
+                <div className="w-20 h-20 rounded-2xl shadow-lg flex items-center justify-center text-5xl bg-gradient-to-br from-fuchsia-300 via-violet-400 to-indigo-500 group-hover:-rotate-12 transition-transform border-4 border-white/50">
+                    🐱
+                </div>
+                <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Meowdoku</span>
+            </button>
             <button
                 onClick={() => onStartGame('flappy')}
                 className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95"
