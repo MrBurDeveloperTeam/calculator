@@ -20,6 +20,12 @@ const GAME_CONFIG: Record<string, { title: string; url: string; icon: string; gr
         url: '/games/tetris/index.html',
         icon: '🧱',
         gradient: 'from-red-400 to-pink-600'
+    },
+    meowdoku: {
+        title: 'Meowdoku',
+        url: '/games/meowdoku/index.html',
+        icon: '🐱',
+        gradient: 'from-fuchsia-400 to-violet-600'
     }
 };
 
@@ -79,10 +85,41 @@ export const GamePage: React.FC<GamePageProps> = ({
     const [isPortrait, setIsPortrait] = useState(false);
     const { stats, setStats } = useGameState();
     const [sessionCoins, setSessionCoins] = useState(0);
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     // Sync score from games
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin || event.source !== iframeRef.current?.contentWindow) return;
+
+            if (event.data?.type === 'MEOWDOKU_READY') {
+                iframeRef.current?.contentWindow?.postMessage({
+                    type: 'MEOWDOKU_WALLET',
+                    coins: stats.coins || 0
+                }, window.location.origin);
+            }
+
+            if (event.data?.type === 'MEOWDOKU_SPEND_COINS') {
+                const amount = Math.max(0, Math.floor(Number(event.data.amount) || 0));
+                const requestId = String(event.data.requestId || '');
+                if (amount > 0 && (stats.coins || 0) >= amount) {
+                    setStats(prev => ({ ...prev, coins: Math.max(0, (prev.coins || 0) - amount) }));
+                    iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_SPEND_RESULT', requestId, ok: true }, window.location.origin);
+                } else {
+                    iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_SPEND_RESULT', requestId, ok: false }, window.location.origin);
+                }
+            }
+
+            if (event.data?.type === 'MEOWDOKU_REWARD') {
+                const reward = Math.max(0, Math.min(1000, Math.floor(Number(event.data.coins) || 0)));
+                if (reward > 0) {
+                    setStats(prev => ({
+                        ...prev,
+                        coins: (prev.coins || 0) + reward,
+                        happiness: Math.min(100, (prev.happiness || 0) + 15)
+                    }));
+                }
+            }
             // Update temporary display score
             if (event.data?.type === 'GAME_SCORE_UPDATE') {
                 const totalScore = event.data.score || 0;
@@ -107,7 +144,7 @@ export const GamePage: React.FC<GamePageProps> = ({
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, [setStats]);
+    }, [setStats, stats.coins]);
 
     // Prevent scroll when game is open
     useEffect(() => {
@@ -280,6 +317,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                     )}
 
                     <iframe
+                        ref={iframeRef}
                         src={config.url}
                         className="w-full h-full border-0 block"
                         title={config.title}

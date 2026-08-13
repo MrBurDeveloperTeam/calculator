@@ -3,9 +3,9 @@ import axios from "axios";
 const APP_LINK_ENDPOINT = 'https://calculator.snabbb.com/api/v1/sso/app_link';
 
 /**
- * Keep the signed SSO path/query/hash returned by the backend, but send the
- * browser back to the deployment where login started. This keeps Cloudflare
- * preview logins on their preview URL while production stays on production.
+ * The SSO service currently returns the production Calculator URL. Keep the
+ * signed path/query/hash from that response, but return to the origin where
+ * login started so Cloudflare branch previews remain on their preview URL.
  */
 const getCurrentDeploymentRedirect = (ssoUrl: string) => {
   const returnedUrl = new URL(ssoUrl, window.location.origin);
