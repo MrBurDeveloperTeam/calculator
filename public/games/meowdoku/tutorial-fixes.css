@@ -217,9 +217,9 @@ body {
   display: block;
   width: 94%;
   height: 94%;
-  background-image: url('cat-idle-spritesheet-fixed.png');
+  background-image: url('cat-blink-spritesheet-v2.png');
   background-repeat: no-repeat;
-  background-size: 800% 100%;
+  background-size: 1200% 100%;
   background-position: 0 0;
   filter: drop-shadow(0 4px 4px rgba(67,39,46,.2));
   clip-path: inset(0 11% 0 11% round 8%);
@@ -232,12 +232,12 @@ body {
 
 .cat-sprite.blinking,
 .just-found .cat-sprite.blinking {
-  animation: catSpriteBlink 1.1s steps(7, end) 1;
+  animation: catSpriteBlink 1.1s steps(11, end) 1;
 }
 
 .cat-sprite.grooming,
 .just-found .cat-sprite.grooming {
-  background-image: url('cat-groom-spritesheet-fixed.png');
+  background-image: url('cat-groom-spritesheet-v2.png');
   background-size: 1200% 100%;
   background-position: 0 0;
   animation: catGroom 1.65s steps(11, end) 1 both;
@@ -246,7 +246,7 @@ body {
 /* Hide stray pixels left at the edges of generated sprite frames. */
 .cat-sprite.blinking,
 .cat-sprite.grooming {
-  clip-path: inset(1% 12% 1% 12% round 8%);
+  clip-path: inset(0 3% 0 3% round 8%);
 }
 
 .cell:nth-child(3n) .cat-token {
@@ -295,13 +295,13 @@ body {
 }
 
 @keyframes catGroom {
-  from { background-position: 0 0; }
-  to { background-position: 100% 0; }
+  from { background-position:0 0;transform:none; }
+  to { background-position:100% 0;transform:none; }
 }
 
 @keyframes catSpriteBlink {
-  from { background-position: 0 0; }
-  to { background-position: 100% 0; }
+  from { background-position:0 0;transform:none; }
+  to { background-position:100% 0;transform:none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
