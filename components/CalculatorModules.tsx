@@ -1091,8 +1091,7 @@ export const ConsumablesCalculator = () => {
     return {
       name: item.name,
       value: item.cost,
-      color,
-      fill: color
+      color
     };
   });
 

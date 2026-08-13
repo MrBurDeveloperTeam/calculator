@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useCalculator } from '../context/CalculatorContext';
-import { PieChart, Pie, Sector, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Info, ChevronDown, ChevronUp, DollarSign } from 'lucide-react';
 
 interface BreakdownItem {
   name: string;
   value: number;
   color: string;
-  fill?: string;
 }
 
 interface ResultVisualsProps {
@@ -29,13 +28,6 @@ interface ResultVisualsProps {
 }
 
 const COLORS = ['#94a3b8', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444'];
-
-const getSegmentColor = (item: BreakdownItem, index: number) =>
-  item.fill || item.color || COLORS[index % COLORS.length];
-
-const colorVariable = (color: string) => ({
-  '--result-segment-color': color
-} as React.CSSProperties);
 
 const ResultVisuals: React.FC<ResultVisualsProps> = ({
   title,
@@ -95,37 +87,19 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
               paddingAngle={5}
               dataKey="value"
               stroke="none"
-              shape={(props: any) => {
-                const index = props.index ?? 0;
-                const color = getSegmentColor(props.payload || data[index], index);
-
-                return (
-                  <Sector
-                    {...props}
-                    className="result-chart-segment"
-                    fill={color}
-                    style={colorVariable(color)}
-                  />
-                );
-              }}
-            />
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend
               verticalAlign="bottom"
               height={36}
+              iconType="circle"
               wrapperStyle={{ marginTop: '40px' }}
-              content={() => (
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  {data.map((item, index) => (
-                    <div key={`${item.name}-${index}`} className="flex items-center gap-1.5">
-                      <span
-                        className="result-chart-legend-dot inline-block h-3 w-3 rounded-full"
-                        style={colorVariable(getSegmentColor(item, index))}
-                      />
-                      <span className="text-xs font-medium text-slate-600">{item.name}</span>
-                    </div>
-                  ))}
-                </div>
+              formatter={(value, entry: any) => (
+                <span className="text-xs font-medium text-slate-600 ml-1">{value}</span>
               )}
             />
           </PieChart>
