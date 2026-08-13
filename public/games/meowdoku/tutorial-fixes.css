@@ -412,45 +412,25 @@ body::after { right: 8vw; top: 15vh; transform: rotate(22deg) scale(.72); }
 .paw-life {
   position: relative;
   display: inline-block;
-  width: 27px;
-  height: 25px;
+  width: 31px;
+  height: 29px;
   flex: none;
-  color: #f28cac;
-  filter: drop-shadow(0 2px 2px rgba(189,68,107,.18));
+  background:url('paw-life-real.png') center / contain no-repeat;
+  filter:drop-shadow(0 3px 3px rgba(64,72,110,.15));
 }
 
 /* One anatomical cat paw: four toe beans and one central pad. */
 .paw-life::before {
-  content: '';
-  position: absolute;
-  left: 7px;
-  bottom: 1px;
-  width: 14px;
-  height: 12px;
-  border-radius: 54% 54% 48% 48% / 64% 64% 42% 42%;
-  background: currentColor;
-  transform: rotate(1deg);
+  content:none;
 }
 
 .paw-life::after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 6px;
-  width: 5px;
-  height: 7px;
-  border-radius: 52%;
-  background: currentColor;
-  transform: rotate(-18deg);
-  box-shadow:
-    6px -4px 0 -.1px currentColor,
-    12px -4px 0 -.1px currentColor,
-    18px 0 0 -.1px currentColor;
+  content:none;
 }
 
 .paw-life.empty {
-  color: #e7dce0;
-  filter: none;
+  opacity:.24;
+  filter:grayscale(1) drop-shadow(0 1px 1px rgba(56,63,91,.08));
 }
 
 /* Subtle frosted ceramic texture; color remains the primary signal. */
@@ -1294,6 +1274,59 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   background:transparent;
 }
 
+/* Fully restyled scrollbar: remove native Windows arrow buttons. */
+#level-screen .level-board .level-grid::-webkit-scrollbar {
+  width:12px;
+  height:12px;
+  background:transparent;
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar-button,
+#level-screen .level-board .level-grid::-webkit-scrollbar-button:single-button,
+#level-screen .level-board .level-grid::-webkit-scrollbar-button:vertical:decrement,
+#level-screen .level-board .level-grid::-webkit-scrollbar-button:vertical:increment {
+  display:none;
+  width:0;
+  height:0;
+  min-width:0;
+  min-height:0;
+  background:none;
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar-track {
+  margin:5px 3px 8px;
+  border:0;
+  border-radius:999px;
+  background:rgba(68,84,154,.075);
+  box-shadow:inset 0 1px 3px rgba(45,59,119,.08);
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar-track-piece {
+  border-radius:999px;
+  background:transparent;
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar-thumb {
+  min-height:52px;
+  border:3px solid transparent;
+  border-radius:999px;
+  background:
+    repeating-linear-gradient(180deg,rgba(255,255,255,.58) 0 1px,transparent 1px 4px) center / 4px 10px no-repeat padding-box,
+    linear-gradient(180deg,#8799ec 0%,#5b72d5 52%,#465fc5 100%) padding-box;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.46),
+    inset 0 -1px rgba(28,48,139,.18),
+    0 3px 9px rgba(50,70,166,.24);
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar-thumb:hover {
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.66) 0 1px,transparent 1px 4px) center / 4px 10px no-repeat padding-box,linear-gradient(180deg,#768be7,#4d65cd 54%,#3b54b8) padding-box;
+}
+
+#level-screen .level-board .level-grid::-webkit-scrollbar-thumb:active {
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.7) 0 1px,transparent 1px 4px) center / 4px 10px no-repeat padding-box,linear-gradient(180deg,#657cdd,#4059bd 54%,#3048a5) padding-box;
+}
+
 .board {
   border-color:#8390bc;
   background:linear-gradient(145deg,#25345f,#111a36 78%);
@@ -1310,3 +1343,55 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
 .wallet,
 .tool-btn,
 .rules-strip { box-shadow:0 10px 24px rgba(48,62,121,.10); }
+
+/* Thin translucent glass tiles — no plastic block depth. */
+.board {
+  gap:4px;
+  padding:9px;
+  background:
+    radial-gradient(ellipse at 25% 12%,rgba(124,151,232,.20),transparent 44%),
+    linear-gradient(145deg,rgba(30,46,91,.94),rgba(13,23,54,.97));
+}
+
+.cell {
+  --tile-pattern:none;
+  border:1px solid rgba(242,247,255,.50);
+  border-radius:10px;
+  background-color:var(--tile-color);
+  background-color:color-mix(in srgb,var(--tile-color) 78%,transparent);
+  background-image:
+    linear-gradient(145deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.10) 28%,transparent 52%),
+    radial-gradient(ellipse at 22% 8%,rgba(255,255,255,.20),transparent 48%);
+  background-blend-mode:soft-light,screen;
+  -webkit-backdrop-filter:blur(7px) saturate(1.08);
+  backdrop-filter:blur(7px) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.38),
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    0 2px 5px rgba(4,10,30,.20);
+  transform:none;
+  transition:filter .14s ease,background-color .14s ease,border-color .14s ease;
+}
+
+.cell::before {
+  opacity:.10;
+  background:
+    linear-gradient(115deg,transparent 18%,rgba(255,255,255,.14) 36%,transparent 52%);
+}
+
+.cell:hover {
+  filter:brightness(1.07) saturate(1.04);
+  border-color:rgba(255,255,255,.70);
+  box-shadow:inset 0 1px rgba(255,255,255,.48),0 3px 7px rgba(4,10,30,.22);
+}
+
+.cell:active {
+  transform:none;
+  filter:brightness(.96);
+  box-shadow:inset 0 1px 3px rgba(8,15,39,.16),0 1px 3px rgba(4,10,30,.17);
+}
+
+.cell[data-color] {
+  --tile-pattern:none;
+  background-size:auto;
+}
