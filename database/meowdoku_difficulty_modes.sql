@@ -114,6 +114,7 @@ begin
     if current_user_id is null then raise exception 'Authentication required'; end if;
     if p_level_number < 1 or p_level_number > 60 then raise exception 'Invalid level number'; end if;
     if normalized_mode not in ('easy', 'medium', 'hard', 'hell') then raise exception 'Invalid mode'; end if;
+    if p_level_number = 1 and normalized_mode <> 'easy' then raise exception 'Level 1 is tutorial-only'; end if;
     if p_lives_remaining < 1 or p_lives_remaining > 3 then raise exception 'Invalid lives remaining'; end if;
     if p_hints_used < 0 then raise exception 'Invalid hint count'; end if;
 

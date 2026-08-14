@@ -39,9 +39,9 @@ declare
     local_today date := (now() at time zone 'Asia/Kuala_Lumpur')::date;
     current_day_index smallint := extract(isodow from (now() at time zone 'Asia/Kuala_Lumpur'))::smallint - 1;
     current_week_start date;
-    rewards integer[] := array[5, 10, 15, 20, 25, 30, 50];
     claimed integer[];
     current_coins integer;
+    claimed_reward integer;
 begin
     if current_user_id is null then
         raise exception 'Authentication required';
@@ -59,12 +59,20 @@ begin
     from public.inventory_pet
     where user_id = current_user_id;
 
+    select reward_coins into claimed_reward
+    from public.meowdoku_daily_checkins
+    where user_id = current_user_id
+      and check_in_date = local_today;
+
     return jsonb_build_object(
         'week_start', current_week_start,
         'today_index', current_day_index,
         'claimed_days', to_jsonb(claimed),
         'claimed_today', current_day_index = any(claimed),
-        'reward_today', rewards[current_day_index + 1],
+        'reward_today', coalesce(claimed_reward, case when current_day_index = 6 then 0 else 5 end),
+        'reward_min', 5,
+        'reward_max', case when current_day_index = 6 then 100 else 5 end,
+        'is_sunday', current_day_index = 6,
         'coins', coalesce(current_coins, 0)
     );
 end;
@@ -81,8 +89,8 @@ declare
     local_today date := (now() at time zone 'Asia/Kuala_Lumpur')::date;
     current_day_index smallint := extract(isodow from (now() at time zone 'Asia/Kuala_Lumpur'))::smallint - 1;
     current_week_start date;
-    rewards integer[] := array[5, 10, 15, 20, 25, 30, 50];
     current_reward integer;
+    reward_roll double precision;
     current_coins integer;
     claimed integer[];
 begin
@@ -91,7 +99,22 @@ begin
     end if;
 
     current_week_start := local_today - current_day_index;
-    current_reward := rewards[current_day_index + 1];
+    if current_day_index < 6 then
+        current_reward := 5;
+    else
+        -- Weighted Sunday wheel: larger prizes remain possible but become rarer.
+        reward_roll := random();
+        current_reward := case
+            when reward_roll < 0.35 then 5
+            when reward_roll < 0.60 then 10
+            when reward_roll < 0.75 then 15
+            when reward_roll < 0.85 then 20
+            when reward_roll < 0.92 then 30
+            when reward_roll < 0.97 then 50
+            when reward_roll < 0.99 then 75
+            else 100
+        end;
+    end if;
 
     insert into public.meowdoku_daily_checkins (
         user_id,
@@ -129,6 +152,9 @@ begin
         'claimed_days', to_jsonb(claimed),
         'claimed_today', true,
         'reward_today', current_reward,
+        'reward_min', 5,
+        'reward_max', case when current_day_index = 6 then 100 else 5 end,
+        'is_sunday', current_day_index = 6,
         'coins', current_coins
     );
 exception

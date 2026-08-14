@@ -385,15 +385,29 @@ declare
     local_today date := (now() at time zone 'Asia/Kuala_Lumpur')::date;
     current_day_index smallint := extract(isodow from (now() at time zone 'Asia/Kuala_Lumpur'))::smallint - 1;
     current_week_start date;
-    rewards integer[] := array[5, 10, 15, 20, 25, 30, 50];
     current_reward integer;
+    reward_roll double precision;
     current_coins integer;
     claimed integer[];
     new_achievements jsonb;
 begin
     if current_user_id is null then raise exception 'Authentication required'; end if;
     current_week_start := local_today - current_day_index;
-    current_reward := rewards[current_day_index + 1];
+    if current_day_index < 6 then
+        current_reward := 5;
+    else
+        reward_roll := random();
+        current_reward := case
+            when reward_roll < 0.35 then 5
+            when reward_roll < 0.60 then 10
+            when reward_roll < 0.75 then 15
+            when reward_roll < 0.85 then 20
+            when reward_roll < 0.92 then 30
+            when reward_roll < 0.97 then 50
+            when reward_roll < 0.99 then 75
+            else 100
+        end;
+    end if;
 
     insert into public.meowdoku_daily_checkins (
         user_id, check_in_date, week_start, day_index, reward_coins
@@ -421,6 +435,9 @@ begin
         'claimed_days', to_jsonb(claimed),
         'claimed_today', true,
         'reward_today', current_reward,
+        'reward_min', 5,
+        'reward_max', case when current_day_index = 6 then 100 else 5 end,
+        'is_sunday', current_day_index = 6,
         'coins', current_coins,
         'new_achievements', new_achievements
     );

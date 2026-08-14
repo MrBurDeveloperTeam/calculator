@@ -1720,6 +1720,69 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   }
 }
 
+/* End-of-board teaser and Sunday reward wheel. */
+#level-screen .level-more-card {
+  grid-column:9 / span 2;
+  min-height:92px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border:1px solid rgba(91,112,205,.25);
+  border-radius:16px;
+  color:#26396f;
+  background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(225,233,255,.76));
+  box-shadow:inset 0 1px rgba(255,255,255,.95),0 10px 24px rgba(53,72,145,.1);
+}
+#level-screen .level-more-card>span { font-size:28px;filter:drop-shadow(0 4px 5px rgba(65,83,157,.18)); }
+#level-screen .level-more-card div { min-width:0;display:grid;gap:4px; }
+#level-screen .level-more-card b { font-size:13px;line-height:1.2; }
+#level-screen .level-more-card small { color:#7683a8;font-size:10px;line-height:1.25; }
+
+.sunday-wheel-wrap {
+  position:relative;
+  width:170px;
+  margin:14px auto 4px;
+  display:grid;
+  justify-items:center;
+  gap:9px;
+}
+.sunday-wheel-wrap[hidden] { display:none!important; }
+.sunday-wheel {
+  --wheel-angle:0deg;
+  position:relative;
+  width:148px;
+  aspect-ratio:1;
+  border:7px solid rgba(255,255,255,.9);
+  border-radius:50%;
+  background:conic-gradient(#5472dd 0 45deg,#83a2ff 45deg 90deg,#52cbb6 90deg 135deg,#f0c65b 135deg 180deg,#ee9a75 180deg 225deg,#df789c 225deg 270deg,#9c7add 270deg 315deg,#425bbb 315deg);
+  box-shadow:0 12px 28px rgba(53,73,157,.25),inset 0 0 0 2px rgba(31,52,126,.22);
+  transform:rotate(var(--wheel-angle));
+}
+.sunday-wheel::after { content:'🐾';position:absolute;inset:37%;display:grid;place-items:center;border-radius:50%;background:#fff;color:#283c82;font-size:22px;box-shadow:0 3px 10px rgba(36,52,117,.25); }
+.sunday-wheel i { position:absolute;left:50%;top:50%;font:700 9px/1 Inter,sans-serif;color:#fff;text-shadow:0 1px 2px rgba(20,30,78,.45);transform-origin:0 0; }
+.sunday-wheel i:nth-child(1){transform:rotate(22.5deg) translateY(-61px) rotate(-22.5deg)}
+.sunday-wheel i:nth-child(2){transform:rotate(67.5deg) translateY(-61px) rotate(-67.5deg)}
+.sunday-wheel i:nth-child(3){transform:rotate(112.5deg) translateY(-61px) rotate(-112.5deg)}
+.sunday-wheel i:nth-child(4){transform:rotate(157.5deg) translateY(-61px) rotate(-157.5deg)}
+.sunday-wheel i:nth-child(5){transform:rotate(202.5deg) translateY(-61px) rotate(-202.5deg)}
+.sunday-wheel i:nth-child(6){transform:rotate(247.5deg) translateY(-61px) rotate(-247.5deg)}
+.sunday-wheel i:nth-child(7){transform:rotate(292.5deg) translateY(-61px) rotate(-292.5deg)}
+.sunday-wheel i:nth-child(8){transform:rotate(337.5deg) translateY(-61px) rotate(-337.5deg)}
+.sunday-wheel-pointer { position:absolute;z-index:2;top:-5px;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:17px solid #273d8f;filter:drop-shadow(0 2px 2px rgba(30,44,103,.25)); }
+.sunday-wheel.spinning { animation:sunday-wheel-spin .42s linear infinite; }
+.sunday-wheel.settled { transition:transform 1s cubic-bezier(.15,.75,.18,1); }
+.sunday-wheel-wrap>strong { color:#304b9f;font-size:15px; }
+@keyframes sunday-wheel-spin { to { transform:rotate(360deg); } }
+
+@media (max-width:760px) {
+  #level-screen .level-more-card { grid-column:4 / span 2;min-height:clamp(52px,15vw,76px);padding:8px;gap:7px; }
+  #level-screen .level-more-card>span { font-size:20px; }
+  #level-screen .level-more-card b { font-size:clamp(8px,2.3vw,11px); }
+  #level-screen .level-more-card small { font-size:clamp(6px,1.75vw,8px); }
+  .sunday-wheel { width:126px; }
+}
+
 /* Tutorial diagrams use real cells so every rule reads as board logic. */
 .tutorial-demo { display:flex;align-items:center;justify-content:center; }
 .tutorial-mini-board {
