@@ -293,11 +293,14 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .cat-sprite,
-  .just-found .cat-sprite,
-  .cat-sprite.blinking,
-  .just-found .cat-sprite.blinking {
+  .just-found .cat-sprite {
     animation: none;
     background-position: 0 0;
+  }
+
+  .cat-sprite.blinking,
+  .just-found .cat-sprite.blinking {
+    animation: catSpriteBlink 1.1s steps(11, end) 1;
   }
 }
 
@@ -1042,7 +1045,7 @@ body::after {
   font-family: "Arial Rounded MT Bold", Inter, ui-rounded, system-ui, sans-serif;
   font-size: 72cqh;
   font-weight: 900;
-  line-height: .82;
+  line-height: 1;
   letter-spacing: -.08em;
   padding-right: .08em;
   background: linear-gradient(
@@ -1064,12 +1067,12 @@ body::after {
   filter:
     drop-shadow(0 4px 3px rgba(25,39,58,.24))
     drop-shadow(0 8px 7px rgba(38,57,82,.12));
-  transform: translateZ(0) rotate(-1deg);
+  transform: translateY(-3%) translateZ(0) rotate(-1deg);
   transition: transform .16s ease, filter .16s ease;
 }
 
 .cell.marked:active::after {
-  transform: translateY(2px) scale(.965) rotate(-1deg);
+  transform: translateY(-1%) scale(.965) rotate(-1deg);
   text-shadow:
     0 1px 0 rgba(255,255,255,.68),
     1px 1px 0 rgba(39,57,78,.38);
@@ -1379,6 +1382,30 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
 .wallet,
 .tool-btn,
 .rules-strip { box-shadow:0 10px 24px rgba(48,62,121,.10); }
+
+/* Bring the game navigation controls closer to their matching metrics. */
+#game-screen .game-header {
+  grid-template-columns: clamp(72px, 10vw, 118px) 1fr 1fr clamp(72px, 10vw, 118px);
+}
+
+#game-screen #back-btn {
+  justify-self: end;
+  margin-right: clamp(5px, 1.2vw, 14px);
+}
+
+#game-screen #settings-btn {
+  justify-self: start;
+  margin-left: clamp(5px, 1.2vw, 14px);
+}
+
+@media (max-width: 620px) {
+  #game-screen .game-header {
+    grid-template-columns: 58px 1fr 1fr 58px;
+  }
+
+  #game-screen #back-btn { margin-right: 3px; }
+  #game-screen #settings-btn { margin-left: 3px; }
+}
 
 /* Thin translucent glass tiles — no plastic block depth. */
 .board {
