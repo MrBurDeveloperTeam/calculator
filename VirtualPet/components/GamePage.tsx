@@ -96,6 +96,23 @@ export const GamePage: React.FC<GamePageProps> = ({
         }, window.location.origin);
     };
 
+    const sendUnlockedAchievements = (value: unknown) => {
+        const achievements = Array.isArray(value) ? value : [];
+        if (!achievements.length) return;
+        iframeRef.current?.contentWindow?.postMessage({
+            type: 'MEOWDOKU_ACHIEVEMENTS_UNLOCKED',
+            achievements
+        }, window.location.origin);
+    };
+
+    const loadMeowdokuAchievements = async () => {
+        if (!meowdokuUserIdRef.current) return;
+        const { data, error } = await supabase.rpc('meowdoku_get_achievements');
+        iframeRef.current?.contentWindow?.postMessage(error
+            ? { type: 'MEOWDOKU_ACHIEVEMENTS_ERROR', message: error.message }
+            : { type: 'MEOWDOKU_ACHIEVEMENTS', achievements: data }, window.location.origin);
+    };
+
     const loadMeowdokuProgress = async () => {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
@@ -122,24 +139,44 @@ export const GamePage: React.FC<GamePageProps> = ({
         });
     };
 
-    const saveMeowdokuProgress = async (payload: { completed_level?: unknown; score?: unknown; mistakes?: unknown; time_seconds?: unknown }) => {
+    const saveMeowdokuProgress = async (payload: { completed_level?: unknown; score?: unknown; mistakes?: unknown; time_seconds?: unknown; hints_used?: unknown; lives_remaining?: unknown }) => {
         const userId = meowdokuUserIdRef.current;
         if (!userId) return;
 
         const completedLevel = Math.max(1, Math.min(60, Math.floor(Number(payload.completed_level) || 0)));
         if (!completedLevel) return;
-        const { error } = await supabase.rpc('meowdoku_complete_level', {
+        const { data, error } = await supabase.rpc('meowdoku_complete_level_with_achievements', {
             p_level_number: completedLevel,
             p_score: Math.max(0, Math.floor(Number(payload.score) || 0)),
             p_mistakes: Math.max(0, Math.floor(Number(payload.mistakes) || 0)),
-            p_time_seconds: Math.max(0, Math.floor(Number(payload.time_seconds) || 0))
+            p_time_seconds: Math.max(0, Math.floor(Number(payload.time_seconds) || 0)),
+            p_hints_used: Math.max(0, Math.floor(Number(payload.hints_used) || 0)),
+            p_lives_remaining: Math.max(1, Math.min(3, Math.floor(Number(payload.lives_remaining) || 3)))
         });
 
         if (error) {
             console.error('Unable to save Meowdoku progress:', error);
             return;
         }
+        const result = Array.isArray(data) ? data[0] : data;
+        sendUnlockedAchievements(result?.new_achievements);
         await loadMeowdokuProgress();
+        await loadMeowdokuAchievements();
+    };
+
+    const recordMeowdokuCatFound = async (payload: { level?: unknown; cat_index?: unknown }) => {
+        if (!meowdokuUserIdRef.current) return;
+        const { data, error } = await supabase.rpc('meowdoku_record_cat_found', {
+            p_level_number: Math.max(1, Math.min(60, Math.floor(Number(payload.level) || 1))),
+            p_cat_index: Math.max(0, Math.floor(Number(payload.cat_index) || 0))
+        });
+        if (error) {
+            console.error('Unable to save Meowdoku cat discovery:', error);
+            return;
+        }
+        const result = Array.isArray(data) ? data[0] : data;
+        sendUnlockedAchievements(result?.new_achievements);
+        await loadMeowdokuAchievements();
     };
 
     const loadMeowdokuCheckIn = async () => {
@@ -160,6 +197,8 @@ export const GamePage: React.FC<GamePageProps> = ({
         const result = Array.isArray(data) ? data[0] : data;
         if (result?.coins != null) setStats(prev => ({ ...prev, coins: Number(result.coins) || prev.coins || 0 }));
         iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_CHECK_IN_CLAIMED', checkIn: result }, window.location.origin);
+        sendUnlockedAchievements(result?.new_achievements);
+        await loadMeowdokuAchievements();
     };
 
     // Sync score from games
@@ -174,14 +213,20 @@ export const GamePage: React.FC<GamePageProps> = ({
                 }, window.location.origin);
                 void loadMeowdokuProgress();
                 void loadMeowdokuCheckIn();
+                void loadMeowdokuAchievements();
             }
 
             if (event.data?.type === 'MEOWDOKU_SAVE_PROGRESS') {
                 void saveMeowdokuProgress(event.data.progress || {});
             }
 
+            if (event.data?.type === 'MEOWDOKU_CAT_FOUND') {
+                void recordMeowdokuCatFound(event.data || {});
+            }
+
             if (event.data?.type === 'MEOWDOKU_GET_CHECK_IN') void loadMeowdokuCheckIn();
             if (event.data?.type === 'MEOWDOKU_CLAIM_CHECK_IN') void claimMeowdokuCheckIn();
+            if (event.data?.type === 'MEOWDOKU_GET_ACHIEVEMENTS') void loadMeowdokuAchievements();
 
             if (event.data?.type === 'MEOWDOKU_SPEND_COINS') {
                 const amount = Math.max(0, Math.floor(Number(event.data.amount) || 0));
