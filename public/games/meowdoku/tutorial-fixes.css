@@ -218,12 +218,12 @@ body {
   display: block;
   width: 94%;
   height: 94%;
-  background-image: url('cat-blink-spritesheet-v2.png');
+  background-image: url('cat-149-transparent.png');
   background-repeat: no-repeat;
-  background-size: 1200% 100%;
-  background-position: 0 0;
+  background-size: contain;
+  background-position: center;
   filter: drop-shadow(0 4px 4px rgba(67,39,46,.2));
-  clip-path: inset(0 11% 0 11% round 8%);
+  clip-path: inset(0 round 8%);
   animation: none;
 }
 
@@ -233,13 +233,35 @@ body {
 
 .cat-sprite.blinking,
 .just-found .cat-sprite.blinking {
-  animation: catSpriteBlink 1.1s steps(11, end) 1;
+  animation: none;
 }
 
 /* Hide stray pixels left at the edges of generated sprite frames. */
 .cat-sprite.blinking {
-  clip-path: inset(0 3% 0 3% round 8%);
+  clip-path: inset(0 round 8%);
 }
+
+/* The body is the untouched 149.png artwork; only these eyelids animate. */
+.cat-sprite::before,
+.cat-sprite::after {
+  content:'';
+  position:absolute;
+  z-index:3;
+  top:24.2%;
+  width:13.5%;
+  height:10.5%;
+  border-radius:52% 52% 46% 46%;
+  opacity:0;
+  clip-path:inset(100% 0 0);
+  background:
+    linear-gradient(180deg,#edc59c 0 65%,#704633 66% 74%,transparent 76%);
+  filter:drop-shadow(0 1px 0 rgba(255,242,220,.45));
+  pointer-events:none;
+}
+.cat-sprite::before { left:28.9%; }
+.cat-sprite::after { left:52.3%; }
+.cat-sprite.blinking::before,
+.cat-sprite.blinking::after { animation:cat149EyelidBlink 1.1s ease-in-out 1; }
 
 .cell:nth-child(3n) .cat-token {
   animation-delay: -.9s;
@@ -300,8 +322,17 @@ body {
 
   .cat-sprite.blinking,
   .just-found .cat-sprite.blinking {
-    animation: catSpriteBlink 1.1s steps(11, end) 1;
+    animation: none;
   }
+
+  .cat-sprite.blinking::before,
+  .cat-sprite.blinking::after { animation:cat149EyelidBlink 1.1s ease-in-out 1; }
+}
+
+@keyframes cat149EyelidBlink {
+  0%,12%,88%,100% { opacity:0;clip-path:inset(100% 0 0); }
+  30%,70% { opacity:1;clip-path:inset(48% 0 0); }
+  44%,58% { opacity:1;clip-path:inset(0); }
 }
 
 /* Boutique tabletop board: ceramic tiles, brass trim, and quiet paw motifs. */
@@ -396,8 +427,8 @@ body::after { right: 8vw; top: 15vh; transform: rotate(22deg) scale(.72); }
 /* Compact in-game status: matching cat portrait and pink paw lives. */
 .status-row { gap: clamp(12px, 4vw, 38px); }
 .cat-progress { display:flex;align-items:center;justify-content:center;gap:7px; }
-.status-cat-icon { position:relative;display:inline-block;width:27px;height:25px;overflow:hidden;flex:none;border-radius:48% 48% 44% 44%; }
-.status-cat-icon i { position:absolute;left:-8px;top:-3px;width:43px;height:43px;background:url('cat-idle-spritesheet-fixed.png') 0 0 / 800% 100% no-repeat;filter:drop-shadow(0 1px 1px rgba(68,38,45,.2)); }
+.status-cat-icon { position:relative;display:inline-block;width:29px;height:27px;overflow:hidden;flex:none;border-radius:48% 48% 44% 44%; }
+.status-cat-icon i { position:absolute;left:-14px;top:-5px;width:57px;height:57px;background:url('cat-149-transparent.png') center / contain no-repeat;filter:drop-shadow(0 1px 1px rgba(68,38,45,.2)); }
 .lives b { display:flex;align-items:center;justify-content:center;gap:5px; }
 .paw-life {
   position: relative;
