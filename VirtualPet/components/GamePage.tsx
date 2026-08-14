@@ -89,7 +89,7 @@ export const GamePage: React.FC<GamePageProps> = ({
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const meowdokuUserIdRef = useRef<string | null>(null);
 
-    const sendMeowdokuProgress = (progress: { unlocked_level: number; completed_levels: Record<string, unknown> }) => {
+    const sendMeowdokuProgress = (progress: { unlocked_level: number; completed_modes: Record<string, unknown> }) => {
         iframeRef.current?.contentWindow?.postMessage({
             type: 'MEOWDOKU_PROGRESS',
             progress
@@ -122,7 +122,7 @@ export const GamePage: React.FC<GamePageProps> = ({
         }
 
         meowdokuUserIdRef.current = user.id;
-        const { data, error } = await supabase.rpc('meowdoku_get_progress');
+        const { data, error } = await supabase.rpc('meowdoku_get_mode_progress');
 
         if (error) {
             console.error('Unable to load Meowdoku progress:', error);
@@ -133,20 +133,23 @@ export const GamePage: React.FC<GamePageProps> = ({
         const progress = Array.isArray(data) ? data[0] : data;
         sendMeowdokuProgress({
             unlocked_level: Math.max(1, Math.min(60, Number(progress?.unlocked_level) || 1)),
-            completed_levels: progress?.completed_levels && typeof progress.completed_levels === 'object'
-                ? progress.completed_levels as Record<string, unknown>
+            completed_modes: progress?.completed_modes && typeof progress.completed_modes === 'object'
+                ? progress.completed_modes as Record<string, unknown>
                 : {}
         });
     };
 
-    const saveMeowdokuProgress = async (payload: { completed_level?: unknown; score?: unknown; mistakes?: unknown; time_seconds?: unknown; hints_used?: unknown; lives_remaining?: unknown }) => {
+    const saveMeowdokuProgress = async (payload: { completed_level?: unknown; mode?: unknown; score?: unknown; mistakes?: unknown; time_seconds?: unknown; hints_used?: unknown; lives_remaining?: unknown }) => {
         const userId = meowdokuUserIdRef.current;
         if (!userId) return;
 
         const completedLevel = Math.max(1, Math.min(60, Math.floor(Number(payload.completed_level) || 0)));
         if (!completedLevel) return;
-        const { data, error } = await supabase.rpc('meowdoku_complete_level_with_achievements', {
+        const mode = String(payload.mode || '').toLowerCase();
+        if (!['easy', 'medium', 'hard', 'hell'].includes(mode)) return;
+        const { data, error } = await supabase.rpc('meowdoku_complete_mode_with_achievements', {
             p_level_number: completedLevel,
+            p_mode: mode,
             p_score: Math.max(0, Math.floor(Number(payload.score) || 0)),
             p_mistakes: Math.max(0, Math.floor(Number(payload.mistakes) || 0)),
             p_time_seconds: Math.max(0, Math.floor(Number(payload.time_seconds) || 0)),

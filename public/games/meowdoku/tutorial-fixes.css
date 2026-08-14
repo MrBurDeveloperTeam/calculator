@@ -2092,3 +2092,36 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   .achievement-grid { gap:7px;padding-right:11px; }
   .achievement-card { padding:8px 6px; }
 }
+
+/* Per-level difficulty selector. */
+.mode-modal { z-index:145; }
+.mode-card {
+  position:relative;
+  width:min(650px,calc(100vw - 40px));
+  padding:27px;
+  color:#223564;
+  background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(234,240,255,.98));
+  border:1px solid rgba(255,255,255,.96);
+}
+.mode-card>small { color:#5c73ce;font-size:9px;font-weight:900;letter-spacing:2px; }
+.mode-card h2 { margin:4px 0 3px;font-size:29px; }
+.mode-card>p { margin:0 34px 19px;color:#74809f;font-size:12px; }
+.mode-close { position:absolute;right:14px;top:13px;display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;color:#40568f;background:#e4eafd;font-size:24px;cursor:pointer; }
+.mode-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px; }
+.mode-option { min-width:0;min-height:135px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:13px 9px;border:1px solid rgba(101,122,199,.18);border-radius:18px;color:#26396d;background:linear-gradient(145deg,#fff,#edf2ff);box-shadow:inset 0 1px #fff,0 8px 18px rgba(53,69,132,.09);cursor:pointer; }
+.mode-option b { font-size:16px; }
+.mode-option span { color:#4862c1;font-size:11px;font-weight:900; }
+.mode-option small { color:#7d87a5;font-size:8px;line-height:1.35; }
+.mode-option:hover:not(:disabled) { transform:translateY(-2px);border-color:#7188e1; }
+.mode-option.completed { cursor:not-allowed;filter:saturate(.35);opacity:.58; }
+.mode-hard { background:linear-gradient(145deg,#f5f1ff,#e2d9ff); }
+.mode-hell { color:#713444;background:linear-gradient(145deg,#fff0f1,#ffd4d8); }
+.mode-hell span { color:#b4475e; }
+
+@media (max-width:700px) {
+  .mode-card { width:100%;max-width:100%;padding:21px 14px 16px; }
+  .mode-card>p { margin:0 20px 14px;font-size:10px; }
+  .mode-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
+  .mode-option { min-height:112px;padding:10px 6px;border-radius:14px; }
+  .mode-option b { font-size:14px; }
+}
