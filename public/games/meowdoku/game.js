@@ -43,16 +43,54 @@
   function formatTime(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}
   function message(text,type='info'){if(type==='info'&&text.startsWith('No cat'))type='error';if(type==='error')navigator.vibrate?.(90);const toast=$('message');toast.textContent=text;toast.className=`message show ${type}`;clearTimeout(message.t);message.t=setTimeout(()=>{toast.textContent='';toast.className='message'},2600)}
   function requestSpend(amount){return new Promise(resolve=>{const requestId=crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`;state.pending.set(requestId,resolve);parent.postMessage({type:'MEOWDOKU_SPEND_COINS',amount,requestId},location.origin);setTimeout(()=>{if(state.pending.has(requestId)){state.pending.delete(requestId);resolve(false)}},4000)})}
-  async function useHint(){const l=state.levels[state.level-1],remaining=[];for(let r=0;r<l.n;r++)for(let c=0;c<l.n;c++){const key=`${r},${c}`;if(!state.marks.has(key)&&!state.found.has(key))remaining.push(key)}if(!remaining.length)return;const ok=await requestSpend(l.hintCost);if(!ok)return message('Not enough coins for a hint.');state.hintsUsed++;state.wallet=Math.max(0,state.wallet-l.hintCost);const isCat=k=>{const[r,c]=k.split(',').map(Number);return l.cats.some(cat=>cat.r===r&&cat.c===c)},wrong=remaining.find(k=>!isCat(k)),key=wrong||remaining.find(isCat);if(wrong){state.marks.add(key);renderBoard();message('Hint: this cell cannot contain a cat.')}else message('Every remaining candidate is important.');setTimeout(()=>document.querySelector(`[data-key="${key}"]`)?.classList.add('hint'),20);updateHud()}
+  async function useHint(){
+    const l=state.levels[state.level-1];
+    const isCat=key=>{
+      const[r,c]=key.split(',').map(Number);
+      return l.cats.some(cat=>cat.r===r&&cat.c===c);
+    };
+    const openCells=[];
+    const crossedCats=[];
+    for(let r=0;r<l.n;r++)for(let c=0;c<l.n;c++){
+      const key=`${r},${c}`;
+      if(state.found.has(key))continue;
+      if(state.marks.has(key)){
+        if(isCat(key))crossedCats.push(key);
+        continue;
+      }
+      openCells.push(key);
+    }
+    const wrongOpenCell=openCells.find(key=>!isCat(key));
+    const openCat=openCells.find(isCat);
+    const key=crossedCats[0]||wrongOpenCell||openCat;
+    if(!key)return message('No useful hint is available right now.');
+    const ok=await requestSpend(l.hintCost);
+    if(!ok)return message('Not enough coins for a hint.');
+    state.hintsUsed++;
+    state.wallet=Math.max(0,state.wallet-l.hintCost);
+    if(crossedCats.includes(key)){
+      state.marks.delete(key);
+      renderBoard();
+      message('Hint: this crossed-out cell may contain a cat.');
+    }else if(!isCat(key)){
+      state.marks.add(key);
+      renderBoard();
+      message('Hint: this cell cannot contain a cat.');
+    }else{
+      message('Hint: this remaining cell is important.');
+    }
+    setTimeout(()=>document.querySelector(`[data-key="${key}"]`)?.classList.add('hint'),20);
+    updateHud();
+  }
   function completeLevel(){clearInterval(state.timer);const l=state.levels[state.level-1],first=!state.save.completed[state.level];if(first){state.save.completed[state.level]={time:state.seconds,lives:state.lives};state.save.unlocked=Math.max(state.save.unlocked,Math.min(60,state.level+1));persist();syncProgress(state.level);parent.postMessage({type:'MEOWDOKU_REWARD',coins:l.reward,level:state.level},location.origin);state.wallet+=l.reward}openModal('🎉','Level complete!',first?`You earned ${l.reward} coins.`:'You solved this level again.',`<span>⏱ ${formatTime(state.seconds)}</span><span>❤ ${state.lives}/3</span>`,state.level<60?'Next level':'Level map',()=>state.level<60?startLevel(state.level+1):goLevels(),'Back to levels',goLevels)}
   function failLevel(){clearInterval(state.timer);openModal('😿','Out of lives','Take another look at the colors and try again.','', 'Try again',()=>startLevel(state.level),'Back to levels',goLevels)}
   function openModal(icon,title,copy,stats,primary,onPrimary,secondary,onSecondary){$('modal-icon').textContent=icon;$('modal-title').textContent=title;$('modal-copy').textContent=copy;$('modal-stats').innerHTML=stats;$('modal-primary').textContent=primary;$('modal-primary').onclick=()=>{closeModal();onPrimary()};$('modal-secondary').textContent=secondary;$('modal-secondary').onclick=()=>{closeModal();onSecondary()};$('modal').classList.add('open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('open');$('modal').setAttribute('aria-hidden','true')}
   const tutorialSteps=[
-    {icon:'🎨',title:'One cat in every color',copy:'Each color region contains exactly one cat. Once you find it, every other cell of that color can be ruled out.',demo:'🟧 🟧 🟧<br>🟧 🐱 🟧'},
-    {icon:'↔️',title:'Rows and columns',copy:'A row or column may have no cat, but it can never contain more than one.',demo:'× &nbsp; 🐱 &nbsp; × &nbsp; ×'},
-    {icon:'✨',title:'Cats cannot touch',copy:'The eight cells around a cat cannot contain another cat, including diagonal cells.',demo:'× × ×<br>× 🐱 ×<br>× × ×'},
-    {icon:'🐾',title:'How to play',copy:'Tap once to add or remove an X. Double-tap only when logic proves that a cat belongs there. A wrong cat costs one life.',demo:'Tap = × &nbsp;&nbsp; Double-tap = 🐱'}
+    {icon:'🎨',title:'One cat in every color',copy:'Each color region contains exactly one cat. Once you find it, every other cell of that color can be ruled out.',demo:'<div class="tutorial-mini-board color-example"><i>×</i><i>×</i><i class="alt"></i><i>×</i><i class="cat">🐱</i><i class="alt"></i><i>×</i><i>×</i><i>×</i></div>'},
+    {icon:'↔️',title:'Rows and columns',copy:'A row or column may have no cat, but it can never contain more than one.',demo:'<div class="tutorial-mini-board line-example"><i></i><i>×</i><i></i><i>×</i><i class="cat">🐱</i><i>×</i><i></i><i>×</i><i></i></div>'},
+    {icon:'✨',title:'Cats cannot touch',copy:'The eight cells around a cat cannot contain another cat, including diagonal cells.',demo:'<div class="tutorial-mini-board touch-example"><i>×</i><i>×</i><i>×</i><i>×</i><i class="cat">🐱</i><i>×</i><i>×</i><i>×</i><i>×</i></div>'},
+    {icon:'🐾',title:'How to play',copy:'Tap once to add or remove an X. Double-tap only when logic proves that a cat belongs there. A wrong cat costs one life.',demo:'<div class="tutorial-controls-demo"><span>Tap = ×</span><span>Double-tap = 🐱</span></div>'}
   ];
   function showTutorial(index=0){const step=tutorialSteps[index];$('tutorial-icon').textContent=step.icon;$('tutorial-step').textContent=`${index+1} / ${tutorialSteps.length}`;$('tutorial-title').textContent=step.title;$('tutorial-copy').textContent=step.copy;$('tutorial-demo').innerHTML=step.demo;$('tutorial-next').textContent=index===tutorialSteps.length-1?'Start playing':'Next';$('tutorial-next').onclick=()=>index===tutorialSteps.length-1?closeTutorial():showTutorial(index+1);$('tutorial-skip').onclick=closeTutorial;$('tutorial-modal').classList.add('open');$('tutorial-modal').setAttribute('aria-hidden','false')}
   function closeTutorial(){$('tutorial-modal').classList.remove('open');$('tutorial-modal').setAttribute('aria-hidden','true')}

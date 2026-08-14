@@ -1720,6 +1720,51 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   }
 }
 
+/* Tutorial diagrams use real cells so every rule reads as board logic. */
+.tutorial-demo { display:flex;align-items:center;justify-content:center; }
+.tutorial-mini-board {
+  display:grid;
+  grid-template-columns:repeat(3,24px);
+  grid-template-rows:repeat(3,24px);
+  gap:3px;
+  padding:5px;
+  border:1px solid rgba(92,110,184,.16);
+  border-radius:10px;
+  background:rgba(255,255,255,.58);
+  box-shadow:inset 0 1px rgba(255,255,255,.9);
+}
+.tutorial-mini-board i {
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+  border:1px solid rgba(255,255,255,.76);
+  border-radius:5px;
+  color:#795363;
+  background:linear-gradient(145deg,#f6d7d4,#eabebb);
+  box-shadow:inset 0 1px rgba(255,255,255,.68),0 1px 2px rgba(67,49,78,.12);
+  font-size:13px;
+  font-style:normal;
+  font-weight:900;
+  line-height:1;
+}
+.tutorial-mini-board i.alt { background:linear-gradient(145deg,#bfeee6,#8fd8ce); }
+.tutorial-mini-board i.cat { font-size:16px; }
+.tutorial-controls-demo {
+  display:flex;
+  width:100%;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(9px,4vw,24px);
+  white-space:nowrap;
+}
+.tutorial-controls-demo span { font-size:clamp(11px,3.6vw,17px); }
+
+@media (max-width:360px) {
+  .tutorial-controls-demo { gap:7px; }
+  .tutorial-controls-demo span { font-size:10px; }
+}
+
 @media (max-width:360px) {
   #level-screen .level-board .level-grid { padding-right:9px; }
   #level-screen .level-board .level-btn i,
@@ -1887,4 +1932,28 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
 @keyframes coachNotificationIn {
   from { opacity:0;transform:translateY(-18px) scale(.98); }
   to { opacity:1;transform:translateY(0) scale(1); }
+}
+
+/* Let level rows keep their own height; overflow belongs to the internal scroller. */
+#level-screen .level-board .level-grid {
+  grid-auto-rows:max-content;
+  align-items:start;
+  align-content:start;
+}
+
+#level-screen .level-board .level-btn {
+  min-height:clamp(58px,7vw,88px);
+  align-self:start;
+}
+
+@media (max-width:760px) {
+  #level-screen .level-board .level-grid {
+    grid-auto-rows:minmax(clamp(52px,15vw,76px),max-content);
+  }
+
+  #level-screen .level-board .level-btn {
+    min-height:clamp(52px,15vw,76px);
+    height:auto;
+    aspect-ratio:auto;
+  }
 }

@@ -336,7 +336,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                 <div
                     className={`absolute inset-x-0 top-0 z-[60] flex items-center justify-between gap-2 px-3 sm:px-6 ${
                         isMeowdoku
-                            ? 'h-[calc(68px+env(safe-area-inset-top))] bg-transparent pt-[env(safe-area-inset-top)] md:h-[calc(112px+env(safe-area-inset-top))]'
+                            ? 'h-[calc(68px+env(safe-area-inset-top))] border-0 bg-transparent pt-[env(safe-area-inset-top)] shadow-none outline-none md:h-[calc(112px+env(safe-area-inset-top))]'
                             : 'pointer-events-none px-6'
                     }`}
                     style={isMeowdoku ? undefined : {
@@ -388,7 +388,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                             </div>
                         )}
 
-                        <div className={`flex items-center rounded-full backdrop-blur-md transition-all duration-500 ${isMeowdoku ? 'h-11 gap-1.5 border border-slate-200/80 bg-white/80 px-3 text-slate-700 shadow-none sm:h-12 sm:gap-2 sm:px-4 md:border-white/20 md:bg-black/40 md:text-white md:shadow-lg md:ring-1 md:ring-white/5' : 'gap-2 border border-white/20 bg-black/40 px-4 py-2.5 text-white shadow-lg ring-1 ring-white/5'}`}>
+                        <div className={`flex items-center rounded-full backdrop-blur-md transition-all duration-500 ${isMeowdoku ? 'h-11 gap-1.5 border border-slate-200/80 bg-white/80 px-3 text-black shadow-none sm:h-12 sm:gap-2 sm:px-4 md:border-white/20 md:bg-black/40 md:text-white md:shadow-lg md:ring-1 md:ring-white/5' : 'gap-2 border border-white/20 bg-black/40 px-4 py-2.5 text-white shadow-lg ring-1 ring-white/5'}`}>
                             <span className="text-base sm:text-xl">💰</span>
                             <span className={`min-w-[3ch] text-right font-black tracking-wider ${isMeowdoku ? 'text-sm sm:text-lg' : 'text-lg'}`}>
                                 <AnimatedCounter value={stats.coins || 0} />
@@ -398,7 +398,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className={`flex shrink-0 appearance-none items-center justify-center rounded-full p-0 backdrop-blur-md transition-all hover:scale-105 active:scale-95 ${isMeowdoku ? 'h-11 w-11 border border-slate-200/80 bg-white/80 text-slate-700 shadow-none hover:bg-white sm:h-12 sm:w-12 md:border-white/10 md:bg-black/40 md:text-white md:shadow-lg md:hover:bg-black/60' : 'h-14 w-14 border border-white/10 bg-black/40 text-white shadow-lg hover:bg-black/60'}`}
+                            className={`flex shrink-0 appearance-none items-center justify-center rounded-full p-0 backdrop-blur-md transition-all hover:scale-105 active:scale-95 ${isMeowdoku ? 'h-11 w-11 border border-slate-200/80 bg-white/80 text-black shadow-none hover:bg-white sm:h-12 sm:w-12 md:border-white/10 md:bg-black/40 md:text-white md:shadow-lg md:hover:bg-black/60' : 'h-14 w-14 border border-white/10 bg-black/40 text-white shadow-lg hover:bg-black/60'}`}
                             title="Back to cat"
                             aria-label="Back to cat"
                         >
@@ -428,7 +428,7 @@ export const GamePage: React.FC<GamePageProps> = ({
 
                 {/* Game Iframe Wrapper */}
                 <div
-                    className={`absolute inset-x-0 bottom-0 bg-slate-900 ${isMeowdoku ? 'top-[calc(68px+env(safe-area-inset-top))] md:top-0' : 'top-0'}`}
+                    className={`absolute inset-x-0 bottom-0 border-0 bg-slate-900 shadow-none outline-none ${isMeowdoku ? 'top-[calc(68px+env(safe-area-inset-top))] md:top-0' : 'top-0'}`}
                 >
                     {isLoading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
@@ -442,7 +442,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                     <iframe
                         ref={iframeRef}
                         src={config.url}
-                        className="w-full h-full border-0 block"
+                        className="block h-full w-full border-0 shadow-none outline-none"
                         title={config.title}
                         onLoad={() => setIsLoading(false)}
                         allow="autoplay; fullscreen"
