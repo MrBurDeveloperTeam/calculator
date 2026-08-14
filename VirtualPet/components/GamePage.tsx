@@ -27,7 +27,7 @@ const GAME_CONFIG: Record<string, { title: string; url: string; icon: string; gr
         // Version the iframe document itself. Mobile browsers can otherwise keep
         // an older Meowdoku HTML shell (and therefore an older game.js URL) even
         // after the main application has been updated.
-        url: '/games/meowdoku/index.html?v=20260814-mode-sync-v2',
+        url: '/games/meowdoku/index.html?v=20260814-hell-logic-v1',
         icon: '🐱',
         gradient: 'from-fuchsia-400 to-violet-600'
     }

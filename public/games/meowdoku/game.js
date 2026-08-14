@@ -21,8 +21,74 @@
   function attacks(a,r,c){return a.r===r||a.c===c||Math.max(Math.abs(a.r-r),Math.abs(a.c-c))===1}
   function findSolutions(level,givenCount,limit=2){const given=level.cats.slice(0,givenCount),byColor=Array.from({length:level.catCount},()=>[]);for(let r=0;r<level.n;r++)for(let c=0;c<level.n;c++)byColor[level.colorGrid[r][c]].push({r,c});for(let color=0;color<givenCount;color++)byColor[color]=[given[color]];const order=[...Array(level.catCount).keys()].sort((a,b)=>byColor[a].length-byColor[b].length),placed=[],solutions=[];function search(index){if(solutions.length>=limit)return;if(index===order.length){solutions.push(placed.map(item=>({...item})));return}const color=order[index];for(const cell of byColor[color]){if(placed.some(cat=>attacks(cat,cell.r,cell.c)))continue;placed.push({...cell,color});search(index+1);placed.pop()}}search(0);return solutions}
   function hasSimpleDeductionChain(level,givenCount){const found=level.cats.slice(0,givenCount),solved=new Set(Array.from({length:givenCount},(_,i)=>i));while(solved.size<level.catCount){let forced=null;for(let color=0;color<level.catCount;color++){if(solved.has(color))continue;const candidates=[];for(let r=0;r<level.n;r++)for(let c=0;c<level.n;c++){if(level.colorGrid[r][c]!==color)continue;if(found.some(cat=>attacks(cat,r,c)))continue;candidates.push({r,c})}if(candidates.length===0)return false;if(candidates.length===1){forced={color,...candidates[0]};break}}if(!forced)return false;const answer=level.cats[forced.color];if(answer.r!==forced.r||answer.c!==forced.c)return false;found.push(answer);solved.add(forced.color)}return true}
+  function hasHellDeductionChain(level){
+    const candidates=Array.from({length:level.catCount},(_,color)=>{
+      const cells=[];
+      for(let r=0;r<level.n;r++)for(let c=0;c<level.n;c++)if(level.colorGrid[r][c]===color)cells.push({r,c});
+      return cells;
+    });
+    const solved=new Map();
+    let changed=true,guard=0;
+    while(changed&&solved.size<level.catCount&&guard++<level.n*level.n*4){
+      changed=false;
+
+      // A confirmed cat removes every candidate in its row, column and 3x3
+      // neighbourhood. It also removes the other cells of its own color.
+      for(const [color,cat] of solved){
+        for(let other=0;other<level.catCount;other++){
+          if(other===color)continue;
+          const next=candidates[other].filter(cell=>!attacks(cat,cell.r,cell.c));
+          if(next.length!==candidates[other].length){candidates[other]=next;changed=true}
+        }
+      }
+
+      // If every remaining position of one color attacks a cell, that cell can
+      // never contain another color's cat. This includes the advanced Hell
+      // deductions where all candidates share a row/column or have a common
+      // neighbouring intersection.
+      for(let color=0;color<level.catCount;color++){
+        if(solved.has(color)||candidates[color].length<2)continue;
+        const source=candidates[color];
+        for(let other=0;other<level.catCount;other++){
+          if(other===color||solved.has(other))continue;
+          const next=candidates[other].filter(cell=>!source.every(option=>attacks(option,cell.r,cell.c)));
+          if(next.length!==candidates[other].length){candidates[other]=next;changed=true}
+        }
+      }
+
+      for(let color=0;color<level.catCount;color++){
+        if(solved.has(color))continue;
+        if(candidates[color].length===0)return false;
+        if(candidates[color].length===1){
+          const forced=candidates[color][0],answer=level.cats[color];
+          if(forced.r!==answer.r||forced.c!==answer.c)return false;
+          solved.set(color,forced);
+          changed=true;
+        }
+      }
+    }
+    return solved.size===level.catCount;
+  }
   function isLogicallySolvable(level,givenCount){const solutions=findSolutions(level,givenCount,2);if(solutions.length!==1||!hasSimpleDeductionChain(level,givenCount))return false;const solution=solutions[0];return level.cats.every((cat,color)=>solution.some(item=>item.color===color&&item.r===cat.r&&item.c===cat.c))}
-  function makeLevel(number,variant=0,mode='easy'){const config=MODES[mode]||MODES.easy;if(number===1&&mode==='easy')return{number,mode,n:5,catCount:3,cats:[{r:0,c:1},{r:3,c:0},{r:4,c:3}],colorGrid:[[0,0,0,2,0],[1,1,0,0,0],[0,0,0,0,0],[1,0,2,2,0],[0,0,0,2,0]],colorPalette:makeColorPalette(number,3,variant),reward:4,hintCost:5,difficulty:'Tutorial',givenCount:1,verified:true};const modeIndex=Object.keys(MODES).indexOf(mode),givenCount=config.given,baseN=number<=3?5:number<=10?6:number<=30?7:number<=50?8:9,n=Math.min(9,baseN+config.size),catCount=givenCount?Math.max(4,n-1):n,seed=number*7919+variant*65537+modeIndex*1000003+17,fullSolution=makeSolution(n,seed),rows=givenCount?shuffled([...Array(n).keys()],number*3571+variant*12289+modeIndex*91771+91).slice(0,catCount).sort((a,b)=>a-b):[...Array(n).keys()],cats=rows.map(r=>({r,c:fullSolution[r]})),colorGrid=Array.from({length:n},()=>Array(n).fill(0));cats.forEach((cat,color)=>colorGrid[cat.r][cat.c]=color);for(let r=0;r<n;r++)for(let c=0;c<n;c++){if(cats.some(cat=>cat.r===r&&cat.c===c))continue;let attacker=-1;for(let i=0;i<cats.length-1;i++)if(attacks(cats[i],r,c)){attacker=i;break}colorGrid[r][c]=attacker>=0?attacker+1:0}const level={number,mode,n,catCount,cats,colorGrid,colorPalette:makeColorPalette(number+modeIndex*67,catCount,variant),reward:config.reward,hintCost:number<=10?5:number<=30?10:number<=50?15:20,difficulty:config.label,givenCount,verified:false};level.verified=isLogicallySolvable(level,givenCount);if(!level.verified)throw new Error(`Level ${number} ${mode} failed logical verification`);return level}
+  function isHellLogicallySolvable(level){
+    const solutions=findSolutions(level,0,2);
+    if(solutions.length!==1||!hasHellDeductionChain(level))return false;
+    return level.cats.every((cat,color)=>solutions[0].some(item=>item.color===color&&item.r===cat.r&&item.c===cat.c));
+  }
+  function makeLevel(number,variant=0,mode='easy'){const config=MODES[mode]||MODES.easy;if(number===1&&mode==='easy')return{number,mode,n:5,catCount:3,cats:[{r:0,c:1},{r:3,c:0},{r:4,c:3}],colorGrid:[[0,0,0,2,0],[1,1,0,0,0],[0,0,0,0,0],[1,0,2,2,0],[0,0,0,2,0]],colorPalette:makeColorPalette(number,3,variant),reward:4,hintCost:5,difficulty:'Tutorial',givenCount:1,verified:true};const modeIndex=Object.keys(MODES).indexOf(mode),givenCount=config.given,baseN=number<=3?5:number<=10?6:number<=30?7:number<=50?8:9,n=Math.min(9,baseN+config.size),catCount=givenCount?Math.max(4,n-1):n,seed=number*7919+variant*65537+modeIndex*1000003+17,fullSolution=makeSolution(n,seed),rows=givenCount?shuffled([...Array(n).keys()],number*3571+variant*12289+modeIndex*91771+91).slice(0,catCount).sort((a,b)=>a-b):[...Array(n).keys()],cats=rows.map(r=>({r,c:fullSolution[r]})),colorGrid=Array.from({length:n},()=>Array(n).fill(0));cats.forEach((cat,color)=>colorGrid[cat.r][cat.c]=color);for(let r=0;r<n;r++)for(let c=0;c<n;c++){if(cats.some(cat=>cat.r===r&&cat.c===c))continue;let attacker=-1;for(let i=0;i<cats.length-1;i++)if(attacks(cats[i],r,c)){attacker=i;break}colorGrid[r][c]=attacker>=0?attacker+1:0}
+    if(mode==='hell'){
+      // Hell starts with one visually unambiguous color region. Its only cell
+      // contains the first solution cat, but the cat itself is not pre-revealed.
+      const first=cats[0];
+      for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+        if(colorGrid[r][c]!==0||(r===first.r&&c===first.c))continue;
+        const attacker=cats.findIndex((cat,index)=>index>0&&attacks(cat,r,c));
+        // A row always has a solution cat. If only color zero attacks this cell,
+        // color one is safe because the first forced cat eliminates it immediately.
+        colorGrid[r][c]=attacker>0?attacker:1;
+      }
+    }
+    const level={number,mode,n,catCount,cats,colorGrid,colorPalette:makeColorPalette(number+modeIndex*67,catCount,variant),reward:config.reward,hintCost:number<=10?5:number<=30?10:number<=50?15:20,difficulty:config.label,givenCount,verified:false};level.verified=mode==='hell'?isHellLogicallySolvable(level):isLogicallySolvable(level,givenCount);if(!level.verified)throw new Error(`Level ${number} ${mode} failed logical verification`);return level}
   function catLayoutKey(level){return`${level.n}|${level.cats.map(cat=>`${cat.r},${cat.c}`).sort().join('|')}`}
   function boardDesignKey(level){return`${catLayoutKey(level)}|${level.colorPalette.join(',')}|${level.colorGrid.map(row=>row.join(',')).join(';')}`}
   function makeDistinctLevels(total){const levels=[],catLayouts=new Set(),boardDesigns=new Set();for(let number=1;number<=total;number++){let accepted=null;for(let variant=0;variant<500&&!accepted;variant++){let candidate;try{candidate=makeLevel(number,variant,'easy')}catch{continue}const catKey=catLayoutKey(candidate),boardKey=boardDesignKey(candidate);if(catLayouts.has(catKey)||boardDesigns.has(boardKey))continue;catLayouts.add(catKey);boardDesigns.add(boardKey);accepted=candidate}if(!accepted)throw new Error(`Unable to create a distinct logical level ${number}`);levels.push(accepted)}return levels}
