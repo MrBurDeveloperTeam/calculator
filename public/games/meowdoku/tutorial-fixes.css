@@ -1034,7 +1034,7 @@ body::after {
 .cell.marked::after {
   content: '';
   position: absolute;
-  inset: 20%;
+  inset: 30%;
   z-index: 3;
   display: block;
   width: auto;
@@ -1395,23 +1395,20 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   display: grid;
   place-items: center;
   padding: 0;
-  font-size: 0;
   line-height: 1;
   overflow: hidden;
 }
 
-#game-screen #settings-btn::before {
-  content: '📖';
+#game-screen #settings-btn svg {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 1em;
-  height: 1em;
-  display: grid;
-  place-items: center;
-  font-size: 23px;
-  line-height: 1;
+  width: 24px;
+  height: 24px;
+  display: block;
   transform: translate(-50%, -50%);
+  overflow: visible;
+  pointer-events: none;
 }
 
 @media (max-width: 620px) {
