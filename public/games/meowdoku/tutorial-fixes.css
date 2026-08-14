@@ -1594,7 +1594,7 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
 .achievement-gallery header p { margin:0;color:#7c87a5;font-size:12px; }
 .achievement-gallery header>strong { flex:none;padding:8px 13px;border-radius:999px;background:#e7ecff;color:#4c63b8;font-size:11px; }
 .achievement-close,.achievement-unlock-close { position:absolute;right:15px;top:14px;z-index:2;display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:#e4eafd;color:#42588f;font-size:25px;line-height:1;cursor:pointer; }
-.achievement-grid { max-height:calc(min(82vh,760px) - 118px);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;padding:17px 5px 10px 2px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#6078d9 transparent; }
+.achievement-grid { max-height:calc(min(82vh,760px) - 118px);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;padding:17px 5px 30px 2px;scroll-padding-bottom:30px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#6078d9 transparent; }
 .achievement-grid::-webkit-scrollbar { width:8px; }
 .achievement-grid::-webkit-scrollbar-track { background:transparent; }
 .achievement-grid::-webkit-scrollbar-thumb { border:2px solid transparent;border-radius:999px;background:linear-gradient(#8396e9,#5269ce) padding-box; }

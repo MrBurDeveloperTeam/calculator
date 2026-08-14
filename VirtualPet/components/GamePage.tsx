@@ -325,27 +325,41 @@ export const GamePage: React.FC<GamePageProps> = ({
     }
 
     const config = GAME_CONFIG[gameId];
+    const isMeowdoku = gameId === 'meowdoku';
 
     return (
         <div className="fixed inset-0 z-50 overflow-hidden bg-black" style={{ fontFamily: "'Fredoka', sans-serif" }}>
             {/* Container - Full Screen */}
             <div className="relative w-full h-full animate-in zoom-in-95 fade-in duration-300">
 
-                {/* Same back control used by the main cat page */}
-                <button
-                    type="button"
-                    onClick={onExitPet}
-                    className="
-                        absolute
-                        left-[calc(env(safe-area-inset-left)+1.5rem)]
-                        top-[calc(env(safe-area-inset-top)+1.5rem)]
-                        z-[60]
-                        flex h-16 w-16
+                {/* Reserved app chrome. Meowdoku starts below this row instead of underneath it. */}
+                <div
+                    className={`absolute inset-x-0 top-0 z-[60] flex items-center justify-between gap-2 px-3 sm:px-6 ${
+                        isMeowdoku
+                            ? 'border-b border-slate-200/80 bg-[#f7f9ff] shadow-sm'
+                            : 'pointer-events-none px-6'
+                    }`}
+                    style={{
+                        height: isMeowdoku
+                            ? 'calc(68px + env(safe-area-inset-top))'
+                            : 'calc(112px + env(safe-area-inset-top))',
+                        paddingTop: 'env(safe-area-inset-top)'
+                    }}
+                >
+                    <button
+                        type="button"
+                        onClick={onExitPet}
+                        className={`
+                        pointer-events-auto
+                        flex
+                        shrink-0
                         appearance-none
                         items-center justify-center
-                        rounded-2xl
+                        ${isMeowdoku
+                            ? 'h-12 w-12 rounded-xl sm:h-14 sm:w-14 sm:rounded-2xl'
+                            : 'h-16 w-16 rounded-2xl'}
                         border border-white/60
-                        bg-white/75
+                        bg-white/90
                         p-0
                         text-black
                         shadow-xl shadow-slate-900/10
@@ -355,15 +369,45 @@ export const GamePage: React.FC<GamePageProps> = ({
                         hover:scale-105
                         hover:bg-white
                         active:scale-95
-                    "
-                    title="Back to main page"
-                    aria-label="Back to main page"
-                >
-                    <TiArrowBack
-                        className="h-12 w-12 text-black"
-                        strokeWidth={0}
-                    />
-                </button>
+                        `}
+                        title="Back to main page"
+                        aria-label="Back to main page"
+                    >
+                        <TiArrowBack
+                            className={isMeowdoku
+                                ? 'h-9 w-9 text-black sm:h-11 sm:w-11'
+                                : 'h-12 w-12 text-black'}
+                            strokeWidth={0}
+                        />
+                    </button>
+
+                    {/* Wallet and close control share the same fixed row. */}
+                    <div className={`pointer-events-auto flex min-w-0 items-center ${isMeowdoku ? 'gap-2 sm:gap-3' : 'gap-3'}`}>
+                        {sessionCoins > 0 && (
+                            <div className={`${isMeowdoku ? 'hidden sm:flex' : 'flex'} items-center gap-1.5 bg-yellow-500/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-yellow-500/20 shadow-sm text-yellow-500 animate-in fade-in slide-in-from-top-2 duration-300`}>
+                                <span className="text-[10px] font-black uppercase tracking-wider opacity-70">Coins</span>
+                                <span className="font-black text-sm tracking-widest">+{sessionCoins}</span>
+                            </div>
+                        )}
+
+                        <div className={`flex items-center rounded-full border border-white/20 bg-black/40 text-white shadow-lg ring-1 ring-white/5 backdrop-blur-md transition-all duration-500 ${isMeowdoku ? 'h-11 gap-1.5 px-3 sm:h-12 sm:gap-2 sm:px-4' : 'gap-2 px-4 py-2.5'}`}>
+                            <span className="text-base sm:text-xl">💰</span>
+                            <span className={`min-w-[3ch] text-right font-black tracking-wider ${isMeowdoku ? 'text-sm sm:text-lg' : 'text-lg'}`}>
+                                <AnimatedCounter value={stats.coins || 0} />
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className={`flex shrink-0 appearance-none items-center justify-center rounded-full border border-white/10 bg-black/40 p-0 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-black/60 active:scale-95 ${isMeowdoku ? 'h-11 w-11 sm:h-12 sm:w-12' : 'h-14 w-14'}`}
+                            title="Back to cat"
+                            aria-label="Back to cat"
+                        >
+                            <span className={`${isMeowdoku ? 'text-2xl sm:text-3xl' : 'text-3xl'} font-black leading-none`}>×</span>
+                        </button>
+                    </div>
+                </div>
 
                 {/* Landscape orientation notice */}
                 {requiresLandscape && isPortrait && (
@@ -384,58 +428,11 @@ export const GamePage: React.FC<GamePageProps> = ({
                 </div>
                 )}
 
-                {/* Top UI Area */}
-                <div className="absolute right-[calc(env(safe-area-inset-right)+1.5rem)] top-[calc(env(safe-area-inset-top)+1.5rem)] z-50 flex flex-col items-end gap-2">
-                    <div className="flex items-center gap-3">
-                        {/* Session Progress (Pending Coins) */}
-                        {sessionCoins > 0 && (
-                            <div className="flex items-center gap-1.5 bg-yellow-500/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-yellow-500/20 shadow-sm text-yellow-400 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <span className="text-[10px] font-black uppercase tracking-wider opacity-70">Coins</span>
-                                <span className="font-black text-sm tracking-widest">+{sessionCoins}</span>
-                            </div>
-                        )}
-
-                        {/* Accumulated Score Indicator (Persistent Wallet) */}
-                        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-full border border-white/10 shadow-lg text-white transition-all duration-500 ring-1 ring-white/5">
-                            <span className="text-xl">💰</span>
-                            <span className="font-black text-lg tracking-widest min-w-[3ch] text-right">
-                                <AnimatedCounter value={stats.coins || 0} />
-                            </span>
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="
-                                flex h-14 w-14
-                                shrink-0
-                                appearance-none
-                                items-center justify-center
-                                rounded-full
-                                border border-white/10
-                                bg-black/40
-                                p-0
-                                text-white
-                                shadow-lg
-                                backdrop-blur-md
-                                transition-all
-                                hover:scale-105
-                                hover:bg-black/60
-                                active:scale-95
-                            "
-                            title="Back to cat"
-                            aria-label="Back to cat"
-                        >
-                            <span className="text-3xl font-black leading-none">
-                                ×
-                            </span>
-                        </button>
-
-                    </div>
-                </div>
-
                 {/* Game Iframe Wrapper */}
-                <div className="absolute inset-0 bg-slate-900">
+                <div
+                    className="absolute inset-x-0 bottom-0 bg-slate-900"
+                    style={{ top: isMeowdoku ? 'calc(68px + env(safe-area-inset-top))' : 0 }}
+                >
                     {isLoading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
                             <div className="flex flex-col items-center gap-4">
