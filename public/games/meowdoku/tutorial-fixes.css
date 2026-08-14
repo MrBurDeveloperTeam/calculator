@@ -2026,15 +2026,23 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
     max-height:none;
     flex:1 1 auto;
     grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:max-content;
+    align-content:start;
+    align-items:start;
     gap:9px;
     padding:12px 13px 28px 2px;
     scroll-padding-bottom:28px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
   }
 
   .achievement-card {
     min-width:0;
+    min-height:clamp(166px,55vw,205px);
+    height:auto;
     grid-template-columns:minmax(0,1fr);
-    grid-template-rows:auto minmax(0,1fr);
+    grid-template-rows:auto auto;
     justify-items:center;
     align-items:start;
     gap:7px;
@@ -2045,8 +2053,9 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   }
 
   .achievement-icon {
-    width:clamp(52px,20vw,72px);
+    width:clamp(58px,21vw,76px);
     max-width:82%;
+    flex:none;
     justify-self:center;
   }
 
