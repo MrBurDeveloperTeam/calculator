@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { TiArrowBack } from 'react-icons/ti';
+import { supabase } from '../../lib/supabase';
 
 const GAME_CONFIG: Record<string, { title: string; url: string; icon: string; gradient: string }> = {
     flappy: {
@@ -86,6 +87,80 @@ export const GamePage: React.FC<GamePageProps> = ({
     const { stats, setStats } = useGameState();
     const [sessionCoins, setSessionCoins] = useState(0);
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const meowdokuUserIdRef = useRef<string | null>(null);
+
+    const sendMeowdokuProgress = (progress: { unlocked_level: number; completed_levels: Record<string, unknown> }) => {
+        iframeRef.current?.contentWindow?.postMessage({
+            type: 'MEOWDOKU_PROGRESS',
+            progress
+        }, window.location.origin);
+    };
+
+    const loadMeowdokuProgress = async () => {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+            meowdokuUserIdRef.current = null;
+            iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_PROGRESS_LOCAL_ONLY' }, window.location.origin);
+            return;
+        }
+
+        meowdokuUserIdRef.current = user.id;
+        const { data, error } = await supabase.rpc('meowdoku_get_progress');
+
+        if (error) {
+            console.error('Unable to load Meowdoku progress:', error);
+            iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_PROGRESS_LOCAL_ONLY' }, window.location.origin);
+            return;
+        }
+
+        const progress = Array.isArray(data) ? data[0] : data;
+        sendMeowdokuProgress({
+            unlocked_level: Math.max(1, Math.min(60, Number(progress?.unlocked_level) || 1)),
+            completed_levels: progress?.completed_levels && typeof progress.completed_levels === 'object'
+                ? progress.completed_levels as Record<string, unknown>
+                : {}
+        });
+    };
+
+    const saveMeowdokuProgress = async (payload: { completed_level?: unknown; score?: unknown; mistakes?: unknown; time_seconds?: unknown }) => {
+        const userId = meowdokuUserIdRef.current;
+        if (!userId) return;
+
+        const completedLevel = Math.max(1, Math.min(60, Math.floor(Number(payload.completed_level) || 0)));
+        if (!completedLevel) return;
+        const { error } = await supabase.rpc('meowdoku_complete_level', {
+            p_level_number: completedLevel,
+            p_score: Math.max(0, Math.floor(Number(payload.score) || 0)),
+            p_mistakes: Math.max(0, Math.floor(Number(payload.mistakes) || 0)),
+            p_time_seconds: Math.max(0, Math.floor(Number(payload.time_seconds) || 0))
+        });
+
+        if (error) {
+            console.error('Unable to save Meowdoku progress:', error);
+            return;
+        }
+        await loadMeowdokuProgress();
+    };
+
+    const loadMeowdokuCheckIn = async () => {
+        if (!meowdokuUserIdRef.current) return;
+        const { data, error } = await supabase.rpc('meowdoku_get_check_in');
+        iframeRef.current?.contentWindow?.postMessage(error
+            ? { type: 'MEOWDOKU_CHECK_IN_ERROR', message: error.message }
+            : { type: 'MEOWDOKU_CHECK_IN', checkIn: data }, window.location.origin);
+    };
+
+    const claimMeowdokuCheckIn = async () => {
+        if (!meowdokuUserIdRef.current) return;
+        const { data, error } = await supabase.rpc('meowdoku_claim_check_in');
+        if (error) {
+            iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_CHECK_IN_ERROR', message: error.message }, window.location.origin);
+            return;
+        }
+        const result = Array.isArray(data) ? data[0] : data;
+        if (result?.coins != null) setStats(prev => ({ ...prev, coins: Number(result.coins) || prev.coins || 0 }));
+        iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_CHECK_IN_CLAIMED', checkIn: result }, window.location.origin);
+    };
 
     // Sync score from games
     useEffect(() => {
@@ -97,7 +172,16 @@ export const GamePage: React.FC<GamePageProps> = ({
                     type: 'MEOWDOKU_WALLET',
                     coins: stats.coins || 0
                 }, window.location.origin);
+                void loadMeowdokuProgress();
+                void loadMeowdokuCheckIn();
             }
+
+            if (event.data?.type === 'MEOWDOKU_SAVE_PROGRESS') {
+                void saveMeowdokuProgress(event.data.progress || {});
+            }
+
+            if (event.data?.type === 'MEOWDOKU_GET_CHECK_IN') void loadMeowdokuCheckIn();
+            if (event.data?.type === 'MEOWDOKU_CLAIM_CHECK_IN') void claimMeowdokuCheckIn();
 
             if (event.data?.type === 'MEOWDOKU_SPEND_COINS') {
                 const amount = Math.max(0, Math.floor(Number(event.data.amount) || 0));

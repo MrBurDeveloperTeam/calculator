@@ -1067,6 +1067,12 @@ body::after {
   pointer-events: none;
 }
 
+.level-board .level-btn.done:disabled {
+  cursor: not-allowed;
+  opacity: .78;
+  filter: saturate(.72);
+}
+
 .cell.marked:active::after {
   transform: translateY(2px) scale(.965);
   filter: drop-shadow(0 2px 2px rgba(25,39,58,.2));
@@ -1455,6 +1461,55 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   background:
     linear-gradient(115deg,transparent 18%,rgba(255,255,255,.14) 36%,transparent 52%);
 }
+
+/* Weekly cat check-in, aligned with the Meowdoku title. */
+#level-screen .hero { position:relative; }
+.checkin-open {
+  margin-left:auto;
+  min-width:158px;
+  min-height:72px;
+  display:grid;
+  grid-template-columns:48px 1fr;
+  grid-template-rows:auto auto;
+  column-gap:10px;
+  align-items:center;
+  padding:10px 15px 10px 10px;
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:22px;
+  color:#203467;
+  background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(229,235,255,.84));
+  box-shadow:0 14px 34px rgba(52,72,143,.15),inset 0 1px rgba(255,255,255,.95);
+  cursor:pointer;
+}
+.checkin-open:hover { transform:translateY(-2px); }
+.checkin-cat { grid-row:1/3;display:grid;place-items:center;width:48px;height:48px;border-radius:17px;background:linear-gradient(145deg,#7692ef,#4965cf);font-size:25px;box-shadow:0 7px 14px rgba(58,79,170,.25); }
+.checkin-open b,.checkin-open small { text-align:left;white-space:nowrap; }
+.checkin-open b { align-self:end;font-size:13px; }
+.checkin-open small { align-self:start;color:#7784a8;font-size:9px; }
+.checkin-card { position:relative;width:min(720px,94vw);padding:28px;background:linear-gradient(145deg,#fff,#eef2ff);border:1px solid rgba(255,255,255,.95);color:#203467; }
+.checkin-close { position:absolute;right:16px;top:14px;width:38px;height:38px;border:0;border-radius:50%;background:#e5eafd;color:#42588f;font-size:24px;cursor:pointer; }
+.checkin-heading { display:flex;align-items:center;gap:15px;text-align:left;padding-right:42px; }
+.checkin-heading>span { display:grid;place-items:center;width:58px;height:58px;flex:none;border-radius:20px;background:linear-gradient(145deg,#7592ef,#4763ce);font-size:30px;box-shadow:0 10px 22px rgba(60,82,177,.22); }
+.checkin-heading small { font-weight:900;letter-spacing:2px;color:#5d75cf; }
+.checkin-heading h2 { margin:3px 0;font-size:27px; }
+.checkin-heading p { margin:0;color:#7883a3;font-size:13px; }
+.checkin-week { display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:24px 0 16px; }
+.checkin-day { position:relative;display:flex;min-width:0;min-height:112px;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(164,177,221,.35);border-radius:17px;background:rgba(255,255,255,.72);box-shadow:inset 0 1px #fff,0 7px 16px rgba(57,72,125,.07); }
+.checkin-day small { color:#7d87a6;font-weight:800; }
+.checkin-day span { display:grid;place-items:center;width:38px;height:38px;border-radius:14px;background:#edf1ff;font-size:19px; }
+.checkin-day b { font-size:10px;white-space:nowrap;color:#4d5f93; }
+.checkin-day.today { outline:2px solid #607cea;background:linear-gradient(155deg,#fff,#e8edff); }
+.checkin-day.claimed span { color:white;background:linear-gradient(145deg,#72d5bd,#3cac93);font-size:25px;font-weight:900; }
+.checkin-day.claimed::after { content:'CLAIMED';position:absolute;top:7px;right:7px;color:#2e987f;font-size:6px;font-weight:900;letter-spacing:.7px; }
+.checkin-message { min-height:20px;margin:0 0 13px;text-align:center;color:#6e7999;font-size:12px;font-weight:700; }
+.checkin-claim { min-width:190px;background:linear-gradient(145deg,#6987ec,#405dcb);box-shadow:0 10px 20px rgba(54,76,170,.22); }
+.checkin-claim:disabled { cursor:not-allowed;opacity:.55;box-shadow:none; }
+.checkin-time-note { display:flex;align-items:center;justify-content:center;gap:10px;margin:17px auto 0;padding:10px 14px;border:1px solid rgba(116,136,204,.18);border-radius:13px;background:rgba(235,240,255,.72);color:#7380a5;font-size:10px;line-height:1.4; }
+.checkin-time-note b { flex:none;color:#4c63b5;font-size:9px;letter-spacing:.5px;text-transform:uppercase; }
+.checkin-time-note span { text-align:left; }
+.check-pop { animation:checkPop .65s cubic-bezier(.2,1.65,.35,1); }
+@keyframes checkPop { 0%{transform:scale(.65);opacity:.3}65%{transform:scale(1.1)}100%{transform:scale(1)} }
+@media(max-width:700px){.checkin-open{min-width:58px;min-height:58px;padding:5px;display:grid;grid-template-columns:1fr}.checkin-open b,.checkin-open small{display:none}.checkin-cat{grid-row:auto;width:46px;height:46px}.checkin-card{padding:22px 14px}.checkin-week{grid-template-columns:repeat(4,1fr)}.checkin-day{min-height:92px}.checkin-heading h2{font-size:22px}}
 
 .cell:hover {
   filter:brightness(1.07) saturate(1.04);
