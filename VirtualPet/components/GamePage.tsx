@@ -24,7 +24,10 @@ const GAME_CONFIG: Record<string, { title: string; url: string; icon: string; gr
     },
     meowdoku: {
         title: 'Meowdoku',
-        url: '/games/meowdoku/index.html',
+        // Version the iframe document itself. Mobile browsers can otherwise keep
+        // an older Meowdoku HTML shell (and therefore an older game.js URL) even
+        // after the main application has been updated.
+        url: '/games/meowdoku/index.html?v=20260814-mode-sync-v2',
         icon: '🐱',
         gradient: 'from-fuchsia-400 to-violet-600'
     }
@@ -118,7 +121,7 @@ export const GamePage: React.FC<GamePageProps> = ({
         if (userError || !user) {
             meowdokuUserIdRef.current = null;
             iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_PROGRESS_LOCAL_ONLY' }, window.location.origin);
-            return;
+            return false;
         }
 
         meowdokuUserIdRef.current = user.id;
@@ -127,7 +130,7 @@ export const GamePage: React.FC<GamePageProps> = ({
         if (error) {
             console.error('Unable to load Meowdoku progress:', error);
             iframeRef.current?.contentWindow?.postMessage({ type: 'MEOWDOKU_PROGRESS_LOCAL_ONLY' }, window.location.origin);
-            return;
+            return true;
         }
 
         const progress = Array.isArray(data) ? data[0] : data;
@@ -137,6 +140,16 @@ export const GamePage: React.FC<GamePageProps> = ({
                 ? progress.completed_modes as Record<string, unknown>
                 : {}
         });
+        return true;
+    };
+
+    const initializeMeowdoku = async () => {
+        const hasAuthenticatedUser = await loadMeowdokuProgress();
+        if (!hasAuthenticatedUser) return;
+        await Promise.all([
+            loadMeowdokuCheckIn(),
+            loadMeowdokuAchievements()
+        ]);
     };
 
     const saveMeowdokuProgress = async (payload: { completed_level?: unknown; mode?: unknown; score?: unknown; mistakes?: unknown; time_seconds?: unknown; hints_used?: unknown; lives_remaining?: unknown }) => {
@@ -214,9 +227,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                     type: 'MEOWDOKU_WALLET',
                     coins: stats.coins || 0
                 }, window.location.origin);
-                void loadMeowdokuProgress();
-                void loadMeowdokuCheckIn();
-                void loadMeowdokuAchievements();
+                void initializeMeowdoku();
             }
 
             if (event.data?.type === 'MEOWDOKU_SAVE_PROGRESS') {
