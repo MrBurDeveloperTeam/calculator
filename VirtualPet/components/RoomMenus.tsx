@@ -226,7 +226,7 @@ export const GamesMenu: React.FC<GamesMenuProps> = ({ onStartGame }) => (
             >
                 <div
                     className="w-20 h-20 bg-cover bg-center rounded-2xl shadow-lg group-hover:-rotate-6 transition-transform border-4 border-white/70"
-                    style={{ backgroundImage: "url('/games/meowdoku/cover.png')" }}
+                    style={{ backgroundImage: "url('/games/meowdoku/cover-148.png')" }}
                 />
                 <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Meowdoku</span>
             </button>
