@@ -336,7 +336,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                 <div
                     className={`absolute inset-x-0 top-0 z-[60] flex items-center justify-between gap-2 px-3 sm:px-6 ${
                         isMeowdoku
-                            ? 'h-[calc(68px+env(safe-area-inset-top))] border-0 bg-transparent pt-[env(safe-area-inset-top)] shadow-none outline-none md:h-[calc(112px+env(safe-area-inset-top))]'
+                            ? 'h-0 border-0 bg-transparent p-0 shadow-none outline-none'
                             : 'pointer-events-none px-6'
                     }`}
                     style={isMeowdoku ? undefined : {
@@ -354,7 +354,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                         appearance-none
                         items-center justify-center
                         ${isMeowdoku
-                            ? 'h-12 w-12 rounded-xl sm:h-14 sm:w-14 sm:rounded-2xl'
+                            ? 'absolute left-3 top-[calc(10px+env(safe-area-inset-top))] h-12 w-12 rounded-xl sm:h-14 sm:w-14 sm:rounded-2xl md:left-6 md:top-[calc(24px+env(safe-area-inset-top))]'
                             : 'h-16 w-16 rounded-2xl'}
                         border border-white/60
                         bg-white/90
@@ -380,7 +380,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                     </button>
 
                     {/* Wallet and close control share the same fixed row. */}
-                    <div className={`pointer-events-auto flex min-w-0 items-center ${isMeowdoku ? 'gap-2 sm:gap-3' : 'gap-3'}`}>
+                    <div className={`pointer-events-auto flex min-w-0 items-center ${isMeowdoku ? 'absolute right-3 top-[calc(12px+env(safe-area-inset-top))] gap-2 sm:gap-3 md:right-6 md:top-[calc(24px+env(safe-area-inset-top))]' : 'gap-3'}`}>
                         {sessionCoins > 0 && (
                             <div className={`${isMeowdoku ? 'hidden sm:flex' : 'flex'} items-center gap-1.5 bg-yellow-500/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-yellow-500/20 shadow-sm text-yellow-500 animate-in fade-in slide-in-from-top-2 duration-300`}>
                                 <span className="text-[10px] font-black uppercase tracking-wider opacity-70">Coins</span>
@@ -428,7 +428,7 @@ export const GamePage: React.FC<GamePageProps> = ({
 
                 {/* Game Iframe Wrapper */}
                 <div
-                    className={`absolute inset-x-0 bottom-0 border-0 bg-slate-900 shadow-none outline-none ${isMeowdoku ? 'top-[calc(68px+env(safe-area-inset-top))] md:top-0' : 'top-0'}`}
+                    className="absolute inset-x-0 bottom-0 top-0 border-0 bg-slate-900 shadow-none outline-none"
                 >
                     {isLoading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
