@@ -2,6 +2,7 @@
   'use strict';
   const COLORS=['#e78498','#e8aa62','#d8c854','#70bf8d','#52b8c5','#708fe0','#b477c5','#45ad9f','#6269c8'];
   const MODES={easy:{label:'Easy',reward:4,size:0,given:1},medium:{label:'Medium',reward:8,size:0,given:0},hard:{label:'Hard',reward:12,size:1,given:0},hell:{label:'Hell',reward:16,size:2,given:0}};
+  const HELL_VARIANTS={2:187,3:263,4:444,5:145,6:1224,7:81,8:171,9:72,10:603,11:1458,12:2440,13:621,14:5944,15:3114,16:2754,17:3744,18:2700,19:693,20:207,21:3575,22:1234,23:531,24:10433,25:5562,26:265,27:334,28:3341,29:423,30:2448,31:2484,32:4131,33:370,34:558,35:3654,36:2142,37:522,38:657,39:568,40:432,41:369,42:7488,43:2376,44:3592,45:2261,46:1874,47:4689,48:554,49:2169,50:1333,51:100,52:5976,53:8731,54:1503,55:603,56:207,57:1431,58:1847,59:531,60:10845};
   const SAVE_KEY='meowdoku_progress_v1';
   const state={level:1,mode:'easy',activeLevel:null,modePickerExitToLevels:false,lives:3,marks:new Set(),found:new Set(),seconds:0,hintsUsed:0,timer:null,wallet:0,pending:new Map(),levels:[],modeLevels:new Map(),save:loadSave(),progressReady:false,coachStep:-1,coachTarget:null,catActions:new Map(),catActionTimers:new Map()};
   const $=id=>document.getElementById(id);
@@ -75,6 +76,22 @@
     if(solutions.length!==1||!hasHellDeductionChain(level))return false;
     return level.cats.every((cat,color)=>solutions[0].some(item=>item.color===color&&item.r===cat.r&&item.c===cat.c));
   }
+  function hellNeedsAdvancedOpening(level){
+    const byColor=Array.from({length:level.catCount},()=>[]);
+    for(let r=0;r<level.n;r++)for(let c=0;c<level.n;c++)byColor[level.colorGrid[r][c]].push({r,c});
+    const starters=byColor.map((cells,color)=>({cells,color})).filter(item=>item.cells.length===1);
+    if(starters.length!==1)return false;
+    const first=starters[0].cells[0];
+    // After the obvious opening cat is used, Hell must not expose another
+    // direct one-cell answer. The next progress must come from an aligned or
+    // common-coverage candidate deduction.
+    for(let color=0;color<level.catCount;color++){
+      if(color===starters[0].color)continue;
+      const remaining=byColor[color].filter(cell=>!attacks(first,cell.r,cell.c));
+      if(remaining.length<=1)return false;
+    }
+    return true;
+  }
   function makeLevel(number,variant=0,mode='easy'){const config=MODES[mode]||MODES.easy;if(number===1&&mode==='easy')return{number,mode,n:5,catCount:3,cats:[{r:0,c:1},{r:3,c:0},{r:4,c:3}],colorGrid:[[0,0,0,2,0],[1,1,0,0,0],[0,0,0,0,0],[1,0,2,2,0],[0,0,0,2,0]],colorPalette:makeColorPalette(number,3,variant),reward:4,hintCost:5,difficulty:'Tutorial',givenCount:1,verified:true};const modeIndex=Object.keys(MODES).indexOf(mode),givenCount=config.given,baseN=number<=3?5:number<=10?6:number<=30?7:number<=50?8:9,n=Math.min(9,baseN+config.size),catCount=givenCount?Math.max(4,n-1):n,seed=number*7919+variant*65537+modeIndex*1000003+17,fullSolution=makeSolution(n,seed),rows=givenCount?shuffled([...Array(n).keys()],number*3571+variant*12289+modeIndex*91771+91).slice(0,catCount).sort((a,b)=>a-b):[...Array(n).keys()],cats=rows.map(r=>({r,c:fullSolution[r]})),colorGrid=Array.from({length:n},()=>Array(n).fill(0));cats.forEach((cat,color)=>colorGrid[cat.r][cat.c]=color);for(let r=0;r<n;r++)for(let c=0;c<n;c++){if(cats.some(cat=>cat.r===r&&cat.c===c))continue;let attacker=-1;for(let i=0;i<cats.length-1;i++)if(attacks(cats[i],r,c)){attacker=i;break}colorGrid[r][c]=attacker>=0?attacker+1:0}
     if(mode==='hell'){
       // Hell starts with one visually unambiguous color region. Its only cell
@@ -87,12 +104,24 @@
         // color one is safe because the first forced cat eliminates it immediately.
         colorGrid[r][c]=attacker>0?attacker:1;
       }
+      // Break the ordinary one-color-at-a-time chain. Extra cells are moved to
+      // colors whose solution cats attack them. Before those cats are known,
+      // these create aligned and overlapping candidate groups that require the
+      // Hell-only shared-line/common-coverage deductions.
+      const hellRandom=rng(seed^0x5f3759df);
+      const hellMix=.12+(variant%9)*.055;
+      for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+        if(cats.some(cat=>cat.r===r&&cat.c===c)||hellRandom()>hellMix)continue;
+        const attackers=[];
+        for(let color=1;color<cats.length;color++)if(attacks(cats[color],r,c))attackers.push(color);
+        if(attackers.length)colorGrid[r][c]=attackers[Math.floor(hellRandom()*attackers.length)];
+      }
     }
-    const level={number,mode,n,catCount,cats,colorGrid,colorPalette:makeColorPalette(number+modeIndex*67,catCount,variant),reward:config.reward,hintCost:number<=10?5:number<=30?10:number<=50?15:20,difficulty:config.label,givenCount,verified:false};level.verified=mode==='hell'?isHellLogicallySolvable(level):isLogicallySolvable(level,givenCount);if(!level.verified)throw new Error(`Level ${number} ${mode} failed logical verification`);return level}
+    const level={number,mode,n,catCount,cats,colorGrid,colorPalette:makeColorPalette(number+modeIndex*67,catCount,variant),reward:config.reward,hintCost:number<=10?5:number<=30?10:number<=50?15:20,difficulty:config.label,givenCount,verified:false};level.verified=mode==='hell'?isHellLogicallySolvable(level)&&!hasSimpleDeductionChain(level,0)&&hellNeedsAdvancedOpening(level):isLogicallySolvable(level,givenCount);if(!level.verified)throw new Error(`Level ${number} ${mode} failed logical verification`);return level}
   function catLayoutKey(level){return`${level.n}|${level.cats.map(cat=>`${cat.r},${cat.c}`).sort().join('|')}`}
   function boardDesignKey(level){return`${catLayoutKey(level)}|${level.colorPalette.join(',')}|${level.colorGrid.map(row=>row.join(',')).join(';')}`}
   function makeDistinctLevels(total){const levels=[],catLayouts=new Set(),boardDesigns=new Set();for(let number=1;number<=total;number++){let accepted=null;for(let variant=0;variant<500&&!accepted;variant++){let candidate;try{candidate=makeLevel(number,variant,'easy')}catch{continue}const catKey=catLayoutKey(candidate),boardKey=boardDesignKey(candidate);if(catLayouts.has(catKey)||boardDesigns.has(boardKey))continue;catLayouts.add(catKey);boardDesigns.add(boardKey);accepted=candidate}if(!accepted)throw new Error(`Unable to create a distinct logical level ${number}`);levels.push(accepted)}return levels}
-  function getModeLevel(number,mode){const key=modeKey(number,mode);if(state.modeLevels.has(key))return state.modeLevels.get(key);for(let variant=0;variant<700;variant++){try{const level=makeLevel(number,variant,mode);state.modeLevels.set(key,level);return level}catch{}}throw new Error(`Unable to create level ${number} in ${mode} mode`)}
+  function getModeLevel(number,mode){const key=modeKey(number,mode);if(state.modeLevels.has(key))return state.modeLevels.get(key);if(mode==='hell'){const variant=HELL_VARIANTS[number];if(variant==null)throw new Error(`Missing verified Hell design for level ${number}`);const level=makeLevel(number,variant,mode);state.modeLevels.set(key,level);return level}for(let variant=0;variant<700;variant++){try{const level=makeLevel(number,variant,mode);state.modeLevels.set(key,level);return level}catch{}}throw new Error(`Unable to create level ${number} in ${mode} mode`)}
   state.levels=makeDistinctLevels(60);
   state.levels.forEach(level=>{
     const givenCount=level.givenCount||0;
