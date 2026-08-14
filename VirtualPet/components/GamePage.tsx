@@ -328,21 +328,19 @@ export const GamePage: React.FC<GamePageProps> = ({
     const isMeowdoku = gameId === 'meowdoku';
 
     return (
-        <div className="fixed inset-0 z-50 overflow-hidden bg-black" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+        <div className={`fixed inset-0 z-50 overflow-hidden ${isMeowdoku ? 'bg-[#f3f6ff]' : 'bg-black'}`} style={{ fontFamily: "'Fredoka', sans-serif" }}>
             {/* Container - Full Screen */}
             <div className="relative w-full h-full animate-in zoom-in-95 fade-in duration-300">
 
-                {/* Reserved app chrome. Meowdoku starts below this row instead of underneath it. */}
+                {/* Meowdoku reserves this row only on narrow screens where floating controls would overlap its content. */}
                 <div
                     className={`absolute inset-x-0 top-0 z-[60] flex items-center justify-between gap-2 px-3 sm:px-6 ${
                         isMeowdoku
-                            ? 'border-b border-slate-200/80 bg-[#f7f9ff] shadow-sm'
+                            ? 'h-[calc(68px+env(safe-area-inset-top))] bg-transparent pt-[env(safe-area-inset-top)] md:h-[calc(112px+env(safe-area-inset-top))]'
                             : 'pointer-events-none px-6'
                     }`}
-                    style={{
-                        height: isMeowdoku
-                            ? 'calc(68px + env(safe-area-inset-top))'
-                            : 'calc(112px + env(safe-area-inset-top))',
+                    style={isMeowdoku ? undefined : {
+                        height: 'calc(112px + env(safe-area-inset-top))',
                         paddingTop: 'env(safe-area-inset-top)'
                     }}
                 >
@@ -362,7 +360,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                         bg-white/90
                         p-0
                         text-black
-                        shadow-xl shadow-slate-900/10
+                        ${isMeowdoku ? 'shadow-none md:shadow-xl md:shadow-slate-900/10' : 'shadow-xl shadow-slate-900/10'}
                         backdrop-blur-md
                         transition-all
                         hover:-translate-x-0.5
@@ -390,7 +388,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                             </div>
                         )}
 
-                        <div className={`flex items-center rounded-full border border-white/20 bg-black/40 text-white shadow-lg ring-1 ring-white/5 backdrop-blur-md transition-all duration-500 ${isMeowdoku ? 'h-11 gap-1.5 px-3 sm:h-12 sm:gap-2 sm:px-4' : 'gap-2 px-4 py-2.5'}`}>
+                        <div className={`flex items-center rounded-full backdrop-blur-md transition-all duration-500 ${isMeowdoku ? 'h-11 gap-1.5 border border-slate-200/80 bg-white/80 px-3 text-slate-700 shadow-none sm:h-12 sm:gap-2 sm:px-4 md:border-white/20 md:bg-black/40 md:text-white md:shadow-lg md:ring-1 md:ring-white/5' : 'gap-2 border border-white/20 bg-black/40 px-4 py-2.5 text-white shadow-lg ring-1 ring-white/5'}`}>
                             <span className="text-base sm:text-xl">💰</span>
                             <span className={`min-w-[3ch] text-right font-black tracking-wider ${isMeowdoku ? 'text-sm sm:text-lg' : 'text-lg'}`}>
                                 <AnimatedCounter value={stats.coins || 0} />
@@ -400,7 +398,7 @@ export const GamePage: React.FC<GamePageProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className={`flex shrink-0 appearance-none items-center justify-center rounded-full border border-white/10 bg-black/40 p-0 text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-black/60 active:scale-95 ${isMeowdoku ? 'h-11 w-11 sm:h-12 sm:w-12' : 'h-14 w-14'}`}
+                            className={`flex shrink-0 appearance-none items-center justify-center rounded-full p-0 backdrop-blur-md transition-all hover:scale-105 active:scale-95 ${isMeowdoku ? 'h-11 w-11 border border-slate-200/80 bg-white/80 text-slate-700 shadow-none hover:bg-white sm:h-12 sm:w-12 md:border-white/10 md:bg-black/40 md:text-white md:shadow-lg md:hover:bg-black/60' : 'h-14 w-14 border border-white/10 bg-black/40 text-white shadow-lg hover:bg-black/60'}`}
                             title="Back to cat"
                             aria-label="Back to cat"
                         >
@@ -430,8 +428,7 @@ export const GamePage: React.FC<GamePageProps> = ({
 
                 {/* Game Iframe Wrapper */}
                 <div
-                    className="absolute inset-x-0 bottom-0 bg-slate-900"
-                    style={{ top: isMeowdoku ? 'calc(68px + env(safe-area-inset-top))' : 0 }}
+                    className={`absolute inset-x-0 bottom-0 bg-slate-900 ${isMeowdoku ? 'top-[calc(68px+env(safe-area-inset-top))] md:top-0' : 'top-0'}`}
                 >
                     {isLoading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
