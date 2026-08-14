@@ -2,7 +2,7 @@
   'use strict';
   const COLORS=['#e78498','#e8aa62','#d8c854','#70bf8d','#52b8c5','#708fe0','#b477c5','#45ad9f','#6269c8'];
   const MODES={easy:{label:'Easy',reward:4,size:0,given:1},medium:{label:'Medium',reward:8,size:0,given:0},hard:{label:'Hard',reward:12,size:1,given:0},hell:{label:'Hell',reward:16,size:2,given:0}};
-  const HELL_VARIANTS={2:56,3:18,4:182,5:369,6:964,7:81,8:0,9:828,10:207,11:5590,12:8884,13:352,14:3600,15:2394,16:3728,17:2754,18:4041,19:2655,20:3711,21:3205,22:153,23:759,24:45,25:2439,26:2880,27:91,28:4815,29:8118,30:1929,31:2091,32:189,33:2160,34:352,35:4464,36:684,37:352,38:1332,39:900,40:504,41:5553,42:1656,43:577,44:2980,45:1215,46:3141,47:2007,48:576,49:758,50:595,51:937,52:108,53:3402,54:2772,55:3081,56:1845,57:702,58:1053,59:720,60:1181};
+  const HELL_VARIANTS={2:56,3:1042,4:4761,5:817,6:1706,7:1054,8:351,9:828,10:577,11:5590,12:19360,13:5493,14:13248,15:2394,16:10926,17:8730,18:4041,19:2655,20:3711,21:19082,22:4573,23:759,24:1693,25:2439,26:2880,27:5670,28:5490,29:8118,30:1929,31:3051,32:7246,33:8003,34:2403,35:7965,36:684,37:352,38:9668,39:900,40:4104,41:10164,42:10422,43:1829,44:4934,45:4458,46:10953,47:4716,48:6921,49:4788,50:10802,51:15798,52:10098,53:3402,54:5148,55:14634,56:3882,57:981,58:1576,59:3133,60:1181};
   const SAVE_KEY='meowdoku_progress_v1';
   const state={level:1,mode:'easy',activeLevel:null,modePickerExitToLevels:false,lives:3,marks:new Set(),found:new Set(),seconds:0,hintsUsed:0,timer:null,wallet:0,pending:new Map(),levels:[],modeLevels:new Map(),save:loadSave(),progressReady:false,coachStep:-1,coachTarget:null,catActions:new Map(),catActionTimers:new Map()};
   const $=id=>document.getElementById(id);
@@ -37,10 +37,12 @@
       for(let r=0;r<level.n;r++)for(let c=0;c<level.n;c++)if(level.colorGrid[r][c]===color)cells.push({r,c});
       return cells;
     });
-    const solved=new Map();
+    const solved=new Map(),advancedInfluenced=new Set();
+    let advancedEliminations=0,advancedResolutions=0,advancedRounds=0;
     let changed=true,guard=0;
     while(changed&&solved.size<level.catCount&&guard++<level.n*level.n*4){
       changed=false;
+      let advancedChanged=false;
 
       // A confirmed cat removes every candidate in its row, column and 3x3
       // neighbourhood. It also removes the other cells of its own color.
@@ -62,9 +64,10 @@
         for(let other=0;other<level.catCount;other++){
           if(other===color||solved.has(other))continue;
           const next=candidates[other].filter(cell=>!source.every(option=>attacks(option,cell.r,cell.c)));
-          if(next.length!==candidates[other].length){candidates[other]=next;changed=true}
+          if(next.length!==candidates[other].length){advancedEliminations+=candidates[other].length-next.length;advancedInfluenced.add(other);candidates[other]=next;changed=true;advancedChanged=true}
         }
       }
+      if(advancedChanged)advancedRounds++;
 
       for(let color=0;color<level.catCount;color++){
         if(solved.has(color))continue;
@@ -73,10 +76,12 @@
           const forced=candidates[color][0],answer=level.cats[color];
           if(forced.r!==answer.r||forced.c!==answer.c)return false;
           solved.set(color,forced);
+          if(advancedInfluenced.has(color))advancedResolutions++;
           changed=true;
         }
       }
     }
+    level.hellLogicStats={advancedEliminations,advancedResolutions,advancedRounds};
     return solved.size===level.catCount;
   }
   function isLogicallySolvable(level,givenCount){const solutions=findSolutions(level,givenCount,2);if(solutions.length!==1||!hasSimpleDeductionChain(level,givenCount))return false;const solution=solutions[0];return level.cats.every((cat,color)=>solution.some(item=>item.color===color&&item.r===cat.r&&item.c===cat.c))}
@@ -100,6 +105,11 @@
       if(remaining.length<=1)return false;
     }
     return true;
+  }
+  function hasDeepHellReasoning(level){
+    const stats=level.hellLogicStats||{};
+    const requiredResolutions=Math.max(3,Math.ceil((level.catCount-1)*.55));
+    return Number(stats.advancedResolutions)>=requiredResolutions&&Number(stats.advancedRounds)>=2&&Number(stats.advancedEliminations)>=level.n;
   }
   function makeLevel(number,variant=0,mode='easy'){const config=MODES[mode]||MODES.easy;if(number===1&&mode==='easy')return{number,mode,n:5,catCount:3,cats:[{r:0,c:1},{r:3,c:0},{r:4,c:3}],colorGrid:[[0,0,0,2,0],[1,1,0,0,0],[0,0,0,0,0],[1,0,2,2,0],[0,0,0,2,0]],colorPalette:makeColorPalette(number,3,variant),reward:4,hintCost:5,difficulty:'Tutorial',givenCount:1,verified:true};const modeIndex=Object.keys(MODES).indexOf(mode),givenCount=config.given,baseN=number<=3?5:number<=10?6:number<=30?7:number<=50?8:9,n=Math.min(9,baseN+config.size),catCount=givenCount?Math.max(4,n-1):n,seed=number*7919+variant*65537+modeIndex*1000003+17,fullSolution=mode==='hell'?makeStableSolution(n,seed):makeSolution(n,seed),rows=givenCount?shuffled([...Array(n).keys()],number*3571+variant*12289+modeIndex*91771+91).slice(0,catCount).sort((a,b)=>a-b):[...Array(n).keys()],cats=rows.map(r=>({r,c:fullSolution[r]})),colorGrid=Array.from({length:n},()=>Array(n).fill(0));cats.forEach((cat,color)=>colorGrid[cat.r][cat.c]=color);for(let r=0;r<n;r++)for(let c=0;c<n;c++){if(cats.some(cat=>cat.r===r&&cat.c===c))continue;let attacker=-1;for(let i=0;i<cats.length-1;i++)if(attacks(cats[i],r,c)){attacker=i;break}colorGrid[r][c]=attacker>=0?attacker+1:0}
     if(mode==='hell'){
@@ -126,7 +136,7 @@
         if(attackers.length)colorGrid[r][c]=attackers[Math.floor(hellRandom()*attackers.length)];
       }
     }
-    const level={number,mode,n,catCount,cats,colorGrid,colorPalette:makeColorPalette(number+modeIndex*67,catCount,variant),reward:config.reward,hintCost:number<=10?5:number<=30?10:number<=50?15:20,difficulty:config.label,givenCount,verified:false};level.verified=mode==='hell'?isHellLogicallySolvable(level)&&!hasSimpleDeductionChain(level,0)&&hellNeedsAdvancedOpening(level):isLogicallySolvable(level,givenCount);if(!level.verified)throw new Error(`Level ${number} ${mode} failed logical verification`);return level}
+    const level={number,mode,n,catCount,cats,colorGrid,colorPalette:makeColorPalette(number+modeIndex*67,catCount,variant),reward:config.reward,hintCost:number<=10?5:number<=30?10:number<=50?15:20,difficulty:config.label,givenCount,verified:false};level.verified=mode==='hell'?isHellLogicallySolvable(level)&&!hasSimpleDeductionChain(level,0)&&hellNeedsAdvancedOpening(level)&&hasDeepHellReasoning(level):isLogicallySolvable(level,givenCount);if(!level.verified)throw new Error(`Level ${number} ${mode} failed logical verification`);return level}
   function catLayoutKey(level){return`${level.n}|${level.cats.map(cat=>`${cat.r},${cat.c}`).sort().join('|')}`}
   function boardDesignKey(level){return`${catLayoutKey(level)}|${level.colorPalette.join(',')}|${level.colorGrid.map(row=>row.join(',')).join(';')}`}
   function makeDistinctLevels(total){const levels=[],catLayouts=new Set(),boardDesigns=new Set();for(let number=1;number<=total;number++){let accepted=null;for(let variant=0;variant<500&&!accepted;variant++){let candidate;try{candidate=makeLevel(number,variant,'easy')}catch{continue}const catKey=catLayoutKey(candidate),boardKey=boardDesignKey(candidate);if(catLayouts.has(catKey)||boardDesigns.has(boardKey))continue;catLayouts.add(catKey);boardDesigns.add(boardKey);accepted=candidate}if(!accepted)throw new Error(`Unable to create a distinct logical level ${number}`);levels.push(accepted)}return levels}
@@ -142,7 +152,7 @@
   function completedModeCount(level){return level===1?(state.save.completed[modeKey(1,'easy')]?1:0):Object.keys(MODES).filter(mode=>state.save.completed[modeKey(level,mode)]).length}
   function renderLevels(){const grid=$('level-grid');grid.innerHTML='';state.levels.forEach(l=>{const total=l.number===1?1:4,completed=completedModeCount(l.number),done=completed===total,unlocked=l.number<=state.save.unlocked,playable=state.progressReady&&unlocked&&!done;const b=document.createElement('button');b.className=`level-btn ${done?'done':''} ${l.number===state.save.unlocked&&!done?'current':''} ${unlocked?'unlocked':'locked'}`;b.disabled=!playable;b.setAttribute('aria-label',!state.progressReady?`Level ${l.number}, loading progress`:unlocked?l.number===1?`Tutorial level, ${done?'completed':'ready to play'}`:`Level ${l.number}, ${completed} of 4 modes completed`:`Level ${l.number}, locked`);b.innerHTML=`<strong>${l.number}</strong><small>${l.number===1?'Tutorial':`${completed} / 4 modes`}</small><i aria-hidden="true">${done?'COMPLETED':!state.progressReady?'SYNCING':unlocked?l.number===1?'PLAY TUTORIAL':'CHOOSE MODE':'LOCKED'}</i>`;if(playable)b.onclick=()=>l.number===1?startLevel(1,'easy'):openModePicker(l.number);grid.appendChild(b)});const more=document.createElement('div');more.className='level-more-card';more.innerHTML='<span aria-hidden="true">🐾</span><div><b>More levels are being designed</b><small>New cat puzzles are coming. Stay tuned!</small></div>';grid.appendChild(more);const modesDone=state.levels.reduce((sum,l)=>sum+completedModeCount(l.number),0),levelsDone=state.levels.filter(l=>completedModeCount(l.number)>0).length;$('progress-label').textContent=state.progressReady?`${levelsDone} / 60 levels · ${modesDone} / 237 challenges`:'Syncing progress…'}
   function installModePicker(){const modal=document.createElement('div');modal.id='mode-modal';modal.className='modal mode-modal';modal.setAttribute('aria-hidden','true');modal.innerHTML='<div class="modal-card mode-card"><button id="mode-close" class="mode-close" aria-label="Close">×</button><small>SELECT A CHALLENGE</small><h2 id="mode-title">Level</h2><p>Each mode has its own puzzle, completion record, and coin reward.</p><div id="mode-grid" class="mode-grid"></div></div>';document.body.appendChild(modal);$('mode-close').onclick=closeModePicker;modal.onclick=e=>{if(e.target===modal)closeModePicker()}}
-  function openModePicker(number,exitToLevels=false){if(number===1){startLevel(1,'easy');return}state.modePickerExitToLevels=exitToLevels;$('mode-title').textContent=`Level ${number}`;const grid=$('mode-grid');grid.innerHTML='';Object.entries(MODES).forEach(([mode,config])=>{const done=Boolean(state.save.completed[modeKey(number,mode)]),button=document.createElement('button');button.className=`mode-option mode-${mode}${done?' completed':''}`;button.disabled=done;button.innerHTML=`<b>${config.label}</b><span>${done?'Completed':`+${config.reward} coins`}</span><small>${mode==='easy'?'One starting cat':mode==='medium'?'No starting cats':mode==='hard'?'Larger board':'Maximum challenge'}</small>`;if(!done)button.onclick=()=>{try{startLevel(number,mode);closeModePicker(false)}catch(error){console.error(`Unable to open level ${number} ${mode}:`,error);message('This challenge could not be prepared. Please refresh and try again.','error')}};grid.appendChild(button)});$('mode-modal').classList.add('open');$('mode-modal').setAttribute('aria-hidden','false')}
+  function openModePicker(number,exitToLevels=false){if(number===1){startLevel(1,'easy');return}state.modePickerExitToLevels=exitToLevels;$('mode-title').textContent=`Level ${number}`;const grid=$('mode-grid');grid.innerHTML='';Object.entries(MODES).forEach(([mode,config])=>{const done=Boolean(state.save.completed[modeKey(number,mode)]),button=document.createElement('button');button.className=`mode-option mode-${mode}${done?' completed':''}`;button.disabled=done;button.innerHTML=`<b>${config.label}</b><span>${done?'Completed':`+${config.reward} coins`}</span><small>${mode==='easy'?'One starting cat':mode==='medium'?'No starting cats':mode==='hard'?'Larger board':'Multi-step advanced logic'}</small>`;if(!done)button.onclick=()=>{try{startLevel(number,mode);closeModePicker(false)}catch(error){console.error(`Unable to open level ${number} ${mode}:`,error);message('This challenge could not be prepared. Please refresh and try again.','error')}};grid.appendChild(button)});$('mode-modal').classList.add('open');$('mode-modal').setAttribute('aria-hidden','false')}
   function closeModePicker(useExit=true){$('mode-modal')?.classList.remove('open');$('mode-modal')?.setAttribute('aria-hidden','true');const shouldExit=useExit&&state.modePickerExitToLevels;state.modePickerExitToLevels=false;if(shouldExit)goLevels()}
   function clearCatActions(){state.catActionTimers.forEach(clearTimeout);state.catActionTimers.clear();state.catActions.clear()}
   function setCatActionElement(key,action){const cat=document.querySelector(`[data-key="${key}"] .cat-sprite`);if(!cat)return;cat.classList.remove('blinking');if(action){void cat.offsetWidth;cat.classList.add(action)}cat.setAttribute('aria-label',action==='blinking'?'Cat blinking':'Cat')}
