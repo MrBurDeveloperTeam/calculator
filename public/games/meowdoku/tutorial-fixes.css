@@ -236,7 +236,7 @@ body {
 
 .cat-sprite.waving,
 .just-found .cat-sprite.waving {
-  animation: catSpriteWave 1.5s linear 1;
+  animation: catSpriteWave 1.5s step-end 1;
 }
 
 .cell:nth-child(3n) .cat-token {
@@ -293,7 +293,7 @@ body {
 
   .cat-sprite.waving,
   .just-found .cat-sprite.waving {
-    animation: catSpriteWave 1.5s linear 1;
+    animation: catSpriteWave 1.5s step-end 1;
   }
 }
 
@@ -2245,32 +2245,27 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
 }
 
 @keyframes catSpriteWave {
-  0%,
-  16.66% {
+  0% {
     background-position: 0% 0%;
   }
 
-  16.67%,
-  33.32% {
+  16.666% {
     background-position: 20% 0%;
   }
 
-  33.33%,
-  49.99% {
+  33.333% {
     background-position: 40% 0%;
   }
 
-  50%,
-  66.65% {
+  50% {
     background-position: 60% 0%;
   }
 
-  66.66%,
-  83.32% {
+  66.666% {
     background-position: 80% 0%;
   }
 
-  83.33%,
+  83.333%,
   100% {
     background-position: 100% 0%;
   }
