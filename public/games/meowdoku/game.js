@@ -924,38 +924,47 @@
   function setCatActionElement(key,action){
     const cat=document.querySelector(`[data-key="${key}"] .cat-sprite`);
     if(!cat)return;
-    cat.classList.remove('blinking');
+    cat.classList.remove('waving');
     if(action){
       void cat.offsetWidth;
       cat.classList.add(action)
     }
     cat.setAttribute(
       'aria-label',
-      action==='blinking'?'Cat blinking':'Cat'
+      action==='waving'?'Cat waving':'Cat'
     )
   }
 
   function scheduleCatAction(key){
     if(state.catActionTimers.has(key)||state.catActions.has(key))return;
-    const delay=700+Math.random()*1100,
+
+    const delay=900+Math.random()*1400,
       level=state.level;
+
     const timer=setTimeout(()=>{
       state.catActionTimers.delete(key);
+
       if(state.level!==level||!state.found.has(key))return;
-      const action='blinking',
-        duration=1100;
+
+      const action='waving',
+        duration=1500;
+
       state.catActions.set(key,action);
       setCatActionElement(key,action);
+
       const finish=setTimeout(()=>{
         state.catActionTimers.delete(key);
         state.catActions.delete(key);
+
         if(state.level===level&&state.found.has(key)){
           setCatActionElement(key,null);
           scheduleCatAction(key)
         }
       },duration);
+
       state.catActionTimers.set(key,finish)
     },delay);
+
     state.catActionTimers.set(key,timer)
   }
 
@@ -1040,7 +1049,8 @@
           cat.className=`cat-sprite${action?` ${action}`:''}`;
           cat.setAttribute('role','img');
           cat.setAttribute(
-            'aria-label',action==='blinking'?'Cat blinking':'Cat'
+            'aria-label',
+            action==='waving'?'Cat waving':'Cat'
           );
           cell.appendChild(cat);
           if(key===animateKey)cell.classList.add('just-found')

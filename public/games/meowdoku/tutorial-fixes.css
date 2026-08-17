@@ -234,16 +234,10 @@ body {
   animation: catSpriteArrive .52s cubic-bezier(.2,1.65,.4,1);
 }
 
-.cat-sprite.blinking,
-.just-found .cat-sprite.blinking {
-  animation: catSpriteWave 1.2s steps(5,end) 1;
+.cat-sprite.waving,
+.just-found .cat-sprite.waving {
+  animation: catSpriteWave 1.5s linear 1;
 }
-
-/* Hide stray pixels left at the edges of generated sprite frames. */
-.cat-sprite.blinking {
-  clip-path: inset(0 round 8%);
-}
-
 
 .cell:nth-child(3n) .cat-token {
   animation-delay: -.9s;
@@ -290,25 +284,16 @@ body {
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-@keyframes catSpriteWave {
-  from {
-    background-position: 0% 0%;
-    transform: none;
-  }
-
-  to {
-    background-position: 100% 0%;
-    transform: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cat-sprite,
-  .just-found .cat-sprite,
-  .cat-sprite.blinking,
-  .just-found .cat-sprite.blinking {
+  .just-found .cat-sprite {
     animation: none;
     background-position: 0% 0%;
+  }
+
+  .cat-sprite.waving,
+  .just-found .cat-sprite.waving {
+    animation: catSpriteWave 1.5s linear 1;
   }
 }
 
@@ -2256,5 +2241,37 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   #game-screen .paw-life {
     width:25px;
     height:23px;
+  }
+}
+
+@keyframes catSpriteWave {
+  0%,
+  16.66% {
+    background-position: 0% 0%;
+  }
+
+  16.67%,
+  33.32% {
+    background-position: 20% 0%;
+  }
+
+  33.33%,
+  49.99% {
+    background-position: 40% 0%;
+  }
+
+  50%,
+  66.65% {
+    background-position: 60% 0%;
+  }
+
+  66.66%,
+  83.32% {
+    background-position: 80% 0%;
+  }
+
+  83.33%,
+  100% {
+    background-position: 100% 0%;
   }
 }
