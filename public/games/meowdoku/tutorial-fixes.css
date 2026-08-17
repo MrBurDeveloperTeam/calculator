@@ -220,12 +220,13 @@ body {
   display: block;
   width: 94%;
   height: 94%;
-  background-image: url('cat-149-blink-spritesheet.png');
+  background-image: url('cat-149-wave-spritesheet.png');
   background-repeat: no-repeat;
-  background-size: 1200% 100%;
-  background-position: 0 0;
+  background-size: 600% 100%;
+  background-position: 0% 0%;
   filter: drop-shadow(0 4px 4px rgba(67,39,46,.2));
   clip-path: inset(0 round 8%);
+  transform-origin: 50% 88%;
   animation: none;
 }
 
@@ -233,16 +234,10 @@ body {
   animation: catSpriteArrive .52s cubic-bezier(.2,1.65,.4,1);
 }
 
-.cat-sprite.blinking,
-.just-found .cat-sprite.blinking {
-  animation: catSpriteBlink 1.1s steps(11,end) 1;
+.cat-sprite.waving,
+.just-found .cat-sprite.waving {
+  animation: catSpriteWave 1.5s step-end 1;
 }
-
-/* Hide stray pixels left at the edges of generated sprite frames. */
-.cat-sprite.blinking {
-  clip-path: inset(0 round 8%);
-}
-
 
 .cell:nth-child(3n) .cat-token {
   animation-delay: -.9s;
@@ -289,20 +284,17 @@ body {
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-@keyframes catSpriteBlink {
-  from { background-position:0 0;transform:none; }
-  to { background-position:100% 0;transform:none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cat-sprite,
   .just-found .cat-sprite {
     animation: none;
-    background-position: 0 0;
+    background-position: 0% 0%;
   }
 
-  .cat-sprite.blinking,
-  .just-found .cat-sprite.blinking { animation:catSpriteBlink 1.1s steps(11,end) 1; }
+  .cat-sprite.waving,
+  .just-found .cat-sprite.waving {
+    animation: catSpriteWave 1.5s step-end 1;
+  }
 }
 
 /* Boutique tabletop board: ceramic tiles, brass trim, and quiet paw motifs. */
@@ -394,9 +386,37 @@ body::after { right: 8vw; top: 15vh; transform: rotate(22deg) scale(.72); }
   pointer-events: none;
   background: radial-gradient(circle, rgba(255,239,184,.25), transparent 68%);
 }
-/* Compact in-game status: matching cat portrait and pink paw lives. */
-.status-row { gap: clamp(12px, 4vw, 38px); }
-.cat-progress { display:flex;align-items:center;justify-content:center;gap:7px; }
+/* Compact in-game status: cat count, timer and pink paw lives. */
+.status-row {
+  gap: clamp(10px, 3vw, 28px);
+}
+
+.cat-progress,
+.timer-pill {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+
+.timer-pill {
+  color:#59678f;
+}
+
+.timer-icon {
+  font-size:22px;
+  line-height:1;
+}
+
+.timer-pill b {
+  min-width:42px;
+  font-size:16px;
+  font-variant-numeric:tabular-nums;
+}
+
+.timer-pill.countdown {
+  color:#a96061;
+}
 .status-cat-icon { position:relative;display:grid;place-items:center;width:31px;height:31px;overflow:hidden;flex:none;border-radius:50%; }
 .status-cat-icon i { width:100%;height:100%;background:url('cat-149-head.png') center / contain no-repeat;filter:drop-shadow(0 1px 1px rgba(68,38,45,.16)); }
 .lives b { display:flex;align-items:center;justify-content:center;gap:5px; }
@@ -1640,7 +1660,7 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
 .cell {
   border:1.5px solid rgba(255,255,255,.72);
   background-color:var(--tile-color);
-  background-color:color-mix(in srgb,var(--tile-color) 91%,white 9%);
+  background-color:color-mix(in srgb,var(--tile-color) 96%,white 4%);
   background-image:
     linear-gradient(145deg,rgba(255,255,255,.44) 0%,rgba(255,255,255,.13) 30%,transparent 54%),
     radial-gradient(ellipse at 22% 8%,rgba(255,255,255,.29),transparent 48%);
@@ -2188,4 +2208,65 @@ body::after { opacity:.018;filter:hue-rotate(175deg) saturate(.6); }
   .mode-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
   .mode-option { min-height:112px;padding:10px 6px;border-radius:14px; }
   .mode-option b { font-size:14px; }
+}
+
+@media (max-width: 420px) {
+  #game-screen .status-row {
+    gap:6px;
+  }
+
+  #game-screen .status-row .pill {
+    min-width:0;
+    padding:6px 9px;
+  }
+
+  #game-screen .status-cat-icon {
+    width:27px;
+    height:27px;
+  }
+
+  #game-screen .timer-icon {
+    font-size:19px;
+  }
+
+  #game-screen .timer-pill b {
+    min-width:36px;
+    font-size:14px;
+  }
+
+  #game-screen .lives b {
+    gap:3px;
+  }
+
+  #game-screen .paw-life {
+    width:25px;
+    height:23px;
+  }
+}
+
+@keyframes catSpriteWave {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  16.666% {
+    background-position: 20% 0%;
+  }
+
+  33.333% {
+    background-position: 40% 0%;
+  }
+
+  50% {
+    background-position: 60% 0%;
+  }
+
+  66.666% {
+    background-position: 80% 0%;
+  }
+
+  83.333%,
+  100% {
+    background-position: 100% 0%;
+  }
 }
