@@ -3,6 +3,8 @@ import { useCalculator } from '../context/CalculatorContext';
 import { ArrowRight, TrendingUp, AlertCircle, Calculator, Wand2 } from 'lucide-react';
 import { ViewState } from '../types';
 import DataIntegrityCheck from './DataIntegrityCheck';
+import { useProfitCalculatorPersonalizedInsight } from '../aiExperience/hooks/useProfitCalculatorPersonalizedInsight';
+import { PersonalizedInsight } from '../aiExperience/components/PersonalizedInsight';
 
 interface DashboardProps {
     onNavigate: (view: ViewState) => void;
@@ -35,8 +37,26 @@ const SummaryCard: React.FC<{
 type Timeframe = 'hourly' | 'daily' | 'monthly' | 'quarterly' | 'yearly';
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
-    const { state, getTotalMonthlyHours, getGlobalTotalMonthlyCost, openModal } = useCalculator();
+    const { state, getTotalMonthlyHours, getGlobalTotalMonthlyCost, openModal, savedPlans } = useCalculator();
     const [timeframe, setTimeframe] = useState<Timeframe>('monthly');
+
+    // Phase-2B first slice: Latest Saved Plan Not Profitable, Latest Saved
+    // Plan Summary. Pure, synchronous, re-derives whenever the already-
+    // loaded CalculatorContext.savedPlans changes — no new Supabase query,
+    // no polling. See
+    // aiExperience/hooks/useProfitCalculatorPersonalizedInsight.ts.
+    const profitInsight = useProfitCalculatorPersonalizedInsight();
+
+    function handleProfitInsightAction() {
+        if (!profitInsight) return;
+        const planId = profitInsight.facts.planId;
+        const plan = savedPlans.find((p) => p.id === planId);
+        // If the referenced plan no longer exists in current state (e.g.
+        // deleted since this candidate was evaluated), do nothing safely
+        // — never fall back to a different plan, never fabricate data.
+        if (!plan) return;
+        openModal(plan.type, plan);
+    }
 
     // --- Derived Calculations ---
 
@@ -134,6 +154,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                     <span>Calculations Active</span>
                 </div>
             </div>
+
+            <PersonalizedInsight candidate={profitInsight} onAction={handleProfitInsightAction} />
 
             {/* Hero Card: Interactive OpEx Timeframe Toggle */}
             <div
