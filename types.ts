@@ -209,6 +209,32 @@ export interface GlobalState {
   owner: OwnerData;
 }
 
+/** Phase-3 Data-Driven Chat readiness — the existing login fetch effect in
+ *  CalculatorContext.tsx has no loading/error distinction today (a failed
+ *  fetch only shows a toast and leaves `state` at its previous value):
+ *  `loading` while the current user's config fetch is in flight (including
+ *  immediately on logout/user-switch, before a stale previous value could
+ *  be mistaken for current), `ready` once it has succeeded at least once
+ *  for the current user, `error` if it failed. `ready` is necessary but
+ *  NOT sufficient for a factual grounded answer — see
+ *  aiExperience/dataChat/utils/checkCalculatorDataIntegrity.ts for the
+ *  separate runtime-value integrity gate. */
+export type CalculatorDataStatus = 'loading' | 'ready' | 'error';
+
+/** The authenticated user ID for whom the currently accepted `state` /
+ *  `savedPlans` / `savedProcedures` were successfully loaded — NOT
+ *  necessarily the current auth user ID. `calculatorDataStatus === 'ready'`
+ *  alone is insufficient to authorize a grounded Data Chat answer: React
+ *  renders with the new auth user BEFORE the `[user?.id]` effect below has
+ *  a chance to run, so `calculatorDataStatus` can still read `'ready'`
+ *  (left over from the PREVIOUS user) for one or more renders after the
+ *  auth user has already changed. Callers must additionally check
+ *  `calculatorDataUserId === currentAuthenticatedUserId` — a read-time
+ *  comparison available immediately at render/message-handling time, not
+ *  dependent on the effect having already executed. `null` means no
+ *  successfully-loaded owner (initial state, logged out, or fetch error). */
+export type CalculatorDataOwnerId = string | null;
+
 export interface CalculatorContextType {
   state: GlobalState;
   updateSection: <K extends keyof GlobalState>(section: K, data: Partial<GlobalState[K]>) => void;
@@ -219,6 +245,8 @@ export interface CalculatorContextType {
   showToast: (message: string) => void;
   getTotalMonthlyHours: () => number;
   getGlobalTotalMonthlyCost: () => number;
+  calculatorDataStatus: CalculatorDataStatus;
+  calculatorDataUserId: CalculatorDataOwnerId;
 
   // History & Modal Management
   savedPlans: SavedPlan[];

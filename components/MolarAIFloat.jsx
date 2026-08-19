@@ -2,14 +2,35 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MolarChat from './MolarChat';
-import { chatWithMolarAI } from '../services/geminiService';
+import { chatWithMolarAI, chatWithGroundedProfitFacts } from '../services/geminiService';
 import { supabase } from '../lib/supabase';
+import { useCalculator } from '../context/CalculatorContext';
+import { useAuth } from '../context/AuthContext';
+import { isProfitMutationRequest } from '../aiExperience/dataChat/router/isProfitMutationRequest';
+import { classifyProfitDataIntent } from '../aiExperience/dataChat/router/classifyProfitDataIntent';
+import { resolveProfitDataQuery } from '../aiExperience/dataChat/resolver/resolveProfitDataQuery';
+import {
+  buildUnsupportedParameterMessage,
+  buildUnsupportedScopeMessage,
+} from '../aiExperience/dataChat/utils/unsupportedParameterMessage';
+import { formatGroundedProfitFallback } from '../aiExperience/dataChat/utils/formatGroundedProfitFallback';
 
 /**
  * Self-contained floating Molar AI button + chat panel.
  * Drop this anywhere in the layout.
  */
 export default function MolarAIFloat({ userContext, disabled = false, onPetToggle }) {
+  // Phase-3 Data-Driven Chat: MolarAIFloat is always rendered inside both
+  // AuthProvider and CalculatorProvider (see App.tsx), so it can read
+  // calculator state and the current authenticated user directly — no
+  // new prop plumbing, no new Supabase read. `user?.id` is read at
+  // message-send time (not cached), so the ownership check below always
+  // compares against whichever user is authenticated on THIS render —
+  // see resolveProfitDataQuery.ts's file header for why this render-time
+  // read (rather than depending on CalculatorContext's own fetch effect)
+  // is the actual privacy boundary.
+  const { state: calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId } = useCalculator();
+  const { user } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState('');
@@ -44,6 +65,91 @@ export default function MolarAIFloat({ userContext, disabled = false, onPetToggl
     setIsChatLoading(true);
 
     try {
+      // ── Phase-3 Data-Driven Chat (read-only pilot) ──────────────────
+      // Runs BEFORE the existing predefined-response/legacy General Chat
+      // pipeline below, and is fully separate from it: a matched request
+      // here never calls the DB-backed predefined-keyword lookup or
+      // `chatWithMolarAI`, and its output is never scanned for the
+      // fenced ```json action block / never reaches
+      // `window.__MOLAR_ACTIONS__`. See aiExperience/dataChat/ for the
+      // deterministic router/provider/resolver pipeline this uses.
+
+      // 1. Explicit mutation-shaped requests are intercepted with a
+      // deterministic refusal — zero Gemini calls, zero mutation. This
+      // is defense-in-depth: `window.__MOLAR_ACTIONS__` is confirmed
+      // unwired/calculator-irrelevant in this repo today (see
+      // isProfitMutationRequest.ts's file header), but the read-only
+      // guarantee must not depend on that remaining true forever.
+      if (isProfitMutationRequest(msg)) {
+        setChatHistory(prev => [
+          ...prev,
+          { role: 'model', parts: [{ text: "This data chat can check your calculator's current cost configuration, but it can't make changes." }] },
+        ]);
+        // `finally` below still runs setIsChatLoading(false) + the scroll.
+        return;
+      }
+
+      // 2. Deterministic LOCAL intent classification (no Gemini call).
+      const dataRoute = classifyProfitDataIntent(msg);
+
+      if (dataRoute.kind === 'unsupported_parameter') {
+        setChatHistory(prev => [
+          ...prev,
+          { role: 'model', parts: [{ text: buildUnsupportedParameterMessage(dataRoute.reason) }] },
+        ]);
+        return;
+      }
+
+      if (dataRoute.kind === 'unsupported_scope') {
+        setChatHistory(prev => [
+          ...prev,
+          { role: 'model', parts: [{ text: buildUnsupportedScopeMessage(dataRoute.reason) }] },
+        ]);
+        return;
+      }
+
+      if (dataRoute.kind === 'matched') {
+        const result = resolveProfitDataQuery(
+          dataRoute.intent,
+          calculatorState,
+          getGlobalTotalMonthlyCost,
+          calculatorDataStatus,
+          calculatorDataUserId,
+          user?.id ?? null
+        );
+
+        let dataChatResponseText;
+        if (result.status === 'unavailable') {
+          // Unknown/invalid calculator state (including an ownership
+          // mismatch — see resolveProfitDataQuery.ts) is never
+          // reinterpreted as a zero-cost answer, and a matched grounded
+          // intent owns this request even when its source is temporarily
+          // unavailable — it does not fall through to legacy chat.
+          // Deliberately generic wording regardless of reasonCode: never
+          // reveals that the data belongs to a different user.
+          dataChatResponseText = "Your calculator data isn't ready yet.";
+        } else {
+          try {
+            // 3. Grounded Gemini phrasing — receives ONLY the question,
+            // the approved intent, and the already-minimized facts.
+            // Plain text only; never scanned for action blocks.
+            dataChatResponseText = await chatWithGroundedProfitFacts(msg, result.intent, result.facts);
+          } catch (groundedErr) {
+            // Mandatory deterministic fallback — never falls through to
+            // legacy General Chat on a Gemini failure at this stage.
+            console.error('Grounded profit response failed:', groundedErr);
+            dataChatResponseText = formatGroundedProfitFallback(result.intent, result.facts);
+          }
+        }
+
+        setChatHistory(prev => [
+          ...prev,
+          { role: 'model', parts: [{ text: dataChatResponseText }] },
+        ]);
+        return;
+      }
+      // ── End Phase-3 Data-Driven Chat (dataRoute.kind === 'no_match') ─
+
       let response = null;
 
       // 1. Check custom responses first
