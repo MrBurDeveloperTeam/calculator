@@ -462,7 +462,7 @@ export default {
       );
     }
 
-    if (url.pathname === '/api/ticketing/sso') {
+    if (url.pathname === '/ticketing/sso') {
       return handleTicketingSso(request, env);
     }
 

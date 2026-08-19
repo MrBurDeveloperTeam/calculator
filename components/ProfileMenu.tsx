@@ -276,7 +276,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 onClick={async () => {
                   setIsOpen(false);
                   try {
-                    const response = await fetch('/api/ticketing/sso', {
+                    const response = await fetch('/ticketing/sso', {
                       method: 'POST',
                       credentials: 'include',
                       headers: { Accept: 'application/json' },
