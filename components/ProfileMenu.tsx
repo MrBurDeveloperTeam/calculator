@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useProfileImage } from "../hooks/useProfileImage";
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Mail, Phone, Settings as SettingsIcon, User as UserIcon, ChevronRight, Wallet, Tv } from 'lucide-react';
+import { ChevronRight, LifeBuoy, LogOut, Mail, Phone, Settings as SettingsIcon, Tv, User as UserIcon, Wallet } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Profile } from '../types';
 import { useGetUserId } from '../lib/useAppLink';
@@ -265,6 +265,39 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">My Channel</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Manage your channel</p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
+              </button>
+
+              {/* My Support Tickets */}
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={async () => {
+                  setIsOpen(false);
+                  try {
+                    const response = await fetch('/api/ticketing/sso', {
+                      method: 'POST',
+                      credentials: 'include',
+                      headers: { Accept: 'application/json' },
+                    });
+                    const data = await response.json().catch(() => null);
+                    if (!response.ok || !data?.url) {
+                      throw new Error(data?.error || 'Unable to open the support portal.');
+                    }
+                    window.location.assign(data.url);
+                  } catch (error) {
+                    console.error('Ticketing SSO failed:', error);
+                  }
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
+              >
+                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
+                  <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">My Support Tickets</p>
+                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">View and manage your requests</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </button>
