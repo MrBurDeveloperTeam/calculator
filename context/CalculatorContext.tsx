@@ -37,7 +37,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // forget so a slow/unreachable worker or Odoo instance never blocks or
   // fails the local Supabase write, which stays the source of truth either
   // way.
-  const logCalculatorActivity = (action: string, details: string) => {
+  const logCalculatorActivity = (
+    action: string,
+    details: string,
+    meta: { pagePath?: string; pageDurationSeconds?: number } = {}
+  ) => {
     if (!user) return;
     logActivityToOdoo({
       logId: crypto.randomUUID(),
@@ -47,6 +51,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       action,
       details,
       occurredAt: new Date().toISOString(),
+      pagePath: meta.pagePath ?? null,
+      pageDurationSeconds: meta.pageDurationSeconds ?? null,
     });
   };
 
@@ -412,7 +418,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       deleteProcedure,
       modalState,
       openModal,
-      closeModal
+      closeModal,
+      logCalculatorActivity
     }}>
       {children}
     </CalculatorContext.Provider>

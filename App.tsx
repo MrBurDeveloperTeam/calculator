@@ -44,7 +44,24 @@ import {
   THEME_SYNC,
   type ThemePreference,
 } from './lib/themeSync';
+import usePageDurationTracker, { type PageViewLogMeta } from './hooks/usePageDurationTracker';
 
+const VIEW_LABELS: Record<ViewState, string> = {
+  settings: 'Clinic Settings',
+  dashboard: 'Dashboard',
+  history: 'History',
+  procedure_builder: 'Procedure Builder',
+  overhead: 'Overhead Calculator',
+  staff: 'Staff Calculator',
+  depreciation: 'Depreciation Calculator',
+  consumables: 'Consumables Calculator',
+  sterilization: 'Sterilization Calculator',
+  lab: 'Lab Calculator',
+  marketing: 'Marketing Calculator',
+  regulatory: 'Regulatory Calculator',
+  financial: 'Financial Calculator',
+  owner: 'Owner Calculator',
+};
 
 const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -91,7 +108,24 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
     closeModal,
     getGlobalTotalMonthlyCost,
     getTotalMonthlyHours,
+    logCalculatorActivity,
   } = useCalculator();
+
+  // Logs how long the user spends on each view (Dashboard, Settings,
+  // History, each cost-category calculator, Procedure Builder) as a
+  // "page_view" activity once they switch views, hide the tab, or leave
+  // the page — see hooks/usePageDurationTracker.ts.
+  usePageDurationTracker(
+    currentView,
+    VIEW_LABELS[currentView],
+    Boolean(user?.email),
+    (description: string, pageMeta: PageViewLogMeta) => {
+      logCalculatorActivity('page_view', description, {
+        pagePath: pageMeta.pagePath,
+        pageDurationSeconds: pageMeta.pageDurationSeconds,
+      });
+    }
+  );
 
   const aiContext = useMemo(() => {
     const totalMonthlyCost = getGlobalTotalMonthlyCost();

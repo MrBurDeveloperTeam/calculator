@@ -240,4 +240,13 @@ export interface CalculatorContextType {
   };
   openModal: (type: 'ROI' | 'FORECAST', data?: SavedPlan | null) => void;
   closeModal: () => void;
+
+  // Odoo activity sync (see services/logActivityToOdoo.ts). Exposed so
+  // App.tsx can log page_view duration events alongside the
+  // save/update/delete events this context already logs internally.
+  logCalculatorActivity: (
+    action: string,
+    details: string,
+    meta?: { pagePath?: string; pageDurationSeconds?: number }
+  ) => void;
 }

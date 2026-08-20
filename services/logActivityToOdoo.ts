@@ -30,6 +30,8 @@ export interface CalculatorActivityPayload {
   action: string; // e.g. "plan_saved", "procedure_deleted", "config_saved", ...
   details: string;
   occurredAt: string; // ISO timestamp
+  pagePath?: string | null; // e.g. "/dashboard" — set for "page_view" duration events
+  pageDurationSeconds?: number | null; // seconds spent on pagePath before it was logged
 }
 
 export async function logActivityToOdoo(params: CalculatorActivityPayload): Promise<boolean> {
@@ -48,6 +50,8 @@ export async function logActivityToOdoo(params: CalculatorActivityPayload): Prom
     action: params.action,
     details: params.details,
     occurred_at: params.occurredAt,
+    ...(params.pagePath != null ? { page_path: params.pagePath } : {}),
+    ...(params.pageDurationSeconds != null ? { page_duration_seconds: params.pageDurationSeconds } : {}),
   };
 
   try {
