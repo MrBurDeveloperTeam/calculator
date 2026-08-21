@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Menu } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
@@ -17,6 +17,12 @@ import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
 import CatMascot from './components/CatMascot';
 import MolarAIFloat from './components/MolarAIFloat';
+import {
+  PersonalizedInsightBridgeProvider,
+  usePublishPersonalizedInsight,
+  type PersonalizedInsightBridgeState,
+} from './aiExperience/petDialogue/PersonalizedInsightBridge';
+import { useProfitCalculatorPersonalizedInsight } from './aiExperience/hooks/useProfitCalculatorPersonalizedInsight';
 import { VirtualPetContainer } from './VirtualPet/VirtualPetContainer';
 import {
   OverheadCalculator,
@@ -68,6 +74,84 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   return <>{children}</>;
+};
+
+/**
+ * Publishes the app-wide Profit personalized reminder — rendered as a
+ * CHILD of <PersonalizedInsightBridgeProvider> (see AppContent's return
+ * below), never as a hook called from AppContent's own body. That
+ * distinction is the entire point of this component's existence: a hook
+ * call executes as part of whichever component calls it, using that
+ * component's OWN position in the tree — a component only "sees" the
+ * Provider instances that wrap ITS OWN render, never a Provider it simply
+ * returns as descendant JSX. `usePublishPersonalizedInsight` called
+ * directly inside `AppContent`'s body was therefore reading/writing a
+ * DIFFERENT (parent-scope, provider-less) context than the one
+ * `<PersonalizedInsightBridgeProvider>` actually creates a few lines
+ * later in the same return statement — a no-op publish into thin air,
+ * which is why the bridge stayed `{status:'not_ready'}` forever and Cat
+ * correctly waited but never received an update. Mounting this as an
+ * actual descendant component of the Provider fixes that: this
+ * component's own `useContext` calls (inside
+ * `usePublishPersonalizedInsight`) now correctly resolve to the same
+ * Provider instance CatMascot itself reads via `usePersonalizedInsightBridge()`.
+ *
+ * Always mounted for the entire authenticated app lifetime (a sibling of
+ * the main view content inside the same Provider, not gated on
+ * `currentView`) — this is what makes the reminder genuinely app-wide.
+ * Renders nothing; it exists purely to keep this hook call in the correct
+ * tree position. No new Supabase query: `useProfitCalculatorPersonalizedInsight`
+ * is a pure `useMemo` over CalculatorContext's already-loaded `savedPlans`
+ * (the exact same call Dashboard.tsx makes separately for its own inline
+ * banner — see that file's own comment on why calling this pure hook
+ * twice is deliberate reuse, not duplicated computation).
+ */
+const ProfitDialoguePublisher: React.FC = () => {
+  const { user } = useAuth();
+  const { savedPlans, openModal, calculatorDataStatus, calculatorDataUserId } = useCalculator();
+  const profitInsight = useProfitCalculatorPersonalizedInsight();
+
+  // CLOSURE SAFETY: this function closes over `profitInsight`/`savedPlans`
+  // from THIS render. The bridge below captures this exact function
+  // reference together with `profitInsight` from the SAME publish call —
+  // CatMascot then freezes that pair in its own refs at adoption time and
+  // never re-reads a later render's values, so a later savedPlans change
+  // can never make the CTA open a DIFFERENT plan than the one Cat
+  // actually displayed. `openModal`/`modalState` are already owned by
+  // CalculatorContext and the modal itself already renders at AppContent
+  // level regardless of `currentView` (see `<ROICalculatorModal>`/
+  // `<SmartForecastingModal>`, both driven by `modalState`), so this works
+  // identically from any internal view, including ones where Dashboard
+  // was never mounted.
+  const handleProfitInsightAction = useCallback(() => {
+    if (!profitInsight) return;
+    const planId = profitInsight.facts.planId;
+    const plan = savedPlans.find((p) => p.id === planId);
+    // If the referenced plan no longer exists in current state (e.g.
+    // deleted since this candidate was evaluated), do nothing safely —
+    // never fall back to a different plan, never fabricate data.
+    if (!plan) return;
+    openModal(plan.type, plan);
+  }, [profitInsight, savedPlans, openModal]);
+
+  // Unconditional: NOT gated on `currentView === 'dashboard'` — the
+  // Profit reminder is an app-wide product requirement, so this runs
+  // regardless of which internal view is currently mounted. Ownership is
+  // checked FIRST (calculatorDataUserId === current authenticated user
+  // id), THEN readiness (calculatorDataStatus === 'ready') — the exact
+  // same two-step gate already established by resolveProfitDataQuery.ts
+  // for Phase-3 Data Chat, reused here rather than re-derived. A stale
+  // previous user's 'ready' status (e.g. right after logout/user-switch,
+  // before CalculatorContext's fetch effect has run for the new user) is
+  // therefore never treated as ready for the new user. See
+  // aiExperience/petDialogue/PersonalizedInsightBridge.tsx's file header.
+  const personalizedInsightBridgeState: PersonalizedInsightBridgeState =
+    calculatorDataUserId !== null && calculatorDataUserId === user?.id && calculatorDataStatus === 'ready'
+      ? { status: 'ready', candidate: profitInsight, onAction: handleProfitInsightAction }
+      : { status: 'not_ready' };
+  usePublishPersonalizedInsight(personalizedInsightBridgeState);
+
+  return null;
 };
 
 interface AppContentProps {
@@ -158,6 +242,14 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
   };
 
   return (
+    // <ProfitDialoguePublisher /> is a genuine DESCENDANT of this Provider
+    // (rendered as JSX here, not called as a hook up in AppContent's own
+    // body — see that component's own doc for why the distinction is
+    // load-bearing), and CatMascot (the reader, always mounted below) is
+    // its sibling — both consume the exact same Provider instance. See
+    // aiExperience/petDialogue/PersonalizedInsightBridge.tsx.
+    <PersonalizedInsightBridgeProvider>
+    <ProfitDialoguePublisher />
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
       <Sidebar
         currentView={currentView}
@@ -230,6 +322,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
         onClose={() => setIsVirtualPetOpen(false)}
       />
     </div>
+    </PersonalizedInsightBridgeProvider>
   );
 };
 

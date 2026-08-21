@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useCalculator } from '../context/CalculatorContext';
 import { ArrowRight, TrendingUp, AlertCircle, Calculator, Wand2 } from 'lucide-react';
 import { ViewState } from '../types';
@@ -43,11 +43,24 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
     // Phase-2B first slice: Latest Saved Plan Not Profitable, Latest Saved
     // Plan Summary. Pure, synchronous, re-derives whenever the already-
     // loaded CalculatorContext.savedPlans changes — no new Supabase query,
-    // no polling. See
-    // aiExperience/hooks/useProfitCalculatorPersonalizedInsight.ts.
+    // no polling. See aiExperience/hooks/useProfitCalculatorPersonalizedInsight.ts.
+    //
+    // DASHBOARD-LOCAL ONLY: this call feeds ONLY the inline
+    // PersonalizedInsight banner rendered below. The app-wide Cat Reminder
+    // publisher now lives in App.tsx (its own separate call to this exact
+    // same hook, unconditional — not gated on currentView) so the
+    // proactive reminder no longer depends on Dashboard being mounted —
+    // see App.tsx's own comment and PersonalizedInsightBridge.tsx's file
+    // header for the full rationale. Calling this pure/no-network hook
+    // twice (once here, once in App.tsx) is deliberate reuse of the same
+    // resolver/data, not a duplicated business computation.
     const profitInsight = useProfitCalculatorPersonalizedInsight();
 
-    function handleProfitInsightAction() {
+    // CLOSURE SAFETY: this function closes over `profitInsight`/`savedPlans`
+    // from THIS render, so the inline banner's own CTA always opens the
+    // exact plan currently shown inline — independent of whatever Cat is
+    // separately doing via App.tsx's own action handler.
+    const handleProfitInsightAction = useCallback(() => {
         if (!profitInsight) return;
         const planId = profitInsight.facts.planId;
         const plan = savedPlans.find((p) => p.id === planId);
@@ -56,7 +69,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
         // — never fall back to a different plan, never fabricate data.
         if (!plan) return;
         openModal(plan.type, plan);
-    }
+    }, [profitInsight, savedPlans, openModal]);
 
     // --- Derived Calculations ---
 
