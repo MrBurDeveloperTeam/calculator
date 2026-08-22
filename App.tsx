@@ -23,7 +23,7 @@ import {
   type PersonalizedInsightBridgeState,
 } from './aiExperience/petDialogue/PersonalizedInsightBridge';
 import { useProfitCalculatorPersonalizedInsight } from './aiExperience/hooks/useProfitCalculatorPersonalizedInsight';
-import { VirtualPetContainer } from './VirtualPet/VirtualPetContainer';
+import CalculatorVirtualPet from './petExperience/CalculatorVirtualPet';
 import {
   OverheadCalculator,
   StaffCalculator,
@@ -317,9 +317,10 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
           onPetToggle={() => setIsVirtualPetOpen(true)}
         />
       </div>
-      <VirtualPetContainer
+      <CalculatorVirtualPet
         isOpen={isVirtualPetOpen}
         onClose={() => setIsVirtualPetOpen(false)}
+        userId={user?.id ?? null}
       />
     </div>
     </PersonalizedInsightBridgeProvider>
