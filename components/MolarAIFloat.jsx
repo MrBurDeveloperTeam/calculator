@@ -1,288 +1,95 @@
-import { useState, useRef, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import MolarChat from './MolarChat';
-import { chatWithMolarAI, chatWithGroundedProfitFacts } from '../services/geminiService';
+import { useEffect, useMemo, useState } from 'react';
+import { SharedMolarAI } from '@mrburdeveloperteam/molar-experience/ai';
 import { supabase } from '../lib/supabase';
 import { useCalculator } from '../context/CalculatorContext';
 import { useAuth } from '../context/AuthContext';
-import { isProfitMutationRequest } from '../aiExperience/dataChat/router/isProfitMutationRequest';
-import { classifyProfitDataIntent } from '../aiExperience/dataChat/router/classifyProfitDataIntent';
-import { resolveProfitDataQuery } from '../aiExperience/dataChat/resolver/resolveProfitDataQuery';
-import {
-  buildUnsupportedParameterMessage,
-  buildUnsupportedScopeMessage,
-} from '../aiExperience/dataChat/utils/unsupportedParameterMessage';
-import { formatGroundedProfitFallback } from '../aiExperience/dataChat/utils/formatGroundedProfitFallback';
+import { createProfitCalculatorMolarAdapter } from '../aiExperience/profitCalculatorMolarAdapter';
 
-/**
- * Self-contained floating Molar AI button + chat panel.
- * Drop this anywhere in the layout.
- */
+// PHASE 4D NOTE (Molar AI extraction): this file is now a LOCAL adapter
+// only — the floating button, chat panel, message rendering, markdown,
+// input/loading/error UI, and generic send/scroll/clear lifecycle all
+// live in @mrburdeveloperteam/molar-experience/ai's <SharedMolarAI>. This
+// component's job is: (1) build the AIAdapter Profit Calculator's own
+// business logic implements (see
+// ../aiExperience/profitCalculatorMolarAdapter.ts — moved mechanically,
+// not rewritten), and (2) fetch the empty-state welcome
+// title/subtitle/prompt-suggestions data this app has always pulled from
+// AIBoard, reactively feeding it to the shared component.
+//
+// KNOWN, ACCEPTED TIMING SEAM (same pattern as Content Studio's Phase 3C
+// migration): the empty-state AIBoard config now fetches once on mount
+// rather than only when the panel is first opened, because the shared
+// component's open/closed state is intentionally internal to it, not
+// exposed back to hosts. This is one cheap, harmless, read-only query
+// per page load — it has no effect on anything the user sees.
 export default function MolarAIFloat({ userContext, disabled = false, onPetToggle }) {
-  // Phase-3 Data-Driven Chat: MolarAIFloat is always rendered inside both
-  // AuthProvider and CalculatorProvider (see App.tsx), so it can read
-  // calculator state and the current authenticated user directly — no
-  // new prop plumbing, no new Supabase read. `user?.id` is read at
-  // message-send time (not cached), so the ownership check below always
-  // compares against whichever user is authenticated on THIS render —
-  // see resolveProfitDataQuery.ts's file header for why this render-time
-  // read (rather than depending on CalculatorContext's own fetch effect)
-  // is the actual privacy boundary.
   const { state: calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId } = useCalculator();
   const { user } = useAuth();
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [chatInput, setChatInput] = useState('');
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const chatEndRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [badgeText, setBadgeText] = useState('Meow! 🐾');
+
+  const [emptyState, setEmptyState] = useState(undefined);
 
   useEffect(() => {
-    const texts = disabled 
-      ? ['Log In', 'Get Started']
-      : ['Ask Me', 'Try Me!', 'SNAI'];
-    
-    let i = 0;
-    setBadgeText(texts[0]);
+    let cancelled = false;
+    const fetchSimConfig = async () => {
+      try {
+        const { data: configs } = await supabase
+          .from('aiboard_simulator_configs')
+          .select('id, title, subtitle')
+          .eq('module_name', 'Profit Calculator')
+          .limit(1);
 
-    const interval = setInterval(() => {
-      i = (i + 1) % texts.length;
-      setBadgeText(texts[i]);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [disabled]);
+        const fallbackPrompts = [
+          { label: 'Review my cost structure', iconName: 'Zap' },
+          { label: 'Check procedure margins', iconName: 'ShieldCheck' },
+          { label: 'Find pricing risks', iconName: 'AlertCircle' },
+          { label: 'Forecast clinic profit', iconName: 'BarChart3' },
+        ];
 
-  const handleSendMessage = async (e) => {
-    if (e) e.preventDefault();
-    if (disabled) return;
-    const msg = chatInput.trim();
-    if (!msg || isChatLoading) return;
+        if (configs && configs.length > 0) {
+          const title = configs[0].title;
+          const subtitle = configs[0].subtitle || 'Ready to assist with pricing, costs, margins, forecasts, and ROI planning.';
 
-    setChatInput('');
-    setChatHistory(prev => [...prev, { role: 'user', parts: [{ text: msg }] }]);
-    setIsChatLoading(true);
+          const { data: promptData } = await supabase
+            .from('aiboard_simulator_prompts')
+            .select('text, icon_name, sort_order')
+            .eq('config_id', configs[0].id)
+            .order('sort_order', { ascending: true });
 
-    try {
-      // ── Phase-3 Data-Driven Chat (read-only pilot) ──────────────────
-      // Runs BEFORE the existing predefined-response/legacy General Chat
-      // pipeline below, and is fully separate from it: a matched request
-      // here never calls the DB-backed predefined-keyword lookup or
-      // `chatWithMolarAI`, and its output is never scanned for the
-      // fenced ```json action block / never reaches
-      // `window.__MOLAR_ACTIONS__`. See aiExperience/dataChat/ for the
-      // deterministic router/provider/resolver pipeline this uses.
+          const prompts = promptData && promptData.length > 0
+            ? promptData.map((p) => ({ label: p.text, iconName: p.icon_name }))
+            : fallbackPrompts;
 
-      // 1. Explicit mutation-shaped requests are intercepted with a
-      // deterministic refusal — zero Gemini calls, zero mutation. This
-      // is defense-in-depth: `window.__MOLAR_ACTIONS__` is confirmed
-      // unwired/calculator-irrelevant in this repo today (see
-      // isProfitMutationRequest.ts's file header), but the read-only
-      // guarantee must not depend on that remaining true forever.
-      if (isProfitMutationRequest(msg)) {
-        setChatHistory(prev => [
-          ...prev,
-          { role: 'model', parts: [{ text: "This data chat can check your calculator's current cost configuration, but it can't make changes." }] },
-        ]);
-        // `finally` below still runs setIsChatLoading(false) + the scroll.
-        return;
-      }
-
-      // 2. Deterministic LOCAL intent classification (no Gemini call).
-      const dataRoute = classifyProfitDataIntent(msg);
-
-      if (dataRoute.kind === 'unsupported_parameter') {
-        setChatHistory(prev => [
-          ...prev,
-          { role: 'model', parts: [{ text: buildUnsupportedParameterMessage(dataRoute.reason) }] },
-        ]);
-        return;
-      }
-
-      if (dataRoute.kind === 'unsupported_scope') {
-        setChatHistory(prev => [
-          ...prev,
-          { role: 'model', parts: [{ text: buildUnsupportedScopeMessage(dataRoute.reason) }] },
-        ]);
-        return;
-      }
-
-      if (dataRoute.kind === 'matched') {
-        const result = resolveProfitDataQuery(
-          dataRoute.intent,
-          calculatorState,
-          getGlobalTotalMonthlyCost,
-          calculatorDataStatus,
-          calculatorDataUserId,
-          user?.id ?? null
-        );
-
-        let dataChatResponseText;
-        if (result.status === 'unavailable') {
-          // Unknown/invalid calculator state (including an ownership
-          // mismatch — see resolveProfitDataQuery.ts) is never
-          // reinterpreted as a zero-cost answer, and a matched grounded
-          // intent owns this request even when its source is temporarily
-          // unavailable — it does not fall through to legacy chat.
-          // Deliberately generic wording regardless of reasonCode: never
-          // reveals that the data belongs to a different user.
-          dataChatResponseText = "Your calculator data isn't ready yet.";
-        } else {
-          try {
-            // 3. Grounded Gemini phrasing — receives ONLY the question,
-            // the approved intent, and the already-minimized facts.
-            // Plain text only; never scanned for action blocks.
-            dataChatResponseText = await chatWithGroundedProfitFacts(msg, result.intent, result.facts);
-          } catch (groundedErr) {
-            // Mandatory deterministic fallback — never falls through to
-            // legacy General Chat on a Gemini failure at this stage.
-            console.error('Grounded profit response failed:', groundedErr);
-            dataChatResponseText = formatGroundedProfitFallback(result.intent, result.facts);
-          }
+          if (!cancelled) setEmptyState({ title, subtitle, prompts });
+        } else if (!cancelled) {
+          setEmptyState({ prompts: fallbackPrompts });
         }
-
-        setChatHistory(prev => [
-          ...prev,
-          { role: 'model', parts: [{ text: dataChatResponseText }] },
-        ]);
-        return;
+      } catch (err) {
+        console.error('Error fetching sim configs:', err);
       }
-      // ── End Phase-3 Data-Driven Chat (dataRoute.kind === 'no_match') ─
+    };
 
-      let response = null;
+    fetchSimConfig();
+    return () => { cancelled = true; };
+  }, []);
 
-      // 1. Check custom responses first
-      const { data: apps } = await supabase
-        .from('aiboard_response_target_apps')
-        .select('response_id')
-        .in('app_name', ['Profit Calculator', 'All']);
-
-      if (apps && apps.length > 0) {
-        const responseIds = apps.map(a => a.response_id);
-        const { data: keywords } = await supabase
-          .from('aiboard_response_keywords')
-          .select('keyword, response_id')
-          .in('response_id', responseIds);
-
-        if (keywords && keywords.length > 0) {
-          const matchedKeyword = keywords.find(k => msg.toLowerCase().includes(k.keyword.toLowerCase()));
-
-          if (matchedKeyword) {
-            const { data: respData } = await supabase
-              .from('aiboard_responses')
-              .select('response')
-              .eq('id', matchedKeyword.response_id)
-              .single();
-
-            if (respData) {
-              response = respData.response;
-            }
-          }
-        }
-      }
-
-      // 2. Fallback to Gemini
-      if (!response) {
-        response = await chatWithMolarAI(chatHistory, msg, userContext || '');
-      }
-      
-      // Parse actions from backticks if present
-      let cleanResponse = response;
-      const jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/) || response.match(/```\s*(\{[\s\S]*?\})\s*```/);
-      
-      if (jsonMatch) {
-         try {
-            const actionObj = JSON.parse(jsonMatch[1]);
-            cleanResponse = response.replace(jsonMatch[0], '').trim();
-            
-            if (actionObj.action && window.__MOLAR_ACTIONS__) {
-               const handlers = window.__MOLAR_ACTIONS__;
-               const { action, data, id } = actionObj;
-               
-               console.log('[MolarAI] Executing action:', action, data);
-               
-               switch(action) {
-                  case 'ADD_APPOINTMENT': handlers.addAppointment?.(data); break;
-                  case 'UPDATE_APPOINTMENT': handlers.updateAppointment?.(id, data); break;
-                  case 'ADD_STAFF': handlers.addStaff?.(data); break;
-                  case 'ADD_ROOM': handlers.addRoom?.(data); break;
-                  case 'ADD_TREATMENT': handlers.addTreatment?.(data); break;
-                  case 'ADD_HOLIDAY': handlers.addHoliday?.(data); break;
-                  case 'ADD_PATIENT': handlers.addPatient?.(data); break;
-                  default: console.warn('[MolarAI] Unknown action:', action);
-               }
-            }
-         } catch (e) {
-            console.error('[MolarAI] Action parse failed:', e);
-         }
-      }
-
-      setChatHistory(prev => [...prev, { role: 'model', parts: [{ text: cleanResponse || "SNAI: Action executed." }] }]);
-    } catch (error) {
-      setChatHistory(prev => [...prev, { role: 'model', parts: [{ text: "SNAI Error: Unable to process request." }] }]);
-    } finally {
-      setIsChatLoading(false);
-      setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-    }
-  };
-
-  const handleOpenChat = () => {
-    if (disabled) return;
-    setIsChatOpen(true);
-  };
-
-  const handleClearChat = () => setChatHistory([]);
+  const adapter = useMemo(
+    () => createProfitCalculatorMolarAdapter({
+      calculatorState,
+      getGlobalTotalMonthlyCost,
+      calculatorDataStatus,
+      calculatorDataUserId,
+      userId: user?.id ?? null,
+      userContext: userContext || '',
+    }),
+    [calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId, user?.id, userContext]
+  );
 
   return (
-    <>
-      {/* Floating trigger button - SuperApp Style */}
-      {!isChatOpen && (
-        <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-center group">
-          <div className="relative flex items-center justify-center">
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-[70] pointer-events-none">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={badgeText}
-                  initial={{ opacity: 0, y: 5, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -5, scale: 0.9 }}
-                  className="bg-white text-emerald-500 text-[10px] sm:text-[12px] font-bold tracking-wider px-2 py-0.5 rounded-full shadow-lg shadow-emerald-500/20 whitespace-nowrap"
-                >
-                  {badgeText}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-            <button
-              onClick={() => setIsChatOpen(true)}
-              disabled={disabled}
-              className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 hover:shadow-xl transition-all shadow-[#1F7A6F]/30 relative overflow-hidden ${disabled ? 'bg-slate-300 grayscale cursor-not-allowed opacity-70' : 'bg-[#1F7A6F]'}`}
-            >
-              
-              <img 
-                src="/images/ai_logo.png" 
-                alt="Molar AI" 
-                className={`w-10 h-10 object-contain drop-shadow-sm transition-transform ${disabled ? 'brightness-80' : ''}`} 
-              />
-            </button>
-          </div>
-        </div>
-      )}
-
-      <MolarChat
-        isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
-        chatHistory={chatHistory}
-        isChatLoading={isChatLoading}
-        chatInput={chatInput}
-        setChatInput={setChatInput}
-        onSendMessage={handleSendMessage}
-        onClearChat={handleClearChat}
-        onPetToggle={onPetToggle}
-        chatEndRef={chatEndRef}
-      />
-
-
-    </>
+    <SharedMolarAI
+      adapter={adapter}
+      disabled={disabled}
+      onPetToggle={onPetToggle}
+      emptyState={emptyState}
+    />
   );
 }
