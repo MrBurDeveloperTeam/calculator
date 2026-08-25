@@ -269,23 +269,23 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </button>
 
-              {/* My Support Tickets */}
+              {/* Support Tickets */}
               <button
                 type="button"
                 disabled={isPending}
                 onClick={async () => {
                   setIsOpen(false);
                   try {
-                    const response = await fetch('/ticketing/sso', {
+                    const response = await fetch('/api/ticketing/sso', {
                       method: 'POST',
                       credentials: 'include',
                       headers: { Accept: 'application/json' },
                     });
                     const data = await response.json().catch(() => null);
-                    if (!response.ok || !data?.url) {
+                    if (!response.ok || !data?.redirectUrl) {
                       throw new Error(data?.error || 'Unable to open the support portal.');
                     }
-                    window.location.assign(data.url);
+                    window.location.assign(data.redirectUrl);
                   } catch (error) {
                     console.error('Ticketing SSO failed:', error);
                   }
@@ -296,8 +296,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">My Support Tickets</p>
-                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">View and manage your requests</p>
+                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Support Tickets</p>
+                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Create and track your support tickets</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </button>
