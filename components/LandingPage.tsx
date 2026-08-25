@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, TrendingUp, ChevronRight, Calculator, BarChart3, Clock, CheckCircle2, Quote, Star, Zap, XCircle, Check, MousePointerClick, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { SNABBB_SIGNUP_URL } from '../constants/authLinks';
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
@@ -24,10 +25,6 @@ const LandingPage: React.FC = () => {
 
     const openLogin = () => {
         navigate('/login');
-    };
-
-    const openSignUp = () => {
-        navigate('/register');
     };
 
     return (
@@ -61,12 +58,12 @@ const LandingPage: React.FC = () => {
                                 Log In
                             </button>
 
-                            <button
-                                onClick={openSignUp}
+                            <a
+                                href={SNABBB_SIGNUP_URL}
                                 className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-sm font-semibold py-2 px-2.5 sm:px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all hover:shadow-md transform hover:-translate-y-[1px]"
                             >
                                 Sign Up
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -103,12 +100,12 @@ const LandingPage: React.FC = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 fill-mode-both">
-                            <button
-                                onClick={openSignUp}
+                            <a
+                                href={SNABBB_SIGNUP_URL}
                                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-base py-3.5 px-8 rounded-xl font-bold shadow-lg shadow-slate-900/20 transition-all hover:shadow-xl transform hover:-translate-y-1"
                             >
                                 Start Calculating <ChevronRight className="w-5 h-5" />
-                            </button>
+                            </a>
                             <button
                                 onClick={openLogin}
                                 className="w-full sm:w-auto text-slate-600 hover:text-slate-900 font-bold py-3.5 px-8 rounded-xl hover:bg-slate-100 transition-colors text-base"
@@ -390,9 +387,9 @@ const LandingPage: React.FC = () => {
                                         </div>
                                     </li>
                                 </ul>
-                                <button onClick={openSignUp} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors relative z-10 shadow-lg shadow-blue-500/20">
+                                <a href={SNABBB_SIGNUP_URL} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors relative z-10 shadow-lg shadow-blue-500/20">
                                     Get Started <ArrowRight className="w-5 h-5" />
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -585,12 +582,12 @@ const LandingPage: React.FC = () => {
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Secure Cloud Backup</li>
                             </ul>
                             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button
-                                    onClick={openSignUp}
+                                <a
+                                    href={SNABBB_SIGNUP_URL}
                                     className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-lg py-4 px-8 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl transform hover:-translate-y-1"
                                 >
                                     Create Free Account
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -603,12 +600,12 @@ const LandingPage: React.FC = () => {
                                 <span className="text-5xl font-black text-slate-900">USD 99</span>
                                 <span className="text-slate-500 font-medium">/mo</span>
                             </div>
-                            <button
-                                onClick={openSignUp}
+                            <a
+                                href={SNABBB_SIGNUP_URL}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-bold transition-colors"
                             >
                                 Start 14-Day Free Trial
-                            </button>
+                            </a>
                             <p className="text-center text-xs text-slate-400 mt-4">No credit card required to start.</p>
                         </div>
                     </div>
