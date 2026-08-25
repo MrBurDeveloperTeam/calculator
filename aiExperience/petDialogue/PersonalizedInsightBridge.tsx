@@ -42,7 +42,7 @@
 // never authorize a candidate for the current user). App.tsx reuses both
 // signals for this bridge — not a new query, not a new readiness flag.
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ProfitCalculatorInsightCandidate } from '../resolver/resolveProfitCalculatorInsight';
 
 export type PersonalizedInsightBridgeState =
@@ -75,8 +75,20 @@ export function PersonalizedInsightBridgeProvider({ children }: { children: Reac
   // `null` no longer belongs in this model now that the publisher is
   // app-wide and always co-mounted with CatMascot.
   const [entry, setEntry] = useState<PersonalizedInsightBridgeState>({ status: 'not_ready' });
+  // Memoized so the Provider's context value keeps the same reference
+  // across renders where `entry` hasn't actually changed (`setEntry` is
+  // React's own stable setter identity, so `[entry]` is the complete and
+  // correct dependency list) — otherwise every render would hand
+  // consumers a fresh `{ entry, publish }` object regardless of whether
+  // `entry` itself changed, defeating referential-equality bailouts for
+  // any consumer (including `usePublishPersonalizedInsight`'s own effect,
+  // which depends on this exact context value).
+  const contextValue = useMemo(
+    () => ({ entry, publish: setEntry }),
+    [entry],
+  );
   return (
-    <PersonalizedInsightBridgeContext.Provider value={{ entry, publish: setEntry }}>
+    <PersonalizedInsightBridgeContext.Provider value={contextValue}>
       {children}
     </PersonalizedInsightBridgeContext.Provider>
   );

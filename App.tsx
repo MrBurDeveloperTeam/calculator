@@ -145,10 +145,22 @@ const ProfitDialoguePublisher: React.FC = () => {
   // before CalculatorContext's fetch effect has run for the new user) is
   // therefore never treated as ready for the new user. See
   // aiExperience/petDialogue/PersonalizedInsightBridge.tsx's file header.
-  const personalizedInsightBridgeState: PersonalizedInsightBridgeState =
-    calculatorDataUserId !== null && calculatorDataUserId === user?.id && calculatorDataStatus === 'ready'
-      ? { status: 'ready', candidate: profitInsight, onAction: handleProfitInsightAction }
-      : { status: 'not_ready' };
+  // Memoized so this object keeps the same reference across renders where
+  // none of its real semantic inputs changed — `profitInsight` is already
+  // a stable useMemo result (useProfitCalculatorPersonalizedInsight.ts,
+  // keyed off `savedPlans`) and `handleProfitInsightAction` is already a
+  // stable useCallback result (above), so the only remaining source of a
+  // fresh reference on every render was this object literal itself. See
+  // PersonalizedInsightBridge.tsx's own Provider memoization — both were
+  // required together to stop `usePublishPersonalizedInsight`'s effect
+  // ([ctx, state] deps) from re-firing on every render.
+  const personalizedInsightBridgeState: PersonalizedInsightBridgeState = useMemo(
+    () =>
+      calculatorDataUserId !== null && calculatorDataUserId === user?.id && calculatorDataStatus === 'ready'
+        ? { status: 'ready', candidate: profitInsight, onAction: handleProfitInsightAction }
+        : { status: 'not_ready' },
+    [calculatorDataUserId, user?.id, calculatorDataStatus, profitInsight, handleProfitInsightAction],
+  );
   usePublishPersonalizedInsight(personalizedInsightBridgeState);
 
   return null;
