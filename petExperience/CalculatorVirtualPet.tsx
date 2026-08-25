@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SharedVirtualPet } from '@mrburdeveloperteam/molar-experience/pet';
 import { supabase } from '../lib/supabase';
 import { calculatorPetRepository } from './calculatorPetRepository';
+import { PET_ASSET_URLS } from '../aiExperience/molarExperienceAssets';
 
 interface GeoInfo {
   ip: string;
@@ -151,6 +152,7 @@ export default function CalculatorVirtualPet({ isOpen, onClose, userId }: Calcul
       repository={calculatorPetRepository}
       userId={userId}
       currencyCode={detectedCurrency}
+      assetUrls={PET_ASSET_URLS}
     />
   );
 }

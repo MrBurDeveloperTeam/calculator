@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useCalculator } from '../context/CalculatorContext';
 import { useAuth } from '../context/AuthContext';
 import { createProfitCalculatorMolarAdapter } from '../aiExperience/profitCalculatorMolarAdapter';
+import { MOLAR_LOGO_URL } from '../aiExperience/molarExperienceAssets';
 
 // PHASE 4D NOTE (Molar AI extraction): this file is now a LOCAL adapter
 // only — the floating button, chat panel, message rendering, markdown,
@@ -90,6 +91,7 @@ export default function MolarAIFloat({ userContext, disabled = false, onPetToggl
       disabled={disabled}
       onPetToggle={onPetToggle}
       emptyState={emptyState}
+      logoUrl={MOLAR_LOGO_URL}
     />
   );
 }
