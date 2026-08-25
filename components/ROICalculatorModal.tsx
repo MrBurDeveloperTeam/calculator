@@ -11,7 +11,7 @@ interface ROICalculatorModalProps {
 }
 
 const ROICalculatorModal: React.FC<ROICalculatorModalProps> = ({ isOpen, onClose, initialPlan }) => {
-   const { state, savePlan, updatePlan, savedProcedures } = useCalculator();
+   const { state, savePlan, updatePlan, savedProcedures, getGlobalTotalMonthlyCost } = useCalculator();
    const { currencySymbol } = state.clinicSettings;
    const [quantities, setQuantities] = useState<Record<string, number>>({});
    const [showSaveModal, setShowSaveModal] = useState(false);
@@ -33,20 +33,12 @@ const ROICalculatorModal: React.FC<ROICalculatorModalProps> = ({ isOpen, onClose
       }
    }, [isOpen, initialPlan, savedProcedures]);
 
-   // Calculate Fixed OpEx (Strictly Fixed Parts)
-   const fixedOpEx = useMemo(() => {
-      const overhead = state.overhead.items.reduce((acc, i) => acc + i.monthlyCost, 0);
-      const staff = state.staff.members.reduce((acc, m) => acc + m.salary + m.benefits + m.bonus, 0);
-      const depreciation = state.depreciation.assets.reduce((acc, a) => {
-         const months = a.lifespanYears * 12;
-         return acc + (months > 0 ? (a.purchasePrice - a.resaleValue) / months : 0);
-      }, 0);
-      const regulatory = ((state.regulatory.annualApc + state.regulatory.annualXray + state.regulatory.annualInsurance) / 12) + state.regulatory.monthlyWaste;
-      const financialFixed = state.financial.monthlyInterest + state.financial.monthlyBankCharges;
-      const ownerComp = state.owner.desiredNetIncome;
-
-      return overhead + staff + depreciation + regulatory + financialFixed + ownerComp;
-   }, [state]);
+   // Fixed Monthly OpEx — sourced from CalculatorContext's canonical
+   // getGlobalTotalMonthlyCost() (the same function ForecastingModal and
+   // Molar's grounded cost-summary facts already use) rather than a local
+   // reimplementation, so this modal can no longer numerically diverge
+   // from either of those.
+   const fixedOpEx = useMemo(() => getGlobalTotalMonthlyCost(), [getGlobalTotalMonthlyCost]);
 
    // Derived Calculations
    const calculations = useMemo(() => {
