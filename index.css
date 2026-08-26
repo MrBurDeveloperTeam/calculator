@@ -991,27 +991,27 @@ body {
 /* Molar Chat: readable text in dark mode */
 :root[data-theme="dark"]
   .molar-chat-panel {
-  background-color: rgba(241, 245, 249, 0.96) !important;
-  border-color: #cbd5e1 !important;
+  background-color: rgba(23, 27, 34, 0.96) !important;
+  border-color: var(--app-border-strong) !important;
 }
 
 :root[data-theme="dark"]
   .molar-chat-panel
   .molar-chat-body {
-  color: #0f172a !important;
+  color: var(--app-text) !important;
 }
 
 :root[data-theme="dark"]
   .molar-chat-panel
   .molar-chat-welcome-title {
-  color: #0f172a !important;
+  color: var(--app-text) !important;
   opacity: 1 !important;
 }
 
 :root[data-theme="dark"]
   .molar-chat-panel
   .molar-chat-welcome-description {
-  color: #475569 !important;
+  color: var(--app-text-muted) !important;
   opacity: 1 !important;
 }
 
@@ -1019,14 +1019,14 @@ body {
 :root[data-theme="dark"]
   .molar-chat-panel
   .molar-chat-input {
-  color: #0f172a !important;
+  color: var(--app-text) !important;
   opacity: 1 !important;
 }
 
 :root[data-theme="dark"]
   .molar-chat-panel
   .molar-chat-input::placeholder {
-  color: #64748b !important;
+  color: var(--app-placeholder) !important;
   opacity: 1 !important;
 }
 
@@ -1068,26 +1068,31 @@ body {
 }
 
 :root[data-theme="dark"] .molar-chat-panel .calculator-support-link {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  background: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
 }
 
 :root[data-theme="dark"] .molar-chat-panel .calculator-support-link:hover {
-  background: #ecfdf5 !important;
-  border-color: #5eead4 !important;
+  background: color-mix(in srgb, var(--snabbb-accent) 10%, var(--app-surface)) !important;
+  border-color: color-mix(in srgb, var(--snabbb-accent) 48%, var(--app-border)) !important;
 }
 
 :root[data-theme="dark"] .molar-chat-panel .calculator-support-title {
-  color: #334155 !important;
+  color: var(--app-text-soft) !important;
 }
 
 :root[data-theme="dark"] .molar-chat-panel .calculator-support-meta {
-  color: #64748b !important;
+  color: var(--app-text-muted) !important;
 }
 
 :root[data-theme="dark"] .molar-chat-panel .calculator-support-icon {
-  color: #0f766e !important;
-  background: #ccfbf1 !important;
-  border-color: #99f6e4 !important;
+  color: var(--snabbb-accent) !important;
+  background: color-mix(in srgb, var(--snabbb-accent) 14%, var(--app-surface-soft)) !important;
+  border-color: color-mix(in srgb, var(--snabbb-accent) 36%, var(--app-border)) !important;
+}
+
+.calculator-support-region {
+  background: transparent;
+  border-top: 0;
 }

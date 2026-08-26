@@ -306,7 +306,7 @@ export default function MolarChat({ isOpen, onClose, chatHistory, isChatLoading,
                 </div>
 
                 {/* Persistent support shortcut */}
-                <div className="px-3 pt-1 relative z-20">
+                <div className="calculator-support-region px-3 pt-1 relative z-20">
                     <a
                         href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=support%40snabbb.com&amp;su=Customer%20Inquiry"
                         target="_blank"
