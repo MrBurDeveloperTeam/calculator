@@ -330,6 +330,15 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
         />
       </div>
       <CalculatorVirtualPet
+        // AppContent only ever mounts once AuthManager (above) has resolved
+        // auth AND confirmed a user exists, so `user.id` here is always a
+        // real, stable id — never a transitional null. `key={userId}` exists
+        // purely for the A -> B account-switch case: if `onAuthStateChange`
+        // ever swaps in a different authenticated user without AppContent
+        // itself unmounting, this forces a fresh SharedVirtualPet instance
+        // (and fresh CalculatorVirtualPet-local state, e.g. `hasLoggedRef`)
+        // instead of one instance silently carrying state across identities.
+        key={user?.id}
         isOpen={isVirtualPetOpen}
         onClose={() => setIsVirtualPetOpen(false)}
         userId={user?.id ?? null}
