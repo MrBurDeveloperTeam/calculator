@@ -15,6 +15,11 @@ components/reference/
 reference/*
 *.env
 
+# Supabase CLI local link/session state (project ref, pooler URL, service
+# versions) — never source, must never be committed. Edge Function source
+# under supabase/functions/ is intentionally NOT covered by this rule.
+supabase/.temp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
