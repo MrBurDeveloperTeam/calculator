@@ -36,6 +36,8 @@ import {
   buildUnsupportedScopeMessage,
 } from './dataChat/utils/unsupportedParameterMessage';
 import { formatGroundedProfitFallback } from './dataChat/utils/formatGroundedProfitFallback';
+import { resolveProfitFollowUp } from './dataChat/router/resolveProfitFollowUp';
+import type { GroundedConversationContext } from './dataChat/context/groundedConversationContext';
 
 interface CreateProfitCalculatorMolarAdapterDeps {
   calculatorState: unknown;
@@ -56,7 +58,15 @@ export function createProfitCalculatorMolarAdapter({
   userContext,
   savedPlans,
 }: CreateProfitCalculatorMolarAdapterDeps) {
+  // Grounded conversation context — lives only inside this closure (one
+  // per authenticated user; see
+  // dataChat/context/groundedConversationContext.ts's header).
+  let groundedContext: GroundedConversationContext | null = null;
+
   return {
+    reset: () => {
+      groundedContext = null;
+    },
     sendMessage: async ({ text: msg, history }: { text: string; history: { role: 'user' | 'model'; text: string }[] }) => {
       // ── Phase-3 Data-Driven Chat (read-only pilot) ──────────────────
       // Runs BEFORE the legacy General Chat pipeline below, fully
@@ -105,6 +115,14 @@ export function createProfitCalculatorMolarAdapter({
           return { text: "Your calculator data isn't ready yet.", meta: { source: 'fallback' as const } };
         }
 
+        groundedContext = {
+          appId: 'calculator',
+          lastIntent: result.intent,
+          lastUserQuestion: msg,
+          generation: (groundedContext?.generation ?? 0) + 1,
+          createdAt: new Date().toISOString(),
+        };
+
         try {
           // 3. Grounded Gemini phrasing — receives ONLY the question, the
           // approved intent, and the already-minimized facts.
@@ -116,6 +134,22 @@ export function createProfitCalculatorMolarAdapter({
           console.error('Grounded profit response failed:', groundedErr);
           return { text: formatGroundedProfitFallback(result.intent, result.facts), meta: { source: 'fallback' as const } };
         }
+      }
+
+      // ── Tier C: Grounded conversational follow-up ───────────────────
+      const followUp = resolveProfitFollowUp(
+        msg,
+        groundedContext,
+        calculatorState,
+        getGlobalTotalMonthlyCost,
+        calculatorDataStatus,
+        calculatorDataUserId,
+        userId,
+        savedPlans
+      );
+      if (followUp && groundedContext) {
+        groundedContext = { ...groundedContext, lastUserQuestion: msg, generation: groundedContext.generation + 1 };
+        return { text: followUp, meta: { source: 'data-chat' as const } };
       }
       // ── End Phase-3 Data-Driven Chat (dataRoute.kind === 'no_match') ─
 
