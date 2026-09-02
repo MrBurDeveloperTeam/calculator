@@ -74,3 +74,53 @@ export async function chatWithGroundedProfitFacts(
 ): Promise<string> {
   return invokeMolarChat({ mode: 'grounded', question, intent, facts });
 }
+
+// ─────────────────────────────────────────────────────────────
+// SEMANTIC CAPABILITY ROUTING — selection only, never data.
+//
+// Calls the Edge Function's "capability_route" mode: the message, a
+// small set of {id, description} capability descriptors (only the 2
+// genuinely supported ones — live profit/margin/break-even are never
+// offered), a few recent model-safe conversation turns, and the
+// previously-selected capability id (if any). Never sees calculator
+// state.
+//
+// THROWS on any failure exactly like chatWithGroundedProfitFacts — the
+// caller (see dataChat/semantic/matchCalculatorCapabilityLLM.ts) must
+// fall back to the local keyword capability matcher on any throw.
+export interface CapabilityRouteResult {
+  route: 'grounded' | 'general_chat' | 'clarification';
+  capability: string | null;
+  confidence: 'high' | 'low';
+  clarification: string | null;
+}
+
+interface CapabilityDescriptor {
+  id: string;
+  description: string;
+}
+
+export async function routeCalculatorCapability(
+  message: string,
+  capabilities: CapabilityDescriptor[],
+  recentContext: string[],
+  previousCapability: string | null
+): Promise<CapabilityRouteResult> {
+  const { data, error } = await supabase.functions.invoke('molar-chat-calculator', {
+    body: { mode: 'capability_route', message, capabilities, recentContext, previousCapability },
+  });
+
+  if (error || !data?.ok) {
+    throw new Error(data?.error || error?.message || 'Capability routing failed');
+  }
+
+  const { route, capability, confidence, clarification } = data as CapabilityRouteResult;
+  if (route !== 'grounded' && route !== 'general_chat' && route !== 'clarification') {
+    throw new Error('Capability routing returned an unsupported route');
+  }
+  if (confidence !== 'high' && confidence !== 'low') {
+    throw new Error('Capability routing returned an invalid confidence');
+  }
+
+  return { route, capability: route === 'grounded' ? capability : null, confidence, clarification: clarification ?? null };
+}
