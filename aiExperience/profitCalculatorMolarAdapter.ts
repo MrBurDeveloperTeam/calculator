@@ -37,7 +37,14 @@ import {
 } from './dataChat/utils/unsupportedParameterMessage';
 import { formatGroundedProfitFallback } from './dataChat/utils/formatGroundedProfitFallback';
 import { resolveProfitFollowUp } from './dataChat/router/resolveProfitFollowUp';
+import { matchCalculatorCapability } from './dataChat/semantic/matchCalculatorCapability';
 import type { GroundedConversationContext } from './dataChat/context/groundedConversationContext';
+import type { ProfitDataIntent } from './dataChat/contracts/groundedDataResult';
+
+const CLARIFICATION_LABEL: Record<ProfitDataIntent, string> = {
+  profit_cost_summary: 'your current monthly cost configuration',
+  profit_latest_saved_plan: 'your latest saved plan',
+};
 
 interface CreateProfitCalculatorMolarAdapterDeps {
   calculatorState: unknown;
@@ -62,6 +69,40 @@ export function createProfitCalculatorMolarAdapter({
   // per authenticated user; see
   // dataChat/context/groundedConversationContext.ts's header).
   let groundedContext: GroundedConversationContext | null = null;
+
+  // Shared by the fast-path classifier match AND the semantic capability
+  // matcher below.
+  async function executeGroundedIntent(intent: ProfitDataIntent, msg: string) {
+    const result = resolveProfitDataQuery(
+      intent,
+      calculatorState,
+      getGlobalTotalMonthlyCost,
+      calculatorDataStatus,
+      calculatorDataUserId,
+      userId,
+      savedPlans
+    );
+
+    if (result.status === 'unavailable') {
+      return { text: "Your calculator data isn't ready yet.", meta: { source: 'fallback' as const } };
+    }
+
+    groundedContext = {
+      appId: 'calculator',
+      lastIntent: result.intent,
+      lastUserQuestion: msg,
+      generation: (groundedContext?.generation ?? 0) + 1,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const text = await chatWithGroundedProfitFacts(msg, result.intent, result.facts);
+      return { text, meta: { source: 'data-chat' as const } };
+    } catch (groundedErr) {
+      console.error('Grounded profit response failed:', groundedErr);
+      return { text: formatGroundedProfitFallback(result.intent, result.facts), meta: { source: 'fallback' as const } };
+    }
+  }
 
   return {
     reset: () => {
@@ -94,46 +135,7 @@ export function createProfitCalculatorMolarAdapter({
       }
 
       if (dataRoute.kind === 'matched') {
-        const result = resolveProfitDataQuery(
-          dataRoute.intent,
-          calculatorState,
-          getGlobalTotalMonthlyCost,
-          calculatorDataStatus,
-          calculatorDataUserId,
-          userId,
-          savedPlans
-        );
-
-        if (result.status === 'unavailable') {
-          // Unknown/invalid calculator state (including an ownership
-          // mismatch) is never reinterpreted as a zero-cost answer, and a
-          // matched grounded intent owns this request even when its
-          // source is temporarily unavailable — it does not fall through
-          // to legacy chat. Deliberately generic wording regardless of
-          // reasonCode: never reveals that the data belongs to a
-          // different user.
-          return { text: "Your calculator data isn't ready yet.", meta: { source: 'fallback' as const } };
-        }
-
-        groundedContext = {
-          appId: 'calculator',
-          lastIntent: result.intent,
-          lastUserQuestion: msg,
-          generation: (groundedContext?.generation ?? 0) + 1,
-          createdAt: new Date().toISOString(),
-        };
-
-        try {
-          // 3. Grounded Gemini phrasing — receives ONLY the question, the
-          // approved intent, and the already-minimized facts.
-          const text = await chatWithGroundedProfitFacts(msg, result.intent, result.facts);
-          return { text, meta: { source: 'data-chat' as const } };
-        } catch (groundedErr) {
-          // Mandatory deterministic fallback — never falls through to
-          // legacy General Chat on a Gemini failure at this stage.
-          console.error('Grounded profit response failed:', groundedErr);
-          return { text: formatGroundedProfitFallback(result.intent, result.facts), meta: { source: 'fallback' as const } };
-        }
+        return executeGroundedIntent(dataRoute.intent, msg);
       }
 
       // ── Tier C: Grounded conversational follow-up ───────────────────
@@ -150,6 +152,16 @@ export function createProfitCalculatorMolarAdapter({
       if (followUp && groundedContext) {
         groundedContext = { ...groundedContext, lastUserQuestion: msg, generation: groundedContext.generation + 1 };
         return { text: followUp, meta: { source: 'data-chat' as const } };
+      }
+
+      // ── Tier D: Semantic capability router ───────────────────────────
+      const semanticRoute = matchCalculatorCapability(msg);
+      if (semanticRoute.type === 'grounded_capability') {
+        return executeGroundedIntent(semanticRoute.capability, msg);
+      }
+      if (semanticRoute.type === 'clarification') {
+        const [a, b] = semanticRoute.candidates;
+        return { text: `Do you mean ${CLARIFICATION_LABEL[a]} or ${CLARIFICATION_LABEL[b]}?`, meta: { source: 'fallback' as const } };
       }
       // ── End Phase-3 Data-Driven Chat (dataRoute.kind === 'no_match') ─
 
