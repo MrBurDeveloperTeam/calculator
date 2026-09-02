@@ -4,14 +4,21 @@
 // answer is chosen by the user's own question, not a resolver picking
 // one winning proactive candidate.
 //
-// Slice 1 supports exactly ONE intent — `profit_cost_summary` — per the
+// Slice 1 supported exactly ONE intent — `profit_cost_summary` — per the
 // readiness pass's finding that monthly profit, projected revenue,
 // profit margin, and break-even either have no single authoritative
 // live formula (three divergent implementations exist for cost/profit)
-// or don't exist in this codebase at all. Do not widen this union
-// without new source evidence.
+// or don't exist in this codebase at all. That restriction still stands
+// for those specific concepts — do not widen the union for them without
+// new source evidence.
+//
+// `profit_latest_saved_plan` (added later) is a SEPARATE, already-
+// authoritative source: the persisted `isProfitable`/`totalProcedures`
+// snapshot on a saved plan row, not a live recomputation — it carries
+// none of slice 1's divergent-formula risk. See
+// ../providers/latestSavedPlanDataProvider.ts.
 
-export type ProfitDataIntent = 'profit_cost_summary';
+export type ProfitDataIntent = 'profit_cost_summary' | 'profit_latest_saved_plan';
 
 export type GroundedDataResult<TFacts> =
   | {
@@ -21,10 +28,10 @@ export type GroundedDataResult<TFacts> =
        *  never a category breakdown. */
       facts: TFacts;
       evaluatedAt: string;
-      /** Always `[]` for this app — a grounded answer represents an
+      /** `[]` for `profit_cost_summary` — that answer represents an
        *  aggregate live calculator configuration, not a traceable
-       *  database row. Kept for structural consistency with sibling
-       *  repos' contracts, never fabricated. */
+       *  database row. `[planId]` for `profit_latest_saved_plan`, which
+       *  DOES trace back to one real saved-plan row. Never fabricated. */
       sourceRecordIds: string[];
     }
   | {

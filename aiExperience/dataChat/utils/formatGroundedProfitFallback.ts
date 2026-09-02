@@ -12,6 +12,7 @@
 
 import type { ProfitDataIntent } from '../contracts/groundedDataResult';
 import type { CostSummaryDataFacts } from '../providers/costSummaryDataProvider';
+import type { LatestSavedPlanDataFacts } from '../providers/latestSavedPlanDataProvider';
 
 function formatAmount(value: number, currencySymbol: string): string {
   const formatted = value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -25,10 +26,21 @@ function formatCostSummary(facts: CostSummaryDataFacts): string {
   )}.`;
 }
 
+function formatLatestSavedPlan(facts: LatestSavedPlanDataFacts): string {
+  const profitability = facts.isProfitable ? 'was profitable when saved' : 'was not profitable when saved';
+  const procedureNote =
+    facts.totalProcedures !== undefined
+      ? ` and included ${facts.totalProcedures} ${facts.totalProcedures === 1 ? 'procedure' : 'procedures'}`
+      : '';
+  return `Your latest saved plan (${facts.timeframe}) ${profitability}${procedureNote}.`;
+}
+
 export function formatGroundedProfitFallback(intent: ProfitDataIntent, facts: unknown): string {
   switch (intent) {
     case 'profit_cost_summary':
       return formatCostSummary(facts as CostSummaryDataFacts);
+    case 'profit_latest_saved_plan':
+      return formatLatestSavedPlan(facts as LatestSavedPlanDataFacts);
     default:
       return "I couldn't format your answer right now.";
   }

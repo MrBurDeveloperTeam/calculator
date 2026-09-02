@@ -44,6 +44,7 @@ interface CreateProfitCalculatorMolarAdapterDeps {
   calculatorDataUserId: string | null;
   userId: string | null;
   userContext: string;
+  savedPlans: unknown;
 }
 
 export function createProfitCalculatorMolarAdapter({
@@ -53,6 +54,7 @@ export function createProfitCalculatorMolarAdapter({
   calculatorDataUserId,
   userId,
   userContext,
+  savedPlans,
 }: CreateProfitCalculatorMolarAdapterDeps) {
   return {
     sendMessage: async ({ text: msg, history }: { text: string; history: { role: 'user' | 'model'; text: string }[] }) => {
@@ -88,7 +90,8 @@ export function createProfitCalculatorMolarAdapter({
           getGlobalTotalMonthlyCost,
           calculatorDataStatus,
           calculatorDataUserId,
-          userId
+          userId,
+          savedPlans
         );
 
         if (result.status === 'unavailable') {

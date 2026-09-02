@@ -25,13 +25,15 @@
 // result.
 
 import { buildCostSummaryDataFacts } from '../providers/costSummaryDataProvider';
+import { buildLatestSavedPlanDataFacts } from '../providers/latestSavedPlanDataProvider';
+import { projectSavedPlansForInsight, selectLatestSavedPlan } from '../../utils/savedPlanProjection';
 import type {
   ProfitDataIntent,
   GroundedDataResult,
   CalculatorDataStatus,
   CalculatorDataOwnerId,
 } from '../contracts/groundedDataResult';
-import type { GlobalState } from '../../../types';
+import type { GlobalState, SavedPlan } from '../../../types';
 
 export function resolveProfitDataQuery(
   intent: ProfitDataIntent,
@@ -39,7 +41,8 @@ export function resolveProfitDataQuery(
   getGlobalTotalMonthlyCost: () => number,
   calculatorDataStatus: CalculatorDataStatus,
   calculatorDataUserId: CalculatorDataOwnerId,
-  currentAuthenticatedUserId: string | null
+  currentAuthenticatedUserId: string | null,
+  savedPlans: SavedPlan[]
 ): GroundedDataResult<unknown> {
   const evaluatedAt = new Date().toISOString();
 
@@ -59,6 +62,20 @@ export function resolveProfitDataQuery(
           return { status: 'unavailable', intent, reasonCode: 'evaluation_error', evaluatedAt };
         }
         return { status: 'ok', intent, facts: evaluation.facts, evaluatedAt, sourceRecordIds: [] };
+      }
+      case 'profit_latest_saved_plan': {
+        const selection = selectLatestSavedPlan(projectSavedPlansForInsight(savedPlans));
+        const evaluation = buildLatestSavedPlanDataFacts(selection);
+        if (!evaluation.ok) {
+          return { status: 'unavailable', intent, reasonCode: 'evaluation_error', evaluatedAt };
+        }
+        return {
+          status: 'ok',
+          intent,
+          facts: evaluation.facts,
+          evaluatedAt,
+          sourceRecordIds: evaluation.sourceRecordIds,
+        };
       }
       default: {
         // Exhaustiveness guard — caught below like any other evaluation

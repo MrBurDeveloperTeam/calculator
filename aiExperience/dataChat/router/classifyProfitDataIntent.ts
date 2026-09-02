@@ -119,6 +119,23 @@ const COST_SUMMARY_PHRASES = [
   'clinic configuration cost',
   'how much am i spending',
 ];
+// Persisted snapshot on the latest SAVED plan row — not a live
+// recomputation, so it doesn't carry slice 1's divergent-formula risk
+// (see groundedDataResult.ts's header). Deliberately distinct from
+// MONTHLY_PROFIT_PHRASES above, which stays blocked for the live/current
+// "am I profitable" question this app cannot answer authoritatively.
+const LATEST_SAVED_PLAN_PHRASES = [
+  'latest saved plan',
+  'last saved plan',
+  'my last plan',
+  'my latest plan',
+  'was my latest plan profitable',
+  'was my last plan profitable',
+  'is my latest plan profitable',
+  'procedures in my last plan',
+  'procedures in my latest plan',
+  'procedures were in my last plan',
+];
 
 export function classifyProfitDataIntent(message: string): ProfitDataRouteResult {
   const msg = normalize(message);
@@ -153,6 +170,9 @@ export function classifyProfitDataIntent(message: string): ProfitDataRouteResult
 
   if (mentionsAny(msg, COST_SUMMARY_PHRASES)) {
     return { kind: 'matched', intent: 'profit_cost_summary' };
+  }
+  if (mentionsAny(msg, LATEST_SAVED_PLAN_PHRASES)) {
+    return { kind: 'matched', intent: 'profit_latest_saved_plan' };
   }
 
   return { kind: 'no_match' };

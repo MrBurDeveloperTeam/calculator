@@ -24,7 +24,7 @@ import { MOLAR_LOGO_URL } from '../aiExperience/molarExperienceAssets';
 // exposed back to hosts. This is one cheap, harmless, read-only query
 // per page load — it has no effect on anything the user sees.
 export default function MolarAIFloat({ userContext, disabled = false, onPetToggle }) {
-  const { state: calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId } = useCalculator();
+  const { state: calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId, savedPlans } = useCalculator();
   const { user } = useAuth();
 
   const [emptyState, setEmptyState] = useState(undefined);
@@ -81,8 +81,9 @@ export default function MolarAIFloat({ userContext, disabled = false, onPetToggl
       calculatorDataUserId,
       userId: user?.id ?? null,
       userContext: userContext || '',
+      savedPlans,
     }),
-    [calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId, user?.id, userContext]
+    [calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId, user?.id, userContext, savedPlans]
   );
 
   return (
