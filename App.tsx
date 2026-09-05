@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Menu } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
@@ -17,7 +17,14 @@ import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
 import CatMascot from './components/CatMascot';
 import MolarAIFloat from './components/MolarAIFloat';
-import { VirtualPetContainer } from './VirtualPet/VirtualPetContainer';
+import {
+  PersonalizedInsightBridgeProvider,
+  usePublishPersonalizedInsight,
+  type PersonalizedInsightBridgeState,
+} from './aiExperience/petDialogue/PersonalizedInsightBridge';
+import { useProfitCalculatorPersonalizedInsight } from './aiExperience/hooks/useProfitCalculatorPersonalizedInsight';
+import CalculatorVirtualPet from './petExperience/CalculatorVirtualPet';
+import MeowdokuLauncher from './petExperience/MeowdokuLauncher';
 import {
   OverheadCalculator,
   StaffCalculator,
@@ -87,6 +94,77 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+/**
+ * Publishes the app-wide Profit personalized reminder — rendered as a
+ * CHILD of <PersonalizedInsightBridgeProvider> (see AppContent's return
+ * below), never as a hook called from AppContent's own body. That
+ * distinction is the entire point of this component's existence: a hook
+ * call executes as part of whichever component calls it, using that
+ * component's OWN position in the tree — a component only "sees" the
+ * Provider instances that wrap ITS OWN render, never a Provider it simply
+ * returns as descendant JSX. Mounting this as an actual descendant
+ * component of the Provider means this component's own `useContext` calls
+ * (inside `usePublishPersonalizedInsight`) correctly resolve to the same
+ * Provider instance CatMascot itself reads via
+ * `usePersonalizedInsightBridge()`.
+ *
+ * Always mounted for the entire authenticated app lifetime (a sibling of
+ * the main view content inside the same Provider, not gated on
+ * `currentView`) — this is what makes the reminder genuinely app-wide.
+ * Renders nothing; it exists purely to keep this hook call in the correct
+ * tree position. No new Supabase query: `useProfitCalculatorPersonalizedInsight`
+ * is a pure `useMemo` over CalculatorContext's already-loaded `savedPlans`.
+ */
+const ProfitDialoguePublisher: React.FC = () => {
+  const { user } = useAuth();
+  const { savedPlans, openModal, calculatorDataStatus, calculatorDataUserId } = useCalculator();
+  const profitInsight = useProfitCalculatorPersonalizedInsight();
+
+  // CLOSURE SAFETY: this function closes over `profitInsight`/`savedPlans`
+  // from THIS render. The bridge below captures this exact function
+  // reference together with `profitInsight` from the SAME publish call —
+  // CatMascot then freezes that pair in its own refs at adoption time and
+  // never re-reads a later render's values, so a later savedPlans change
+  // can never make the CTA open a DIFFERENT plan than the one Cat
+  // actually displayed. `openModal`/`modalState` are already owned by
+  // CalculatorContext and the modal itself already renders at AppContent
+  // level regardless of `currentView` (see `<ROICalculatorModal>`/
+  // `<SmartForecastingModal>`, both driven by `modalState`), so this works
+  // identically from any internal view, including ones where Dashboard
+  // was never mounted.
+  const handleProfitInsightAction = useCallback(() => {
+    if (!profitInsight) return;
+    const planId = profitInsight.facts.planId;
+    const plan = savedPlans.find((p) => p.id === planId);
+    // If the referenced plan no longer exists in current state (e.g.
+    // deleted since this candidate was evaluated), do nothing safely —
+    // never fall back to a different plan, never fabricate data.
+    if (!plan) return;
+    openModal(plan.type, plan);
+  }, [profitInsight, savedPlans, openModal]);
+
+  // Unconditional: NOT gated on `currentView === 'dashboard'` — the
+  // Profit reminder is an app-wide product requirement, so this runs
+  // regardless of which internal view is currently mounted. Ownership is
+  // checked FIRST (calculatorDataUserId === current authenticated user
+  // id), THEN readiness (calculatorDataStatus === 'ready') — the exact
+  // same two-step gate already established by resolveProfitDataQuery.ts
+  // for Phase-3 Data Chat, reused here rather than re-derived. A stale
+  // previous user's 'ready' status (e.g. right after logout/user-switch,
+  // before CalculatorContext's fetch effect has run for the new user) is
+  // therefore never treated as ready for the new user.
+  const personalizedInsightBridgeState: PersonalizedInsightBridgeState = useMemo(
+    () =>
+      calculatorDataUserId !== null && calculatorDataUserId === user?.id && calculatorDataStatus === 'ready'
+        ? { status: 'ready', candidate: profitInsight, onAction: handleProfitInsightAction }
+        : { status: 'not_ready' },
+    [calculatorDataUserId, user?.id, calculatorDataStatus, profitInsight, handleProfitInsightAction],
+  );
+  usePublishPersonalizedInsight(personalizedInsightBridgeState);
+
+  return null;
+};
+
 interface AppContentProps {
   theme: ThemePreference;
   onThemeChange: (theme: ThemePreference) => void;
@@ -97,6 +175,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
   const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isVirtualPetOpen, setIsVirtualPetOpen] = useState(false);
+  const [isMeowdokuOpen, setIsMeowdokuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const {
     state,
@@ -192,6 +271,14 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
   };
 
   return (
+    // <ProfitDialoguePublisher /> is a genuine DESCENDANT of this Provider
+    // (rendered as JSX here, not called as a hook up in AppContent's own
+    // body — see that component's own doc for why the distinction is
+    // load-bearing), and CatMascot (the reader, always mounted below) is
+    // its sibling — both consume the exact same Provider instance. See
+    // aiExperience/petDialogue/PersonalizedInsightBridge.tsx.
+    <PersonalizedInsightBridgeProvider>
+    <ProfitDialoguePublisher />
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
       <Sidebar
         currentView={currentView}
@@ -252,17 +339,59 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
       />
 
       <div className={isVirtualPetOpen ? 'hidden' : 'contents'}>
-        <CatMascot onCatClick={() => setIsVirtualPetOpen(true)} />
+        {/* Keyed by the authenticated Supabase user id so a direct A -> B
+            account switch (one that never passes through a logged-out
+            state) still forces a fresh mount — otherwise CatMascot's own
+            account-sensitive presentation cache and MolarAIFloat's
+            groundedContextStoreRef (a useRef, initialized only once per
+            mount) would survive the switch and leak the previous user's
+            state into the new user's session. */}
+        <CatMascot key={user?.id} onCatClick={() => setIsVirtualPetOpen(true)} />
         <MolarAIFloat
+          key={user?.id}
           userContext={aiContext}
           onPetToggle={() => setIsVirtualPetOpen(true)}
         />
       </div>
-      <VirtualPetContainer
+      <CalculatorVirtualPet
+        // AppContent only ever mounts once AuthManager (above) has resolved
+        // auth AND confirmed a user exists, so `user.id` here is always a
+        // real, stable id — never a transitional null. `key={userId}` exists
+        // purely for the A -> B account-switch case: if `onAuthStateChange`
+        // ever swaps in a different authenticated user without AppContent
+        // itself unmounting, this forces a fresh SharedVirtualPet instance
+        // (and fresh CalculatorVirtualPet-local state, e.g. `hasLoggedRef`)
+        // instead of one instance silently carrying state across identities.
+        key={user?.id}
         isOpen={isVirtualPetOpen}
         onClose={() => setIsVirtualPetOpen(false)}
+        userId={user?.id ?? null}
+        extraGames={user?.id ? [
+          {
+            id: 'meowdoku',
+            title: 'Meowdoku',
+            iconUrl: '/games/meowdoku/cover-148.png',
+            onSelect: () => setIsMeowdokuOpen(true),
+          },
+        ] : undefined}
       />
+      {/* Meowdoku is already live/user-facing in Production (legacy
+          VirtualPet/{GamePage,RoomMenus}.tsx) — exposed here as a 4th game
+          via SharedVirtualPet's extraGames slot instead. Rendered as a
+          sibling ABOVE SharedVirtualPet's own z-[1000] overlay (z-[1100],
+          the proven value for this exact sibling-hidden-under-
+          SharedVirtualPet bug class) so it never renders invisibly behind
+          it; closing it leaves SharedVirtualPet's Games room still open
+          underneath, matching Production's existing behavior. */}
+      {user?.id && (
+        <MeowdokuLauncher
+          isOpen={isMeowdokuOpen}
+          onClose={() => setIsMeowdokuOpen(false)}
+          userId={user.id}
+        />
+      )}
     </div>
+    </PersonalizedInsightBridgeProvider>
   );
 };
 

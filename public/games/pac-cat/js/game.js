@@ -39,6 +39,14 @@ function initGame(newgame) {
 		stopTrailer();
 
 		HOME = false;
+
+		/*
+		* Show the mobile direction pad during gameplay.
+		*/
+		document.body.classList.add(
+			"game-active"
+		);
+
 		GAMEOVER = false;
 
 		$('#help').fadeOut("slow");
@@ -47,7 +55,6 @@ function initGame(newgame) {
 		clearMessage();
 		$("#home").hide();
 		$("#panel").show();
-		$("#mobile-controls").show();
 
 		var ctx = null;
 		var canvas = document.getElementById('canvas-panel-title-pacman');
