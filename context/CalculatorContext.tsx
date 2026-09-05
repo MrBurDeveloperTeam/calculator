@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure } from '../types';
+import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure, CalculatorDataStatus, CalculatorDataOwnerId } from '../types';
 import { useAuth } from './AuthContext';
 import * as api from '../data/api';
 import { logActivityToOdoo } from '../services/logActivityToOdoo';
@@ -27,8 +27,26 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
   const [modalState, setModalState] = useState<{ isOpen: boolean; type: 'ROI' | 'FORECAST' | null; initialData: SavedPlan | null }>({ isOpen: false, type: null, initialData: null });
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [calculatorDataStatus, setCalculatorDataStatus] = useState<CalculatorDataStatus>('loading');
+  // Ownership of the currently accepted `state`/`savedPlans`/
+  // `savedProcedures` — see the `CalculatorDataOwnerId` doc comment in
+  // types.ts for why `calculatorDataStatus === 'ready'` alone is not a
+  // safe render-time privacy gate.
+  const [calculatorDataUserId, setCalculatorDataUserId] = useState<CalculatorDataOwnerId>(null);
   const { user, profile } = useAuth(); // Hook into the authenticated session
-  const isFetchingRef = useRef(false);
+  // Latest-request-wins guard for the fetch effect below. The PREVIOUS
+  // version of this effect used a single shared `isFetchingRef` boolean
+  // that (a) did not stop a late-resolving fetch from user A overwriting
+  // state after the user switched to B (no staleness check was ever
+  // applied to the `setState`/`setSavedPlans`/... calls below), and (b)
+  // could cause user B's fetch to be silently skipped entirely if it
+  // started while A's fetch was still in flight. Both are real
+  // correctness bugs, not hypothetical — required to fix before
+  // `calculatorDataStatus` can safely gate a grounded Data Chat answer.
+  // `requestIdRef` replaces that boolean: every run of this effect owns a
+  // strictly increasing id, and only the run whose id still matches when
+  // its fetch settles is allowed to write state.
+  const requestIdRef = useRef(0);
 
   // Best-effort: every saved section/plan/procedure also gets pushed to
   // Odoo (see services/logActivityToOdoo.ts +
@@ -58,20 +76,27 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // 1. Central Data Fetching on Login
   useEffect(() => {
-    let isMounted = true;
+    const requestId = ++requestIdRef.current;
 
     if (!user) {
       setState(INITIAL_STATE);
       setSavedPlans([]);
       setSavedProcedures([]);
       setIsDataLoaded(false);
+      // Logged out — a stale previous user's 'ready' status must never
+      // authorize a grounded answer for the (absent) current user. This
+      // effect-driven reset is a backstop, not the primary boundary — the
+      // primary boundary is the read-time `calculatorDataUserId ===
+      // currentAuthenticatedUserId` check callers perform immediately,
+      // which does not wait for this effect to run at all.
+      setCalculatorDataStatus('loading');
+      setCalculatorDataUserId(null);
       return;
     }
 
-    if (isFetchingRef.current) return;
+    setCalculatorDataStatus('loading');
 
     const fetchUserSupabaseData = async () => {
-      isFetchingRef.current = true;
       try {
         const [
           settings,
@@ -102,6 +127,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           api.getPlans(user.id),
           api.getProcedures(user.id)
         ]);
+
+        // Latest-request-wins: a since-superseded run (user switched again
+        // while this fetch was in flight) must never write state over the
+        // current run's data — see the requestIdRef comment above.
+        if (requestId !== requestIdRef.current) return;
 
         setState(prev => ({
           clinicSettings: {
@@ -158,12 +188,21 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setSavedProcedures(procedures || []);
 
         setIsDataLoaded(true);
+        setCalculatorDataStatus('ready');
+        // Ownership is set ONLY together with an accepted success, for the
+        // exact user this request was fetched for — never before, and
+        // never for a stale/superseded request (already excluded by the
+        // `requestId` check above).
+        setCalculatorDataUserId(user.id);
 
       } catch (err) {
         console.error("Failed to load user data from Supabase", err);
         setToast({ message: 'Failed to sync data from cloud.', isVisible: true });
-      } finally {
-        isFetchingRef.current = false;
+        if (requestId !== requestIdRef.current) return;
+        setCalculatorDataStatus('error');
+        // A failed fetch must never leave a previous successful owner's
+        // data groundable — clear ownership rather than retaining it.
+        setCalculatorDataUserId(null);
       }
     };
 
@@ -400,6 +439,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   return (
     <CalculatorContext.Provider value={{
       state,
+      calculatorDataStatus,
+      calculatorDataUserId,
       updateSection,
       resetAll,
       saveSection,

@@ -868,15 +868,51 @@ function moveDown() {
     return true;
 }
 
-function hardDrop() {
-    if (!gameState.running || gameState.paused || gameState.isCountingDown || !player.matrix) return;
-    while (!collide(gameState.arena, player)) player.pos.y++;
-    player.pos.y--;
-    merge(gameState.arena, player);
-    sweepLines();
-    spawnNext();
-    gameState.dropCounter = 0;
-}
+/*
+ * Public mobile-control interface.
+ *
+ * Horizontal swipe controls call these functions directly
+ * because ArrowLeft and ArrowRight are state-based keyboard
+ * inputs. Sending keydown and keyup immediately would clear
+ * the state before the next animation frame.
+ */
+window.tetrisMobileApi = {
+    moveLeft: function () {
+        if (
+            !gameState.running ||
+            gameState.paused ||
+            gameState.isCountingDown
+        ) {
+            return false;
+        }
+
+        var moved = moveLeft();
+
+        if (moved) {
+            draw();
+        }
+
+        return moved;
+    },
+
+    moveRight: function () {
+        if (
+            !gameState.running ||
+            gameState.paused ||
+            gameState.isCountingDown
+        ) {
+            return false;
+        }
+
+        var moved = moveRight();
+
+        if (moved) {
+            draw();
+        }
+
+        return moved;
+    }
+};
 
 /**
  * Start new game
@@ -1007,7 +1043,12 @@ function handleKey(e) {
         playerRotate(1);
     } else if (e.code === 'Space') {
         e.preventDefault();
-        hardDrop();
+        while (!collide(gameState.arena, player)) player.pos.y++;
+        player.pos.y--;
+        merge(gameState.arena, player);
+        sweepLines();
+        spawnNext();
+        gameState.dropCounter = 0;
     } else if (e.key.toLowerCase() === 'c') {
         e.preventDefault();
         holdCurrentPiece();
@@ -1042,7 +1083,6 @@ overlayClose.addEventListener('click', () => {
 if (btnPause) {
     btnPause.addEventListener('click', togglePause);
 }
-
 
 const btnSettings = document.getElementById('btn-settings-toggle');
 if (btnSettings) {
@@ -1129,26 +1169,6 @@ window.addEventListener('load', () => {
     document.body.focus();
 });
 
-let layoutFrame = 0;
-function fitTetrisLayout() {
-    layoutFrame = 0;
-    const viewport = window.visualViewport;
-    const width = viewport ? viewport.width : window.innerWidth;
-    const height = viewport ? viewport.height : window.innerHeight;
-    const scale = Math.min((width - 24) / 904, (height - 24) / 620, 1);
-    document.documentElement.style.setProperty('--tetris-scale', Math.max(0.25, scale));
-}
-
-function scheduleTetrisFit() {
-    if (layoutFrame) return;
-    layoutFrame = requestAnimationFrame(fitTetrisLayout);
-}
-
-window.addEventListener('resize', scheduleTetrisFit, { passive: true });
-if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', scheduleTetrisFit, { passive: true });
-}
-
 document.body.addEventListener('click', () => {
     document.body.focus();
     if (!audioCtx) ensureAudio();
@@ -1158,7 +1178,6 @@ document.body.addEventListener('click', () => {
  * Initialize game
  */
 function init() {
-    fitTetrisLayout();
     canvas.width = CONFIG.COLS * CONFIG.CELL_SIZE;
     canvas.height = CONFIG.ROWS * CONFIG.CELL_SIZE;
     nextCanvas.width = 6 * 28;

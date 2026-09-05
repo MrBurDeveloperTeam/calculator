@@ -1,3 +1,15 @@
+/*
+ * Deployment marker used to confirm that the current
+ * Flappy Cat JavaScript has executed.
+ */
+window.FLAPPY_BUILD =
+    "20260731-12";
+
+console.log(
+    "[Flappy Cat] JavaScript loaded:",
+    window.FLAPPY_BUILD
+);
+
 //board
 let board;
 let boardWidth = 360;
@@ -40,6 +52,47 @@ const BASE_HEIGHT = 640;
 const MIN_WIDTH = 320;
 const MIN_HEIGHT = 568;
 
+/*
+ * Detect Apple devices that can run the web game.
+ * This includes iPhone, iPad, iPod touch and macOS devices.
+ */
+const IS_APPLE_DEVICE =
+    /Macintosh|Mac OS X|iPhone|iPad|iPod/.test(
+        navigator.userAgent
+    ) ||
+    /MacIntel|MacPPC|Mac68K|iPhone|iPad|iPod/.test(
+        navigator.platform
+    );
+
+/*
+ * Normalize game movement against a 60 FPS simulation.
+ * This keeps movement consistent across 60 Hz and 120 Hz screens.
+ */
+const TARGET_FRAME_TIME = 1000 / 60;
+
+/*
+ * Allow only a small amount of timing compensation.
+ * A large delta can make the cat suddenly jump downward.
+ */
+const MAX_FRAME_DELTA = 1.25;
+
+/*
+ * Limit the maximum downward speed so long falls remain
+ * controllable and predictable.
+ */
+const MAX_FALL_SPEED = 7;
+
+let lastFrameTime = 0;
+let resizeTimer = null;
+
+/*
+ * Remember the current orientation so minor Safari toolbar
+ * resize events do not rebuild the Canvas during gameplay.
+ */
+let lastViewportIsLandscape =
+    window.innerWidth >
+    window.innerHeight;
+
 let gameOver = false;
 let score = 0;
 let started = false;
@@ -51,21 +104,11 @@ let playAgainBtn;
 let scoreValueEl;
 let highScoreValueEl;
 let highScore = 0;
-let sfxDie, sfxHit, sfxWing;
-let pointAudioContext = null;
-let pointAudioBuffer = null;
-let pointAudioLoadPromise = null;
-let animationFrameId = 0;
-let lastFrameTime = 0;
-let pipeElapsed = 0;
-const PIPE_DELAY = 1800;
-const MAX_DPR = 1.5;
-const MOBILE_MAX_DPR = 1;
-let resizeFrameId = 0;
+let sfxDie, sfxHit, sfxPoint, sfxWing;
 
 window.onload = function () {
     board = document.getElementById("board");
-    context = board.getContext("2d", { alpha: true, desynchronized: true });
+    context = board.getContext("2d"); //used for drawing on the board
     overlay = document.getElementById("overlay");
     startBtn = document.getElementById("start-btn");
     gameOverModal = document.getElementById("gameover-modal");
@@ -77,9 +120,25 @@ window.onload = function () {
     // load sfx
     sfxDie = new Audio("./sfx_die.wav");
     sfxHit = new Audio("./sfx_hit.wav");
-    // The score sound uses Web Audio below. Decoding starts on the first user
-    // gesture so it is ready before the player reaches the first pipe.
+    sfxPoint = new Audio("./sfx_point.wav");
     sfxWing = new Audio("./sfx_wing.wav");
+
+    /*
+    * Preload sound effects on Apple devices to reduce
+    * playback preparation delay during gameplay.
+    */
+    if (IS_APPLE_DEVICE) {
+        [
+            sfxDie,
+            sfxHit,
+            sfxPoint,
+            sfxWing
+        ].forEach((audio) => {
+            audio.preload = "auto";
+            audio.load();
+        });
+    }
+
     setBoardSize(true);
 
     if (startBtn) {
@@ -106,21 +165,70 @@ window.onload = function () {
     bottomPipeImg = new Image();
     bottomPipeImg.src = "./bottompipe.png";
 
-    animationFrameId = requestAnimationFrame(update);
+    requestAnimationFrame(update);
     document.addEventListener("keydown", moveBird);
-    // Allow mouse/touch clicks anywhere on the page to flap (mobile-friendly)
-    document.addEventListener("pointerdown", handlePointerFlap, { passive: true });
-    window.addEventListener("resize", handleResize, { passive: true });
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    /*
+    * Only the game Canvas should trigger flap input.
+    * Menu buttons retain their normal click behavior.
+    */
+    board.addEventListener(
+        "pointerdown",
+        handlePointerFlap,
+        {
+            passive: false
+        }
+    );
+    /*
+    * Apple browsers can produce repeated viewport resize events.
+    * Use debouncing on Apple devices while preserving the
+    * original resize behavior on other platforms.
+    */
+    if (IS_APPLE_DEVICE) {
+        window.addEventListener(
+            "resize",
+            handleResize
+        );
+
+        window.addEventListener(
+            "orientationchange",
+            handleResize
+        );
+    } else {
+        window.addEventListener(
+            "resize",
+            () => setBoardSize(true)
+        );
+    }
 }
 
-function update(now) {
-    animationFrameId = 0;
+function update(timestamp) {
+    requestAnimationFrame(update);
 
-    // Normalize movement to 60 fps. This prevents 120 Hz iPhones from doing
-    // twice the physics work/speed and caps long frames after interruptions.
-    const delta = lastFrameTime ? Math.min((now - lastFrameTime) / (1000 / 60), 2) : 1;
-    lastFrameTime = now;
+    /*
+     * Calculate movement according to the actual time between
+     * frames. Do not manually skip frames because small timing
+     * variations can otherwise produce a double-size physics step.
+     */
+    const elapsed = lastFrameTime
+        ? timestamp - lastFrameTime
+        : TARGET_FRAME_TIME;
+
+    lastFrameTime = timestamp;
+
+    /*
+     * Limit unusually delayed frames so the cat does not
+     * suddenly move a large distance in one rendered frame.
+     */
+    const delta = Math.min(
+        elapsed /
+            TARGET_FRAME_TIME,
+        MAX_FRAME_DELTA
+    );
+
+    /*
+     * The drawing context already uses DPR scaling, so clear using
+     * logical CSS dimensions instead of backing-canvas dimensions.
+     */
     context.clearRect(0, 0, boardWidth, boardHeight);
 
     if (!started) {
@@ -134,10 +242,22 @@ function update(now) {
         return;
     }
 
-    //bird
-    velocityY += gravity * delta;
-    // bird.y += velocityY;
-    bird.y = Math.max(bird.y + velocityY * delta, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
+    /*
+    * Apply gravity while limiting the maximum downward speed.
+    * The limit scales together with the game dimensions.
+    */
+    const maxFallSpeed =
+        MAX_FALL_SPEED * scale;
+
+    velocityY = Math.min(
+        velocityY + gravity * delta,
+        maxFallSpeed
+    );
+
+    bird.y = Math.max(
+        bird.y + velocityY * delta,
+        0
+    );
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
 
     if (bird.y > boardHeight) {
@@ -153,24 +273,51 @@ function update(now) {
         if (
             pipe.countsForScore &&
             !pipe.passed &&
-            bird.x > pipe.x + pipe.width
+            bird.x >
+                pipe.x +
+                pipe.width
         ) {
+            /*
+            * One pipe pair equals one complete point.
+            */
             score += 1;
             pipe.passed = true;
-            playPointSfx();
 
+            /*
+            * Play the point sound only once per pipe pair.
+            */
+            playSfx(sfxPoint);
+
+            /*
+            * Send only one score update to the React parent.
+            */
             window.parent.postMessage(
                 {
-                    type: "GAME_SCORE_UPDATE",
-                    score: score * 100,
+                    type:
+                        "GAME_SCORE_UPDATE",
+
+                    score:
+                        Math.floor(
+                            score * 100
+                        )
                 },
                 "*"
             );
         }
 
-        if (detectCollision(bird, pipe)) {
+        if (
+            detectCollision(
+                bird,
+                pipe
+            )
+        ) {
             playSfx(sfxHit);
             endGame();
+
+            /*
+            * Stop processing the remaining pipes after game over.
+            */
+            break;
         }
     }
 
@@ -179,17 +326,7 @@ function update(now) {
         pipeArray.shift(); //removes first element from the array
     }
 
-    pipeElapsed += delta * (1000 / 60);
-    if (pipeElapsed >= PIPE_DELAY) {
-        pipeElapsed %= PIPE_DELAY;
-        placePipes();
-    }
-
     drawHUD();
-
-    if (started && !gameOver && !document.hidden) {
-        animationFrameId = requestAnimationFrame(update);
-    }
 }
 
 function placePipes() {
@@ -212,56 +349,100 @@ function placePipes() {
         width: pipeWidth,
         height: pipeHeight,
         passed: false,
-        countsForScore: true,
+
+        /*
+        * Only one pipe in each pair should trigger scoring.
+        */
+        countsForScore: true
     };
     pipeArray.push(topPipe);
 
     let bottomPipe = {
         img: bottomPipeImg,
         x: spawnX,
-        y: randomPipeY + pipeHeight + openingSpace,
+        y:
+            randomPipeY +
+            pipeHeight +
+            openingSpace,
         width: pipeWidth,
         height: pipeHeight,
         passed: false,
-        countsForScore: false,
+
+        /*
+        * The lower pipe belongs to the same pair and must not
+        * trigger another score, sound or parent message.
+        */
+        countsForScore: false
     };
     pipeArray.push(bottomPipe);
 }
 
 function moveBird(e) {
-    if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
-        preparePointSfx();
+    if (
+        e.code === "Space" ||
+        e.code === "ArrowUp" ||
+        e.code === "KeyX"
+    ) {
+        e.preventDefault();
         flap();
     }
 }
 
 function detectCollision(a, b) {
-    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-        a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-        a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-        a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+    return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+    );
 }
 
-function handlePointerFlap() {
-    preparePointSfx();
-    // Ignore clicks when game over and modal is showing unless they hit Play
-    if (gameOver && !gameOverModal.classList.contains("hidden")) return;
+function handlePointerFlap(event) {
+    if (!event.isPrimary) {
+        return;
+    }
+
+    if (
+        event.pointerType === "mouse" &&
+        event.button !== 0
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+
+    if (
+        gameOver &&
+        gameOverModal &&
+        !gameOverModal.classList.contains(
+            "hidden"
+        )
+    ) {
+        return;
+    }
+
     flap();
 }
 
 function flap() {
-    //jump
-    velocityY = jumpStrength;
-    playSfx(sfxWing);
-
-    //reset game
     if (gameOver) {
         return;
     }
 
-    // start from input if not already started
     if (!started) {
         startGame();
+    }
+
+    /*
+     * Apply the jump immediately.
+     */
+    velocityY = jumpStrength;
+
+    /*
+     * Avoid repeated HTML audio playback on Apple devices.
+     */
+    if (!IS_APPLE_DEVICE) {
+        playSfx(sfxWing);
     }
 }
 
@@ -274,6 +455,7 @@ function resetGame() {
     }
     velocityY = 0;
     pipeArray = [];
+    lastFrameTime = performance.now();
     score = 0;
     gameOver = false;
     started = false;
@@ -285,27 +467,106 @@ function resetGame() {
     if (gameOverModal) gameOverModal.classList.add("hidden");
 }
 
+function handleResize() {
+    if (resizeTimer) {
+        clearTimeout(
+            resizeTimer
+        );
+    }
+
+    resizeTimer =
+        setTimeout(
+            () => {
+                const nextIsLandscape =
+                    window.innerWidth >
+                    window.innerHeight;
+
+                /*
+                 * Ignore same-orientation Safari toolbar changes
+                 * while gameplay is active.
+                 */
+                if (
+                    started &&
+                    !gameOver &&
+                    nextIsLandscape ===
+                        lastViewportIsLandscape
+                ) {
+                    lastFrameTime =
+                        performance.now();
+
+                    return;
+                }
+
+                /*
+                 * A real orientation change occurred, or the game
+                 * is not currently active.
+                 */
+                lastViewportIsLandscape =
+                    nextIsLandscape;
+
+                setBoardSize(
+                    !started ||
+                    gameOver
+                );
+
+                lastFrameTime =
+                    performance.now();
+            },
+            200
+        );
+}
+
 function setBoardSize(reset = false) {
     // FIX: Always fill the entire browser window
     boardWidth = window.innerWidth;
     boardHeight = window.innerHeight;
+
+    lastViewportIsLandscape =
+        boardWidth >
+        boardHeight;
 
     // Calculate scale based on the dimension that 'fits' best
     // This ensures the bird/pipes don't get too huge on wide screens 
     // or too small on tall screens.
     scale = Math.min(boardWidth / BASE_WIDTH, boardHeight / BASE_HEIGHT);
 
-    // Full DPR 3 canvases are expensive on iPhones and provide little visual
-    // benefit for this pixel-art game. Limit the backing buffer size.
-    const isMobile = window.matchMedia("(pointer: coarse)").matches;
-    const dprLimit = isMobile ? MOBILE_MAX_DPR : MAX_DPR;
-    const dpr = Math.min(window.devicePixelRatio || 1, dprLimit);
+    /*
+    * Limit Canvas resolution on Apple Retina displays.
+    * Other platforms keep their original device pixel ratio.
+    */
+    const devicePixelRatio =
+        window.devicePixelRatio || 1;
+
+    /*
+    * Render Apple devices at CSS-pixel resolution.
+    * A DPR 1 Canvas contains about one quarter of the pixels
+    * of a DPR 2 Canvas.
+    */
+    const dpr = IS_APPLE_DEVICE
+        ? 1
+        : devicePixelRatio;
+
     board.style.width = `${boardWidth}px`;
     board.style.height = `${boardHeight}px`;
     board.width = Math.round(boardWidth * dpr);
     board.height = Math.round(boardHeight * dpr);
-    context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    context.imageSmoothingEnabled = false;
+
+    context.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+    /*
+    * Disable image smoothing only on Apple devices.
+    * Other platforms keep the browser's default behavior.
+    */
+    if (IS_APPLE_DEVICE) {
+        context.imageSmoothingEnabled = false;
+    }
 
     // Update game element sizes based on the new scale
     birdWidth = 34 * scale * BIRD_SCALE;
@@ -342,49 +603,15 @@ function startGame() {
     bird.y = boardHeight / 2;
     velocityY = 0;
     pipeArray = [];
-    pipeElapsed = 0;
     lastFrameTime = performance.now();
 
     if (overlay) overlay.classList.add("hidden");
     if (gameOverModal) gameOverModal.classList.add("hidden");
 
-    // Pipe spawning is driven by the same requestAnimationFrame loop.
-    if (!animationFrameId && !document.hidden) {
-        animationFrameId = requestAnimationFrame(update);
+    if (pipeInterval) {
+        clearInterval(pipeInterval);
     }
-}
-
-function handleResize() {
-    // iOS Safari fires many resize events while its address bar expands or
-    // collapses. Rebuild the canvas at most once per rendered frame.
-    if (resizeFrameId) return;
-    resizeFrameId = requestAnimationFrame(() => {
-        resizeFrameId = 0;
-        const widthChanged = Math.abs(window.innerWidth - boardWidth) > 2;
-        // Ignore small height-only changes caused by Safari's collapsing URL
-        // bar. They are not real layout changes and must not reset gameplay.
-        const heightChanged = Math.abs(window.innerHeight - boardHeight) > Math.max(120, boardHeight * 0.2);
-        if (!widthChanged && !heightChanged) return;
-
-        setBoardSize(true);
-        lastFrameTime = performance.now();
-        if (!animationFrameId) animationFrameId = requestAnimationFrame(update);
-    });
-}
-
-function handleVisibilityChange() {
-    if (document.hidden) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = 0;
-        return;
-    }
-
-    lastFrameTime = performance.now();
-    if (!animationFrameId && started && !gameOver) {
-        animationFrameId = requestAnimationFrame(update);
-    } else if (!started || gameOver) {
-        animationFrameId = requestAnimationFrame(update);
-    }
+    pipeInterval = setInterval(placePipes, 1800);
 }
 
 function drawHUD() {
@@ -441,51 +668,21 @@ function endGame() {
 
 function playSfx(audioEl) {
     if (!audioEl) return;
+
     try {
         audioEl.currentTime = 0;
-        audioEl.play();
-    } catch (e) {
-        // ignore playback errors (e.g., user gesture not granted)
-    }
-}
 
-function preparePointSfx() {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return Promise.resolve();
+        const playPromise = audioEl.play();
 
-    if (!pointAudioContext) {
-        pointAudioContext = new AudioContextClass({ latencyHint: "interactive" });
-    }
-
-    if (pointAudioContext.state === "suspended") {
-        pointAudioContext.resume().catch(() => {});
-    }
-
-    if (!pointAudioLoadPromise) {
-        pointAudioLoadPromise = fetch("./sfx_point.wav")
-            .then((response) => {
-                if (!response.ok) throw new Error("Unable to load score sound");
-                return response.arrayBuffer();
-            })
-            .then((audioData) => pointAudioContext.decodeAudioData(audioData))
-            .then((buffer) => {
-                pointAudioBuffer = buffer;
-            })
-            .catch(() => {
-                // Sound is optional; never let an audio failure affect gameplay.
+        if (
+            playPromise &&
+            typeof playPromise.catch === "function"
+        ) {
+            playPromise.catch(() => {
+                // Ignore mobile autoplay or interrupted playback errors
             });
+        }
+    } catch {
+        // Ignore synchronous playback errors
     }
-
-    return pointAudioLoadPromise;
-}
-
-function playPointSfx() {
-    // Do not fall back to HTMLAudio while the buffer is loading: on iOS that
-    // synchronous seek/play path is exactly what can hitch the scoring frame.
-    if (!pointAudioContext || !pointAudioBuffer || pointAudioContext.state !== "running") return;
-
-    const source = pointAudioContext.createBufferSource();
-    source.buffer = pointAudioBuffer;
-    source.connect(pointAudioContext.destination);
-    source.start(0);
 }
