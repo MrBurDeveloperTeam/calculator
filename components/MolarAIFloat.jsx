@@ -110,6 +110,24 @@ export default function MolarAIFloat({ userContext, disabled = false, onPetToggl
   // ordinary calculator-state refreshes.
   const groundedContextStoreRef = useRef(createGroundedContextStore());
 
+  // General Chat cross-user context guard: `userContext` (built by
+  // App.tsx's `aiContext` from CalculatorContext state) must never reach
+  // General Chat unless it was computed from the CURRENT authenticated
+  // user's own successfully-loaded calculator data. On a direct account
+  // switch A -> B, CalculatorContext's `state`/`savedPlans` can still
+  // transiently hold user A's prior values while user B's fetch is in
+  // flight — `calculatorDataStatus`/`calculatorDataUserId` are the only
+  // read-time signals that distinguish that from a genuinely-current
+  // value (see their own doc comments in types.ts), so this checks both
+  // BEFORE ever passing `userContext` through, rather than trusting that
+  // an effect has already cleared stale state by the time this renders.
+  const hasCurrentUserCalculatorData =
+    calculatorDataStatus === 'ready' &&
+    calculatorDataUserId !== null &&
+    calculatorDataUserId === user?.id;
+
+  const safeUserContext = hasCurrentUserCalculatorData ? (userContext || '') : '';
+
   const adapter = useMemo(
     () => createProfitCalculatorMolarAdapter({
       calculatorState,
@@ -117,11 +135,11 @@ export default function MolarAIFloat({ userContext, disabled = false, onPetToggl
       calculatorDataStatus,
       calculatorDataUserId,
       userId: user?.id ?? null,
-      userContext: userContext || '',
+      userContext: safeUserContext,
       savedPlans,
       groundedContextStore: groundedContextStoreRef.current,
     }),
-    [calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId, user?.id, userContext, savedPlans]
+    [calculatorState, getGlobalTotalMonthlyCost, calculatorDataStatus, calculatorDataUserId, user?.id, safeUserContext, savedPlans]
   );
 
   return (
