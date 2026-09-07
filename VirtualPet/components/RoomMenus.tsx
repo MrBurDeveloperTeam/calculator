@@ -61,7 +61,7 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                             onClick={onOpenShop}
                             className="flex h-16 w-44 shrink-0 mb-2 items-center justify-center rounded-2xl border border-dashed border-orange-300 bg-orange-50/70 px-4 text-center text-[15px] font-bold text-orange-700 tracking-wider transition-colors hover:bg-orange-100"
                         >
-                            No food yet!
+                            No food yet!!!
                         </button>
                     )}
                     {availableItems.map((item) => (
