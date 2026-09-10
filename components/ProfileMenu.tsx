@@ -304,20 +304,20 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
 
               {/* Settings */}
               <button
+                type="button"
+                disabled={isPending}
                 onClick={async () => {
-                          const res = await createAppLink({
-                            app: 'snabbb',
-                            email: user?.email,
-                            name: user?.user_metadata.name,
-                          });
-                          
-                          const supabaseUserId = res.result?.supabase_user_id;
-                          const w = window.open('', '_blank');
-                          if (supabaseUserId && w) {
-                            w.location.href = `https://app.snabbb.com/profile-settings`;
-                          }
-                        }}
-                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
+                  const res = await createAppLink({
+                    app: 'snabbb',
+                    email: user?.email,
+                    name: user?.user_metadata.name,
+                  });
+
+                  if (res.result?.supabase_user_id) {
+                    window.location.assign('https://app.snabbb.com/profile-settings');
+                  }
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
               >
                 <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
                   <SettingsIcon className="w-3.5 h-3.5 text-[var(--app-text-soft)]" />
