@@ -13,6 +13,9 @@ interface ProfileMenuProps {
   triggerClassName?: string;
 }
 
+// Keep the unfinished support portal available in code while hiding its menu entry.
+const SHOW_SUPPORT_TICKETS = false;
+
 const getInitials = (name: string) => {
   const initials = name
     .split(' ')
@@ -269,38 +272,40 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </button>
 
-              {/* Support Tickets */}
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={async () => {
-                  setIsOpen(false);
-                  try {
-                    const response = await fetch('/api/ticketing/sso', {
-                      method: 'POST',
-                      credentials: 'include',
-                      headers: { Accept: 'application/json' },
-                    });
-                    const data = await response.json().catch(() => null);
-                    if (!response.ok || !data?.redirectUrl) {
-                      throw new Error(data?.error || 'Unable to open the support portal.');
+              {/* Support Tickets — hidden until the feature is ready. */}
+              {SHOW_SUPPORT_TICKETS && (
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={async () => {
+                    setIsOpen(false);
+                    try {
+                      const response = await fetch('/api/ticketing/sso', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { Accept: 'application/json' },
+                      });
+                      const data = await response.json().catch(() => null);
+                      if (!response.ok || !data?.redirectUrl) {
+                        throw new Error(data?.error || 'Unable to open the support portal.');
+                      }
+                      window.location.assign(data.redirectUrl);
+                    } catch (error) {
+                      console.error('Ticketing SSO failed:', error);
                     }
-                    window.location.assign(data.redirectUrl);
-                  } catch (error) {
-                    console.error('Ticketing SSO failed:', error);
-                  }
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
-              >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Support Tickets</p>
-                  <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Create and track your support tickets</p>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
-              </button>
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
+                >
+                  <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
+                    <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Support Tickets</p>
+                    <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Create and track your support tickets</p>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
+                </button>
+              )}
 
               {/* Settings */}
               <button
