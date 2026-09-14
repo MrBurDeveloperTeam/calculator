@@ -99,7 +99,8 @@ export async function signUpDual({
  */
 export async function exchangeSsoToken() {
     try {
-        const token = new URLSearchParams(window.location.search).get('token');
+        const launchUrl = new URL(window.location.href);
+        const token = launchUrl.searchParams.get('sso_token') || launchUrl.searchParams.get('token');
         const sso = await odooApi.get('/sso/exchange', token ? {
             headers: { Authorization: `Bearer ${token}` },
         } : undefined);
@@ -110,7 +111,11 @@ export async function exchangeSsoToken() {
             });
             if (error) throw error;
             localStorage.setItem('is_sso_session', 'true');
-            if (token) window.history.replaceState({}, '', '/');
+            if (token) {
+                launchUrl.searchParams.delete('sso_token');
+                launchUrl.searchParams.delete('token');
+                window.history.replaceState({}, document.title, `${launchUrl.pathname}${launchUrl.search}${launchUrl.hash}`);
+            }
             return true;
         }
     } catch (err: any) {
