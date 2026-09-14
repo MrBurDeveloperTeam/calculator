@@ -101,9 +101,19 @@ export async function exchangeSsoToken() {
     try {
         const launchUrl = new URL(window.location.href);
         const token = launchUrl.searchParams.get('sso_token') || launchUrl.searchParams.get('token');
+
+        // Only a token should override an existing identity. Without one,
+        // reuse the locally persisted Supabase session and avoid a slow
+        // central SSO request on every page load.
+        if (!token) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) return true;
+        }
+
         const sso = await odooApi.get('/sso/exchange', token ? {
             headers: { Authorization: `Bearer ${token}` },
-        } : undefined);
+            timeout: 3000,
+        } : { timeout: 3000 });
         if (sso?.data?.access_token && sso?.data?.refresh_token) {
             const { error } = await supabase.auth.setSession({
                 access_token: sso.data.access_token,
