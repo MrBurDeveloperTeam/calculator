@@ -10,11 +10,23 @@ export function useSsoExchange() {
     queryFn: async () => {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
-        const { data } = await api.get('/sso/exchange');
+        const launchUrl = new URL(window.location.href);
+        const launchToken = launchUrl.searchParams.get('sso_token') || launchUrl.searchParams.get('token');
+        const exchangePath = launchToken
+          ? `/sso/exchange?sso_token=${encodeURIComponent(launchToken)}`
+          : '/sso/exchange';
+        const { data } = await api.get(exchangePath);
         const { error } = await supabase.auth.setSession({
                 access_token: data.access_token,
                 refresh_token: data.refresh_token,
             });
+        if (error) throw error;
+
+        if (launchToken) {
+          launchUrl.searchParams.delete('sso_token');
+          launchUrl.searchParams.delete('token');
+          window.history.replaceState({}, document.title, `${launchUrl.pathname}${launchUrl.search}${launchUrl.hash}`);
+        }
         
         localStorage.setItem('is_sso_session', 'true');
         console.log('sessionData response:', sessionData);
