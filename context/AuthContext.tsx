@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { Profile } from '../types';
@@ -29,39 +29,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const authGenerationRef = useRef(0);
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
+        isMountedRef.current = true;
+        let initialResolutionComplete = false;
+
+        const resolveSession = async (session: Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']) => {
+            const generation = ++authGenerationRef.current;
+            setIsLoading(true);
+            setProfile(null);
+            setUser(session?.user ?? null);
+
+            if (!session?.user) {
+                if (isMountedRef.current && generation === authGenerationRef.current) {
+                    setIsLoading(false);
+                }
+                return;
+            }
+
+            await fetchProfile(session.user.id, generation);
+        };
+
         const initializeAuth = async () => {
             // 1. Attempt SSO Exchange first (silently configures Supabase session if Odoo cookie is valid)
             await exchangeSsoToken().catch(console.warn);
 
             // 2. Get initial session from Supabase (now potentially populated by the SSO exchange)
             const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                fetchProfile(session.user.id);
-            } else {
-                setIsLoading(false);
-            }
+            await resolveSession(session);
+            initialResolutionComplete = true;
         };
 
         initializeAuth();
 
         // 3. Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                fetchProfile(session.user.id);
-            } else {
-                setProfile(null);
-                setIsLoading(false);
-            }
+            // Supabase may emit an initial null event while the explicit SSO
+            // exchange above is still running. The initializer owns the UI
+            // until it has conclusively resolved that exchange and session.
+            if (!initialResolutionComplete) return;
+            void resolveSession(session);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            isMountedRef.current = false;
+            authGenerationRef.current += 1;
+            subscription.unsubscribe();
+        };
     }, []);
 
-    const fetchProfile = async (userId: string) => {
+    const fetchProfile = async (userId: string, generation: number) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -69,15 +88,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 .eq('user_id', userId)
                 .single();
 
+            if (!isMountedRef.current || generation !== authGenerationRef.current) return;
+
             if (error) {
                 console.error('Error fetching profile:', error);
             } else {
                 setProfile(data);
+                setIsLoading(false);
             }
         } catch (err) {
             console.error('Unexpected error fetching profile:', err);
-        } finally {
-            setIsLoading(false);
         }
     };
 
