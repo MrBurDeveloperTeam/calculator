@@ -277,22 +277,10 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 <button
                   type="button"
                   disabled={isPending}
-                  onClick={async () => {
+                  onClick={() => {
                     setIsOpen(false);
-                    try {
-                      const response = await fetch('/api/ticketing/sso', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { Accept: 'application/json' },
-                      });
-                      const data = await response.json().catch(() => null);
-                      if (!response.ok || !data?.redirectUrl) {
-                        throw new Error(data?.error || 'Unable to open the support portal.');
-                      }
-                      window.location.assign(data.redirectUrl);
-                    } catch (error) {
-                      console.error('Ticketing SSO failed:', error);
-                    }
+                    const dashboardPath = profile?.account_type === 'admin' ? '/admin/dashboard' : '/user/dashboard';
+                    window.location.assign(`https://app.snabbb.com${dashboardPath}`);
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
                 >
