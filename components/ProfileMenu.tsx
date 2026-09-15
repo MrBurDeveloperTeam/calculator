@@ -13,8 +13,8 @@ interface ProfileMenuProps {
   triggerClassName?: string;
 }
 
-// Keep the unfinished support portal available in code while hiding its menu entry.
-const SHOW_SUPPORT_TICKETS = false;
+// The support dashboard is available to every signed-in account.
+const SHOW_SUPPORT_TICKETS = true;
 
 const getInitials = (name: string) => {
   const initials = name
@@ -272,7 +272,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
               </button>
 
-              {/* Support Tickets — hidden until the feature is ready. */}
+              {/* Role-aware support dashboard entry. */}
               {SHOW_SUPPORT_TICKETS && (
                 <button
                   type="button"
@@ -300,8 +300,14 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                     <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Support Tickets</p>
-                    <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Create and track your support tickets</p>
+                    <p className="text-sm font-bold text-[var(--app-text)] leading-tight">
+                      {profile?.account_type === 'admin' ? 'Admin Dashboard' : 'User Dashboard'}
+                    </p>
+                    <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">
+                      {profile?.account_type === 'admin'
+                        ? 'Manage all support tickets'
+                        : 'Create and track support tickets'}
+                    </p>
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 text-[var(--app-border-strong)] group-hover:text-[var(--app-text-muted)] transition-colors" />
                 </button>
