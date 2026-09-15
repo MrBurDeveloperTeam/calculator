@@ -14,7 +14,9 @@ import {
   Wallet,
   Calculator,
   Settings,
-  History
+  History,
+  Monitor,
+  ChevronDown
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -41,7 +43,98 @@ const MENU_ITEMS: { id: ViewState; label: string; icon: React.FC<{ className?: s
   { id: 'owner', label: 'Owner Comp', icon: Wallet },
 ];
 
+type ThemeMode = 'light' | 'dark' | 'system';
+
+const SHARED_THEME_KEY = 'snabbb-theme';
+const LEGACY_THEME_KEY = 'theme';
+const THEME_VALUES: ThemeMode[] = ['light', 'dark', 'system'];
+
+const getCookieValue = (name: string) => {
+  if (typeof document === 'undefined') return null;
+
+  const cookie = document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`));
+
+  return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : null;
+};
+
+const getInitialTheme = (): ThemeMode => {
+  if (typeof window === 'undefined') return 'light';
+
+  const cookieTheme = getCookieValue(SHARED_THEME_KEY);
+  if (cookieTheme && THEME_VALUES.includes(cookieTheme as ThemeMode)) {
+    return cookieTheme as ThemeMode;
+  }
+
+  const sharedTheme = window.localStorage.getItem(SHARED_THEME_KEY);
+  if (sharedTheme && THEME_VALUES.includes(sharedTheme as ThemeMode)) {
+    return sharedTheme as ThemeMode;
+  }
+
+  const legacyTheme = window.localStorage.getItem(LEGACY_THEME_KEY);
+  if (legacyTheme && THEME_VALUES.includes(legacyTheme as ThemeMode)) {
+    return legacyTheme as ThemeMode;
+  }
+
+  return 'light';
+};
+
+const resolveTheme = (theme: ThemeMode) => {
+  if (theme === 'system') {
+    return typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  return theme;
+};
+
+const applyTheme = (theme: ThemeMode) => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  const resolvedTheme = resolveTheme(theme);
+
+  document.documentElement.setAttribute('data-theme', resolvedTheme);
+  document.documentElement.classList.toggle('dark', resolvedTheme === 'dark');
+
+  window.localStorage.setItem(SHARED_THEME_KEY, theme);
+  window.localStorage.setItem(LEGACY_THEME_KEY, theme);
+
+  document.cookie = [
+    `${SHARED_THEME_KEY}=${encodeURIComponent(theme)}`,
+    'Path=/',
+    'Domain=.snabbb.com',
+    'Max-Age=31536000',
+    'SameSite=Lax',
+    'Secure',
+  ].join('; ');
+};
+
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, setIsOpen }) => {
+  const [theme, setTheme] = React.useState<ThemeMode>(getInitialTheme);
+
+  React.useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  React.useEffect(() => {
+    if (theme !== 'system' || typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = () => applyTheme('system');
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+      return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    }
+
+    mediaQuery.addListener(handleSystemThemeChange);
+    return () => mediaQuery.removeListener(handleSystemThemeChange);
+  }, [theme]);
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -89,6 +182,32 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, se
           })}
         </nav>
         
+        {/* Snabbb Theme Selection */}
+        <div className="p-4 border-t border-slate-800 flex-shrink-0">
+          <div className="flex items-center gap-2 text-slate-400 mb-3">
+            <Monitor className="w-4 h-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">SNABBB THEME</span>
+          </div>
+
+          <div className="relative">
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as ThemeMode)}
+              aria-label="Snabbb theme"
+              className="w-full appearance-none rounded-xl border-2 border-teal-400/80 bg-slate-800 px-4 py-3 pr-10 text-sm font-semibold text-white outline-none transition-colors hover:border-teal-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-400/20"
+            >
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
+          </div>
+
+          <p className="mt-3 text-[11px] leading-5 text-slate-500">
+            Inherits from Snabbb and syncs across Snabbb subdomains.
+          </p>
+        </div>
+
         {/* Footer info */}
         <div className="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
           <p>v3.1 • Visual Suite</p>
