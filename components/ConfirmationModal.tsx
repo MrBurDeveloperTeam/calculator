@@ -21,7 +21,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="confirmation-modal relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
           <h3 className="text-lg font-bold text-slate-800">{title}</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -30,9 +30,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
         </div>
 
         <div className="p-6">
-          <div className="bg-amber-50 border border-amber-100 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p className="text-amber-800 text-sm">{message}</p>
+          <div className="confirmation-warning bg-amber-50 border border-amber-100 rounded-lg p-4 flex items-start gap-3">
+            <AlertTriangle className="confirmation-warning-icon w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <p className="confirmation-warning-text text-amber-800 text-sm leading-relaxed">
+              {message}
+            </p>
           </div>
         </div>
 

@@ -1,20 +1,30 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Menu, LogOut, User as UserIcon } from 'lucide-react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Menu } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ViewState } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import HistoryTab from './components/HistoryTab';
 import Toast from './components/Toast';
+import ProfileMenu from './components/ProfileMenu';
 import { CalculatorProvider, useCalculator } from './context/CalculatorContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPage from './components/LandingPage';
+import LoginPage from './components/Auth/LoginPage';
+import RegisterPage from './components/Auth/RegisterPage';
 import ClinicSettings from './components/ClinicSettings';
 import ROICalculatorModal from './components/ROICalculatorModal';
 import SmartForecastingModal from './components/SmartForecastingModal';
 import CatMascot from './components/CatMascot';
 import MolarAIFloat from './components/MolarAIFloat';
-import { VirtualPetContainer } from './VirtualPet/VirtualPetContainer';
+import {
+  PersonalizedInsightBridgeProvider,
+  usePublishPersonalizedInsight,
+  type PersonalizedInsightBridgeState,
+} from './aiExperience/petDialogue/PersonalizedInsightBridge';
+import { useProfitCalculatorPersonalizedInsight } from './aiExperience/hooks/useProfitCalculatorPersonalizedInsight';
+import CalculatorVirtualPet from './petExperience/CalculatorVirtualPet';
+import MeowdokuLauncher from './petExperience/MeowdokuLauncher';
 import {
   OverheadCalculator,
   StaffCalculator,
@@ -28,14 +38,42 @@ import {
   OwnerCalculator,
   ProcedureBuilder
 } from './components/CalculatorModules';
-import { useSsoExchange } from './lib/ssoExchange';
+import {
+  normalizeTheme,
+  readStoredTheme,
+  readThemeCookie,
+  writeThemeCookie,
+  writeStoredTheme,
+  applyThemeToDocument,
+  broadcastTheme,
+  syncThemeFromOdoo,
+  pushThemeToOdoo,
+  THEME_SYNC,
+  type ThemePreference,
+} from './lib/themeSync';
+import usePageDurationTracker, { type PageViewLogMeta } from './hooks/usePageDurationTracker';
 
+const VIEW_LABELS: Record<ViewState, string> = {
+  settings: 'Clinic Settings',
+  dashboard: 'Dashboard',
+  history: 'History',
+  procedure_builder: 'Procedure Builder',
+  overhead: 'Overhead Calculator',
+  staff: 'Staff Calculator',
+  depreciation: 'Depreciation Calculator',
+  consumables: 'Consumables Calculator',
+  sterilization: 'Sterilization Calculator',
+  lab: 'Lab Calculator',
+  marketing: 'Marketing Calculator',
+  regulatory: 'Regulatory Calculator',
+  financial: 'Financial Calculator',
+  owner: 'Owner Calculator',
+};
 
 const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
-  const { data, isLoading: isSsoLoading, error } = useSsoExchange();
 
-  if (isLoading || isSsoLoading) {
+  if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin border-opacity-50"></div>
@@ -47,8 +85,8 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
       <>
         <LandingPage />
-        <CatMascot disabled />
-        <MolarAIFloat disabled />
+        <CatMascot disabled onCatClick={() => {}} />
+        <MolarAIFloat disabled userContext="" onPetToggle={() => {}} />
       </>
     );
   }
@@ -56,13 +94,89 @@ const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-const AppContent: React.FC = () => {
+/**
+ * Publishes the app-wide Profit personalized reminder — rendered as a
+ * CHILD of <PersonalizedInsightBridgeProvider> (see AppContent's return
+ * below), never as a hook called from AppContent's own body. That
+ * distinction is the entire point of this component's existence: a hook
+ * call executes as part of whichever component calls it, using that
+ * component's OWN position in the tree — a component only "sees" the
+ * Provider instances that wrap ITS OWN render, never a Provider it simply
+ * returns as descendant JSX. Mounting this as an actual descendant
+ * component of the Provider means this component's own `useContext` calls
+ * (inside `usePublishPersonalizedInsight`) correctly resolve to the same
+ * Provider instance CatMascot itself reads via
+ * `usePersonalizedInsightBridge()`.
+ *
+ * Always mounted for the entire authenticated app lifetime (a sibling of
+ * the main view content inside the same Provider, not gated on
+ * `currentView`) — this is what makes the reminder genuinely app-wide.
+ * Renders nothing; it exists purely to keep this hook call in the correct
+ * tree position. No new Supabase query: `useProfitCalculatorPersonalizedInsight`
+ * is a pure `useMemo` over CalculatorContext's already-loaded `savedPlans`.
+ */
+const ProfitDialoguePublisher: React.FC = () => {
+  const { user } = useAuth();
+  const { savedPlans, openModal, calculatorDataStatus, calculatorDataUserId } = useCalculator();
+  const profitInsight = useProfitCalculatorPersonalizedInsight();
+
+  // CLOSURE SAFETY: this function closes over `profitInsight`/`savedPlans`
+  // from THIS render. The bridge below captures this exact function
+  // reference together with `profitInsight` from the SAME publish call —
+  // CatMascot then freezes that pair in its own refs at adoption time and
+  // never re-reads a later render's values, so a later savedPlans change
+  // can never make the CTA open a DIFFERENT plan than the one Cat
+  // actually displayed. `openModal`/`modalState` are already owned by
+  // CalculatorContext and the modal itself already renders at AppContent
+  // level regardless of `currentView` (see `<ROICalculatorModal>`/
+  // `<SmartForecastingModal>`, both driven by `modalState`), so this works
+  // identically from any internal view, including ones where Dashboard
+  // was never mounted.
+  const handleProfitInsightAction = useCallback(() => {
+    if (!profitInsight) return;
+    const planId = profitInsight.facts.planId;
+    const plan = savedPlans.find((p) => p.id === planId);
+    // If the referenced plan no longer exists in current state (e.g.
+    // deleted since this candidate was evaluated), do nothing safely —
+    // never fall back to a different plan, never fabricate data.
+    if (!plan) return;
+    openModal(plan.type, plan);
+  }, [profitInsight, savedPlans, openModal]);
+
+  // Unconditional: NOT gated on `currentView === 'dashboard'` — the
+  // Profit reminder is an app-wide product requirement, so this runs
+  // regardless of which internal view is currently mounted. Ownership is
+  // checked FIRST (calculatorDataUserId === current authenticated user
+  // id), THEN readiness (calculatorDataStatus === 'ready') — the exact
+  // same two-step gate already established by resolveProfitDataQuery.ts
+  // for Phase-3 Data Chat, reused here rather than re-derived. A stale
+  // previous user's 'ready' status (e.g. right after logout/user-switch,
+  // before CalculatorContext's fetch effect has run for the new user) is
+  // therefore never treated as ready for the new user.
+  const personalizedInsightBridgeState: PersonalizedInsightBridgeState = useMemo(
+    () =>
+      calculatorDataUserId !== null && calculatorDataUserId === user?.id && calculatorDataStatus === 'ready'
+        ? { status: 'ready', candidate: profitInsight, onAction: handleProfitInsightAction }
+        : { status: 'not_ready' },
+    [calculatorDataUserId, user?.id, calculatorDataStatus, profitInsight, handleProfitInsightAction],
+  );
+  usePublishPersonalizedInsight(personalizedInsightBridgeState);
+
+  return null;
+};
+
+interface AppContentProps {
+  theme: ThemePreference;
+  onThemeChange: (theme: ThemePreference) => void;
+}
+
+const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<ViewState>('settings');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isVirtualPetOpen, setIsVirtualPetOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const [isMeowdokuOpen, setIsMeowdokuOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
   const {
     state,
     savedPlans,
@@ -73,7 +187,24 @@ const AppContent: React.FC = () => {
     closeModal,
     getGlobalTotalMonthlyCost,
     getTotalMonthlyHours,
+    logCalculatorActivity,
   } = useCalculator();
+
+  // Logs how long the user spends on each view (Dashboard, Settings,
+  // History, each cost-category calculator, Procedure Builder) as a
+  // "page_view" activity once they switch views, hide the tab, or leave
+  // the page — see hooks/usePageDurationTracker.ts.
+  usePageDurationTracker(
+    currentView,
+    VIEW_LABELS[currentView],
+    Boolean(user?.email),
+    (description: string, pageMeta: PageViewLogMeta) => {
+      logCalculatorActivity('page_view', description, {
+        pagePath: pageMeta.pagePath,
+        pageDurationSeconds: pageMeta.pageDurationSeconds,
+      });
+    }
+  );
 
   const aiContext = useMemo(() => {
     const totalMonthlyCost = getGlobalTotalMonthlyCost();
@@ -93,6 +224,26 @@ const AppContent: React.FC = () => {
       `Consumables: ${state.consumables.items.length}`,
     ].join('\n');
   }, [currentView, getGlobalTotalMonthlyCost, getTotalMonthlyHours, savedPlans.length, savedProcedures.length, state]);
+
+  useEffect(() => {
+    const wheelOptions: AddEventListenerOptions = { capture: true, passive: false };
+
+    const preventNumberInputScroll = (event: WheelEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof HTMLInputElement) || target.type !== 'number') return;
+      if (document.activeElement !== target) return;
+
+      event.preventDefault();
+      target.blur();
+    };
+
+    document.addEventListener('wheel', preventNumberInputScroll, wheelOptions);
+
+    return () => {
+      document.removeEventListener('wheel', preventNumberInputScroll, wheelOptions);
+    };
+  }, []);
 
   const logOut = async () => {
     await signOut().then((res) => {
@@ -120,12 +271,22 @@ const AppContent: React.FC = () => {
   };
 
   return (
+    // <ProfitDialoguePublisher /> is a genuine DESCENDANT of this Provider
+    // (rendered as JSX here, not called as a hook up in AppContent's own
+    // body — see that component's own doc for why the distinction is
+    // load-bearing), and CatMascot (the reader, always mounted below) is
+    // its sibling — both consume the exact same Provider instance. See
+    // aiExperience/petDialogue/PersonalizedInsightBridge.tsx.
+    <PersonalizedInsightBridgeProvider>
+    <ProfitDialoguePublisher />
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
       <Sidebar
         currentView={currentView}
         onChangeView={setCurrentView}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
+        theme={theme}
+        onThemeChange={onThemeChange}
       />
 
       <div className="flex-1 flex flex-col lg:pl-64 transition-all duration-300">
@@ -137,27 +298,11 @@ const AppContent: React.FC = () => {
             </a>
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                onBlur={() => setTimeout(() => setIsUserMenuOpen(false), 200)}
-                className="p-2 text-slate-600 hover:bg-slate-100 rounded-full border border-slate-200 transition-colors"
-                title="User Menu"
-              >
-                <UserIcon className="w-5 h-5" />
-              </button>
-              {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
-                  <div className="px-4 py-3 text-sm text-slate-700 border-b border-slate-100 bg-slate-50 truncate">
-                    <div className="font-medium text-slate-900 mb-0.5">Signed in as</div>
-                    <div className="text-slate-500 truncate">{user?.email}</div>
-                  </div>
-                  <button onClick={logOut} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
-                    <LogOut className="w-4 h-4" /> Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
+            <ProfileMenu
+              user={user}
+              profile={profile}
+              onSignOut={logOut}
+              triggerClassName="w-10 h-10 p-1 flex items-center justify-center overflow-hidden text-[var(--app-text-soft)] hover:bg-[var(--app-surface-muted)] rounded-full bg-[var(--app-surface)] border border-[var(--app-border)] shadow-sm transition-colors"            />
             <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
               <Menu className="w-6 h-6" />
             </button>
@@ -166,27 +311,7 @@ const AppContent: React.FC = () => {
 
         {/* Desktop Header Actions (Optional padding logic) */}
         <div className="hidden lg:flex justify-end p-4 absolute top-0 right-0 z-20">
-          <div className="relative">
-            <button
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              onBlur={() => setTimeout(() => setIsUserMenuOpen(false), 200)}
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-full bg-white border border-slate-200 shadow-sm transition-colors"
-              title="User Menu"
-            >
-              <UserIcon className="w-5 h-5" />
-            </button>
-            {isUserMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
-                <div className="px-4 py-3 text-sm text-slate-700 border-b border-slate-100 bg-slate-50 truncate">
-                  <div className="font-medium text-slate-900 mb-0.5">Signed in as</div>
-                  <div className="text-slate-500 truncate">{user?.email}</div>
-                </div>
-                <button onClick={logOut} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
-                  <LogOut className="w-4 h-4" /> Sign Out
-                </button>
-              </div>
-            )}
-          </div>
+          <ProfileMenu user={user} profile={profile} onSignOut={logOut} />
         </div>
 
         {/* Main Content Area */}
@@ -214,32 +339,146 @@ const AppContent: React.FC = () => {
       />
 
       <div className={isVirtualPetOpen ? 'hidden' : 'contents'}>
-        <CatMascot onCatClick={() => setIsVirtualPetOpen(true)} />
+        {/* Keyed by the authenticated Supabase user id so a direct A -> B
+            account switch (one that never passes through a logged-out
+            state) still forces a fresh mount — otherwise CatMascot's own
+            account-sensitive presentation cache and MolarAIFloat's
+            groundedContextStoreRef (a useRef, initialized only once per
+            mount) would survive the switch and leak the previous user's
+            state into the new user's session. */}
+        <CatMascot key={user?.id} onCatClick={() => setIsVirtualPetOpen(true)} />
         <MolarAIFloat
+          key={user?.id}
           userContext={aiContext}
           onPetToggle={() => setIsVirtualPetOpen(true)}
         />
       </div>
-      <VirtualPetContainer
+      <CalculatorVirtualPet
+        // AppContent only ever mounts once AuthManager (above) has resolved
+        // auth AND confirmed a user exists, so `user.id` here is always a
+        // real, stable id — never a transitional null. `key={userId}` exists
+        // purely for the A -> B account-switch case: if `onAuthStateChange`
+        // ever swaps in a different authenticated user without AppContent
+        // itself unmounting, this forces a fresh SharedVirtualPet instance
+        // (and fresh CalculatorVirtualPet-local state, e.g. `hasLoggedRef`)
+        // instead of one instance silently carrying state across identities.
+        key={user?.id}
         isOpen={isVirtualPetOpen}
         onClose={() => setIsVirtualPetOpen(false)}
+        userId={user?.id ?? null}
+        extraGames={user?.id ? [
+          {
+            id: 'meowdoku',
+            title: 'Meowdoku',
+            iconUrl: '/games/meowdoku/cover-148.png',
+            onSelect: () => setIsMeowdokuOpen(true),
+          },
+        ] : undefined}
       />
+      {/* Meowdoku is already live/user-facing in Production (legacy
+          VirtualPet/{GamePage,RoomMenus}.tsx) — exposed here as a 4th game
+          via SharedVirtualPet's extraGames slot instead. Rendered as a
+          sibling ABOVE SharedVirtualPet's own z-[1000] overlay (z-[1100],
+          the proven value for this exact sibling-hidden-under-
+          SharedVirtualPet bug class) so it never renders invisibly behind
+          it; closing it leaves SharedVirtualPet's Games room still open
+          underneath, matching Production's existing behavior. */}
+      {user?.id && (
+        <MeowdokuLauncher
+          isOpen={isMeowdokuOpen}
+          onClose={() => setIsMeowdokuOpen(false)}
+          userId={user.id}
+        />
+      )}
     </div>
+    </PersonalizedInsightBridgeProvider>
   );
 };
 
 const App: React.FC = () => {
+  // Snabbb theme inheritance: Worker-injected value/cookie first, mini-app fallback second.
+  const [theme, setTheme] = useState<ThemePreference>(() => readStoredTheme() || 'light');
+
+  useEffect(() => {
+    const normalized = normalizeTheme(theme) || 'light';
+    applyThemeToDocument(normalized);
+  }, [theme]);
+
+  useEffect(() => {
+    syncThemeFromOdoo((odooTheme) => {
+      setTheme((current) => (current === odooTheme ? current : odooTheme));
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleStorageSync = (event: StorageEvent) => {
+      if (event.key !== THEME_SYNC.localStorageKey && event.key !== 'snabbb-theme') return;
+      const next = normalizeTheme(event.newValue);
+      if (next) setTheme((current) => (current === next ? current : next));
+    };
+
+    const handleMessageSync = (event: MessageEvent) => {
+      const data = event.data;
+      if (!data || data.type !== THEME_SYNC.messageType) return;
+      if (data.source === THEME_SYNC.appSource) return;
+
+      const next = normalizeTheme(data.theme);
+      if (next) setTheme((current) => (current === next ? current : next));
+    };
+
+    const handleSystemThemeChange = () => {
+      setTheme((current) => {
+        if (current === 'system') applyThemeToDocument('system');
+        return current;
+      });
+    };
+
+    let lastCookie = readThemeCookie();
+    const cookieInterval = window.setInterval(() => {
+      const currentCookie = readThemeCookie();
+      if (currentCookie && currentCookie !== lastCookie) {
+        lastCookie = currentCookie;
+        setTheme((current) => (current === currentCookie ? current : currentCookie));
+      }
+    }, 1000);
+
+    const mediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+
+    window.addEventListener('storage', handleStorageSync);
+    window.addEventListener('message', handleMessageSync);
+    mediaQuery?.addEventListener?.('change', handleSystemThemeChange);
+    mediaQuery?.addListener?.(handleSystemThemeChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageSync);
+      window.removeEventListener('message', handleMessageSync);
+      mediaQuery?.removeEventListener?.('change', handleSystemThemeChange);
+      mediaQuery?.removeListener?.(handleSystemThemeChange);
+      window.clearInterval(cookieInterval);
+    };
+  }, []);
+
+  const handleSetTheme = (newTheme: ThemePreference) => {
+    const normalized = normalizeTheme(newTheme) || 'light';
+    setTheme(normalized);
+    writeThemeCookie(normalized);
+    writeStoredTheme(normalized);
+    broadcastTheme(normalized);
+    void pushThemeToOdoo(normalized);
+  };
+
   return (
     <AuthProvider>
       <CalculatorProvider>
         <Router>
           <Routes>
-            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route
               path="/*"
               element={
                 <AuthManager>
-                  <AppContent />
+                  <AppContent theme={theme} onThemeChange={handleSetTheme} />
                 </AuthManager>
               }
             />

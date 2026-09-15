@@ -1,5 +1,6 @@
 import React from 'react';
 import { ViewState } from '../types';
+import type { ThemePreference } from '../lib/themeSync';
 import { 
   LayoutDashboard, 
   Building2, 
@@ -14,7 +15,8 @@ import {
   Wallet,
   Calculator,
   Settings,
-  History
+  History,
+  Monitor
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,6 +24,8 @@ interface SidebarProps {
   onChangeView: (view: ViewState) => void;
   isOpen: boolean;
   setIsOpen: (val: boolean) => void;
+  theme: ThemePreference;
+  onThemeChange: (theme: ThemePreference) => void;
 }
 
 const MENU_ITEMS: { id: ViewState; label: string; icon: React.FC<{ className?: string }> }[] = [
@@ -41,7 +45,7 @@ const MENU_ITEMS: { id: ViewState; label: string; icon: React.FC<{ className?: s
   { id: 'owner', label: 'Owner Comp', icon: Wallet },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, setIsOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, setIsOpen, theme, onThemeChange }) => {
   return (
     <>
       {/* Mobile Overlay */}
@@ -89,9 +93,26 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, se
           })}
         </nav>
         
-        {/* Footer info */}
-        <div className="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
-          <p>v3.1 • Visual Suite</p>
+        {/* Snabbb Theme Sync */}
+        <div className="p-4 border-t border-slate-800 space-y-3">
+          <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <Monitor className="w-4 h-4" />
+            Snabbb Theme
+          </label>
+          <select
+            value={theme}
+            onChange={(event) => onThemeChange(event.target.value as ThemePreference)}
+            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-200 outline-none transition-colors focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+            aria-label="Choose Snabbb theme"
+          >
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+          </select>
+          <p className="text-[10px] leading-relaxed text-slate-500">
+            Inherits from Snabbb and syncs across Snabbb subdomains.
+          </p>
+          <p className="text-xs text-slate-500 text-center">v3.1 • Visual Suite</p>
         </div>
       </div>
     </>

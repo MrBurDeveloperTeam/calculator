@@ -1,130 +1,61 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, X } from 'lucide-react';
+// PHASE 4B (Cat Presentation + Dialogue Runtime migration): this file is
+// now a LOCAL host adapter only — sprite rendering, entry-walk, click-to-
+// move, and the generic dialogue lifecycle (mount-scoped shown-tracking,
+// dismissal persistence, cross-tab sync, exact-adopted-candidate binding,
+// one-activation/no-cascade, Intro/Welcome-Back timing) all live in
+// `@mrburdeveloperteam/molar-experience/cat`'s `SharedCatMascot` +
+// `useSharedCatDialogueRuntime`. This component's job is: (1) resolve the
+// current user/pet/sleep state exactly as before, (2) fetch Profit
+// Calculator's own Intro/Welcome-Back content and the personalized
+// Not-Profitable/Summary reminder (via the existing bridge), reactively
+// feeding them into the shared runtime's inputs, (3) run the pet-mood
+// polling + ambient meow loop + audio loop, all moved mechanically, not
+// rewritten, and (4) preserve the working click-meow sound, which the
+// shared package intentionally does not own.
+//
+// NOT migrated in this phase, and deliberately unchanged: Molar AI,
+// Virtual Pet, and the mobile-safe `getSafeX` entry-walk/click-target
+// clamp that Profit Calculator's previous local implementation had — see
+// this file's own PHASE 4A audit finding: `SharedCatMascot` owns its own
+// position state internally and has no host hook for this. Manual browser
+// parity is the acceptance gate for whether that specific behavioral
+// difference is acceptable.
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { SharedCatMascot, useSharedCatDialogueRuntime } from '@mrburdeveloperteam/molar-experience/cat';
 import { supabase } from '../lib/supabase';
-import { getPetOption, normalizePetId } from '../VirtualPet/petOptions';
+import { normalizePetId } from '../VirtualPet/petOptions';
+import { usePersonalizedInsightBridge } from '../aiExperience/petDialogue/PersonalizedInsightBridge';
+import { CAT_SPRITE_SHEET_URLS } from '../aiExperience/molarExperienceAssets';
 
-const MALLOW_FRAME_WIDTH = 192;
-const MALLOW_FRAME_HEIGHT = 208;
-const MALLOW_SCALE = 0.42;
 const PET_SLEEPING_KEY = 'pet_is_sleeping';
 const PET_SLEEPING_UPDATED_AT_KEY = 'pet_is_sleeping_updated_at';
-const MALLOW_ROWS = {
-  idle: { row: 0, frames: 6, duration: '1.1s' },
-  runRight: { row: 1, frames: 8, duration: '0.7s' },
-  runLeft: { row: 2, frames: 8, duration: '0.7s' },
-  wave: { row: 3, frames: 4, duration: '0.8s' },
-  review: { row: 3, frames: 4, duration: '0.8s' },
-  sleep: { row: 5, frames: 1, duration: '1s', frame: 4 },
+const APP_ID = 'profit-calculator';
+// Format preserved EXACTLY — matches the shared runtime's own internal
+// `cat/internal/introCompletion.ts` key (user-scoped, no appId segment).
+// Used here ONLY to skip an unnecessary Supabase query for a user who has
+// already completed Intro, mirroring the pre-migration optimization — the
+// shared runtime independently makes the actual show/skip decision itself.
+const introCompletedLocally = (uid) => {
+  if (!uid) return false;
+  try {
+    return localStorage.getItem(`intro_shown_${uid}`) === 'true';
+  } catch {
+    return false;
+  }
 };
 
-function MallowMascotSprite({
-  spriteSheetUrl,
-  sleepHoldFrame,
-  idleFrames,
-  idleDuration,
-  hoverRow,
-  hoverFrames,
-  hoverDuration,
-  clickRow,
-  clickFrames,
-  clickDuration,
-  isWalking,
-  facingLeft,
-  isMeowing,
-  isHovered,
-  isSleeping,
-  onHoverStart,
-  onHoverEnd,
-}) {
-  const shouldSleep = isSleeping && !isWalking && !isMeowing;
-  const shouldReview = isHovered && !isWalking && !shouldSleep;
-  const stateClass = shouldSleep ? 'sleep' : shouldReview ? 'review' : isWalking ? (facingLeft ? 'run-left' : 'run-right') : 'idle';
-  const reviewConfig = {
-    row: hoverRow ?? MALLOW_ROWS.review.row,
-    frames: hoverFrames ?? MALLOW_ROWS.review.frames,
-    duration: hoverDuration ?? MALLOW_ROWS.review.duration,
-  };
-  const clickConfig = {
-    row: clickRow ?? MALLOW_ROWS.wave.row,
-    frames: clickFrames ?? MALLOW_ROWS.wave.frames,
-    duration: clickDuration ?? MALLOW_ROWS.wave.duration,
-  };
-  const idleConfig = {
-    ...MALLOW_ROWS.idle,
-    frames: idleFrames ?? MALLOW_ROWS.idle.frames,
-    duration: idleDuration ?? MALLOW_ROWS.idle.duration,
-  };
-  const config = shouldSleep
-    ? { ...MALLOW_ROWS.sleep, frame: sleepHoldFrame ?? MALLOW_ROWS.sleep.frame }
-    : shouldReview
-      ? reviewConfig
-      : isMeowing && !isWalking
-        ? clickConfig
-        : facingLeft && isWalking
-          ? MALLOW_ROWS.runLeft
-          : isWalking
-            ? MALLOW_ROWS.runRight
-            : idleConfig;
-
-  return (
-    <div
-      className={`mallow-mascot ${stateClass} frames-${config.frames} ${isMeowing ? 'is-talking' : ''}`}
-      aria-label={`Selected pet ${stateClass}`}
-      onPointerEnter={onHoverStart}
-      onMouseEnter={onHoverStart}
-      onMouseOver={onHoverStart}
-      onPointerLeave={onHoverEnd}
-      onMouseLeave={onHoverEnd}
-      style={{
-        '--sprite-row': config.row,
-        '--sprite-frames': config.frames,
-        '--sprite-duration': config.duration,
-        '--sprite-frame': config.frame ?? 0,
-        '--pet-spritesheet': `url("${spriteSheetUrl}")`,
-      }}
-    />
-  );
-}
-
 export default function CatMascot({ onCatClick, disabled = false }) {
-  const [catPos, setCatPos] = useState({ x: -10, y: 85 });
-  const [isWalking, setIsWalking] = useState(false);
-  const [facingLeft, setFacingLeft] = useState(false);
-  const [isMeowing, setIsMeowing] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isPetSleeping, setIsPetSleeping] = useState(false);
+  const [isPetSleeping, setIsPetSleeping] = useState(() => {
+    try { return localStorage.getItem(PET_SLEEPING_KEY) === 'true'; } catch { return false; }
+  });
   const [selectedPetId, setSelectedPetId] = useState(() => normalizePetId(localStorage.getItem('pet_name')));
-  const selectedPet = getPetOption(selectedPetId);
-  const [walkDuration, setWalkDuration] = useState(0.8);
-
-  const [dialogStep, setDialogStep] = useState(0);
-  const [isDialogActive, setIsDialogActive] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const autoCloseTimerRef = useRef(null);
-  const isEntryWalkComplete = useRef(false);
-  const hasDismissedDialog = useRef(false);
-
-  const closeDialog = () => {
-    hasDismissedDialog.current = true;
-    setIsDialogActive(false);
-    if (autoCloseTimerRef.current) {
-      clearTimeout(autoCloseTimerRef.current);
-      autoCloseTimerRef.current = null;
-    }
-    if (!disabled && currentUserId) {
-      localStorage.setItem(`intro_shown_${currentUserId}`, 'true');
-    }
-  };
-
-  const [dialogSteps, setDialogSteps] = useState([
-    "👋 Hi there! I'm your AI assistant for Snabbb.io.\nI'm here to help you explore and understand all the features available.",
-    "Click on me to open the Virtual Pet ecosystem, or ask me any questions about the app!"
-  ]);
 
   const [meowMsg, setMeowMsg] = useState(null);
   const [petStates, setPetStates] = useState(['Normal']);
   const meowTimerRef = useRef(null);
+  const audioLoopTimerRef = useRef(null);
+  const audioRef = useRef(null);
 
   // Clear message bubble immediately when state changes
   useEffect(() => {
@@ -133,6 +64,7 @@ export default function CatMascot({ onCatClick, disabled = false }) {
 
   const petStatesRef = useRef(['Normal']);
 
+  // --- Pet mood/sleep/identity polling — unchanged from pre-migration source ---
   useEffect(() => {
     if (disabled) return;
 
@@ -245,105 +177,201 @@ export default function CatMascot({ onCatClick, disabled = false }) {
 
     fetchStats();
     const interval = setInterval(fetchStats, 120000);
+    // Staggered retries: SSO exchange can take 0.5–4s; the first successful call wins
+    const r1 = setTimeout(fetchStats, 500);
+    const r2 = setTimeout(fetchStats, 2000);
+    const r3 = setTimeout(fetchStats, 5000);
     return () => {
       clearInterval(interval);
+      clearTimeout(r1); clearTimeout(r2); clearTimeout(r3);
       window.removeEventListener('virtual-pet-sleep-change', handlePetSleepChange);
       window.removeEventListener('virtual-pet-selection-change', handlePetSelectionChange);
       window.removeEventListener('storage', handleStorage);
     };
   }, [disabled]);
 
+  // --- Resolve current user id (needed by the shared dialogue runtime) ---
   useEffect(() => {
-    const initDialog = async () => {
-      let userId = null;
+    let cancelled = false;
+    (async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        userId = session?.user?.id || null;
-        setCurrentUserId(userId);
+        if (!cancelled) setCurrentUserId(session?.user?.id || null);
       } catch (err) {
-        console.error("Error fetching session in initDialog:", err);
+        console.error('Error fetching session in CatMascot:', err);
       }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
-      // If user is logged in (disabled = false) and has seen the intro, show Welcome Back and auto-close
-      if (!disabled && userId && localStorage.getItem(`intro_shown_${userId}`) === 'true') {
-        setDialogSteps(["Welcome back! 👋"]);
-        setDialogStep(0);
+  // --- Intro content (Profit Calculator's own AIBoard config) ---
+  const [introState, setIntroState] = useState({ status: 'not_ready' });
 
-        if (isEntryWalkComplete.current && !hasDismissedDialog.current) {
-          setIsDialogActive(true);
-        }
+  useEffect(() => {
+    let cancelled = false;
 
-        if (autoCloseTimerRef.current) {
-          clearTimeout(autoCloseTimerRef.current);
-        }
-        autoCloseTimerRef.current = setTimeout(() => {
-          hasDismissedDialog.current = true;
-          setIsDialogActive(false);
-        }, 6000); // disappear after 6 seconds
-        return;
-      }
-
-      // Default fallback dialogs
-      const fallbackPreLogin = [
-        "👋 Welcome to Snabbb Calculator!",
-        "Please sign in to manage your dental profit calculations."
-      ];
-
-      const fallbackPostLogin = [
-        "👋 Welcome back! I'm your Calculator Assistant.",
-        "Click on me to open the Virtual Pet ecosystem, or ask me for help!"
-      ];
+    const fetchIntro = async () => {
+      // Skip the query entirely if this user has already completed Intro —
+      // matches the pre-migration optimization exactly. Pre-login
+      // (disabled=true, currentUserId=null) always proceeds, since the
+      // pre-login intro sequence is never marked complete either (see
+      // introCompletedLocally's own comment).
+      if (!disabled && currentUserId && introCompletedLocally(currentUserId)) return;
 
       try {
-        const { data: configs } = await supabase
+        const { data: configs, error: configsError } = await supabase
           .from('aiboard_simulator_configs')
           .select('id')
           .eq('module_name', 'Profit Calculator')
           .limit(1);
 
-        if (configs && configs.length > 0) {
-          const configId = configs[0].id;
-
-          const { data, error } = await supabase
-            .from('aiboard_simulator_dialog_steps')
-            .select('step_text, sort_order')
-            .eq('config_id', configId)
-            .eq('is_post_login', !disabled)
-            .order('sort_order', { ascending: true });
-
-          if (!error && data && data.length > 0) {
-            setDialogSteps(data.map(d => d.step_text));
-            setDialogStep(0);
-            if (isEntryWalkComplete.current && !hasDismissedDialog.current) {
-              setIsDialogActive(true);
-            }
-            return;
-          }
+        if (configsError) {
+          // Infrastructure/query failure — leave status 'not_ready' so the
+          // runtime keeps waiting; retry happens naturally on next mount.
+          return;
         }
 
-        // If no config found or no steps returned, use fallback based on login state
-        setDialogSteps(disabled ? fallbackPreLogin : fallbackPostLogin);
-        setDialogStep(0);
-        if (isEntryWalkComplete.current && !hasDismissedDialog.current) {
-          setIsDialogActive(true);
+        if (!configs || configs.length === 0) {
+          // No Intro configured at all — report ready with zero steps so
+          // the shared runtime marks Intro complete itself and proceeds.
+          if (!cancelled) setIntroState({ status: 'ready', steps: [] });
+          return;
         }
 
+        const configId = configs[0].id;
+
+        const { data, error } = await supabase
+          .from('aiboard_simulator_dialog_steps')
+          .select('step_text, sort_order')
+          .eq('config_id', configId)
+          .eq('is_post_login', !disabled)
+          .order('sort_order', { ascending: true });
+
+        if (error) return;
+
+        const steps = (data || [])
+          .map((d) => d.step_text)
+          .filter((text) => typeof text === 'string' && text.trim().length > 0);
+
+        if (!cancelled) setIntroState({ status: 'ready', steps });
       } catch (err) {
-        console.error("Error fetching dialog steps:", err);
-        // Fallback on error
-        setDialogSteps(disabled ? fallbackPreLogin : fallbackPostLogin);
-        setDialogStep(0);
-        if (isEntryWalkComplete.current && !hasDismissedDialog.current) {
-          setIsDialogActive(true);
-        }
+        console.error('Error fetching dialog steps:', err);
       }
     };
 
-    initDialog();
-  }, [disabled]);
+    fetchIntro();
+    return () => { cancelled = true; };
+  }, [disabled, currentUserId]);
+
+  // --- Welcome Back content (Profit Calculator's own AIBoard config + name interpolation) ---
+  const [welcomeBackState, setWelcomeBackState] = useState({ status: 'not_ready' });
 
   useEffect(() => {
-    if (disabled || isDialogActive) return;
+    let cancelled = false;
+
+    const fetchWelcomeBack = async () => {
+      // Same gate as the pre-migration `arbitrateReturningUser` had before
+      // ever calling `activateWelcomeBack`: never for the disabled
+      // instance, never before this user has completed Intro. Fetched
+      // reactively once eligible rather than only after the shared
+      // runtime has actually decided Welcome Back is the outcome — a
+      // known, accepted timing seam (one extra, harmless read), since the
+      // runtime itself still only ever SHOWS this once it independently
+      // determines Welcome Back is appropriate.
+      if (disabled || !currentUserId || !introCompletedLocally(currentUserId)) return;
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const userMeta = session?.user?.user_metadata || null;
+        const userEmail = session?.user?.email || null;
+
+        const { data: config, error } = await supabase
+          .from('aiboard_simulator_configs')
+          .select('welcome_back_text, welcome_back_auto_close_ms')
+          .eq('module_name', 'Profit Calculator')
+          .limit(1)
+          .maybeSingle();
+
+        let welcomeText = !error ? config?.welcome_back_text : null;
+        const autoCloseMs = (!error && config?.welcome_back_auto_close_ms) || 6000;
+
+        if (welcomeText && /\[name\]/i.test(welcomeText)) {
+          let displayName = null;
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('name, full_name')
+              .eq('user_id', currentUserId)
+              .maybeSingle();
+            displayName = profile?.name || profile?.full_name || null;
+          } catch (err) {
+            console.error('Error fetching profile for welcome back name:', err);
+          }
+          if (!displayName) displayName = userMeta?.name || null;
+          if (!displayName && userEmail) displayName = userEmail.split('@')[0];
+          // Never show a raw email address, even if it came from profiles.name/full_name.
+          if (displayName && displayName.includes('@')) displayName = displayName.split('@')[0];
+
+          welcomeText = displayName
+            ? welcomeText.replace(/\[name\]/gi, displayName)
+            : welcomeText
+                .replace(/,\s*\[name\]/gi, '')
+                .replace(/\[name\],\s*/gi, '')
+                .replace(/\[name\]/gi, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+        }
+
+        if (!cancelled) {
+          setWelcomeBackState(
+            welcomeText ? { status: 'ready', message: welcomeText, autoCloseMs } : { status: 'not_ready' }
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching welcome back message:', err);
+      }
+    };
+
+    fetchWelcomeBack();
+    return () => { cancelled = true; };
+  }, [disabled, currentUserId]);
+
+  // --- Personalized (Not-Profitable / Summary) reminder — unchanged bridge read ---
+  const bridgeEntry = usePersonalizedInsightBridge();
+
+  // Priority (verified directly from resolveProfitCalculatorInsight.ts,
+  // not assumed): Not Profitable > Summary > null. Ordering itself is
+  // resolved entirely upstream (App.tsx's ProfitDialoguePublisher); this
+  // adapter only reshapes the bridge's singular candidate into the shared
+  // runtime's `candidates[]` array shape (zero or one element).
+  const personalizedState = useMemo(() => {
+    if (bridgeEntry.status === 'not_ready') return { status: 'not_ready' };
+    return { status: 'ready', candidates: bridgeEntry.candidate ? [bridgeEntry.candidate] : [] };
+  }, [bridgeEntry]);
+
+  // The bridge's `onAction` is already the exact closure captured at
+  // publish time over the candidate it was published with (see
+  // PersonalizedInsightBridge.tsx / App.tsx's ProfitDialoguePublisher) —
+  // the shared runtime freezes this pair in its own refs at adoption time
+  // and never re-reads a later bridge value, so the candidate arg here is
+  // intentionally unused: the exact-adopted binding is already guaranteed
+  // upstream.
+  const personalizedOnAction = useCallback(() => {
+    if (bridgeEntry.status === 'ready') bridgeEntry.onAction();
+  }, [bridgeEntry]);
+
+  const { dialogue, closeActiveDialogue } = useSharedCatDialogueRuntime({
+    appId: APP_ID,
+    userId: currentUserId,
+    disabled,
+    intro: introState,
+    personalized: { state: personalizedState, onAction: personalizedOnAction },
+    welcomeBack: welcomeBackState,
+  });
+
+  // --- Ambient meow loop — unchanged from pre-migration source ---
+  useEffect(() => {
+    if (disabled || dialogue.kind !== 'none') return;
 
     let isSubscribed = true;
 
@@ -380,7 +408,7 @@ export default function CatMascot({ onCatClick, disabled = false }) {
           if (normalTiming?.[0] && !normalTiming[0].disabled) {
             activeTiming = normalTiming[0];
           } else {
-            console.warn("[CatMascot] No active or Normal timing found. Meow loop aborted.", nError);
+            console.warn('[CatMascot] No active or Normal timing found. Meow loop aborted.', nError);
             return;
           }
         }
@@ -428,7 +456,7 @@ export default function CatMascot({ onCatClick, disabled = false }) {
 
         loop();
       } catch (err) {
-        console.error("Error setting up meow loop:", err);
+        console.error('Error setting up meow loop:', err);
       }
     };
 
@@ -438,10 +466,9 @@ export default function CatMascot({ onCatClick, disabled = false }) {
       isSubscribed = false;
       if (meowTimerRef.current) clearTimeout(meowTimerRef.current);
     };
-  }, [disabled, isDialogActive, petStates]);
+  }, [disabled, dialogue.kind, petStates]);
 
-  const audioLoopTimerRef = useRef(null);
-
+  // --- Ambient audio loop — unchanged from pre-migration source ---
   useEffect(() => {
     if (disabled) return;
 
@@ -481,7 +508,7 @@ export default function CatMascot({ onCatClick, disabled = false }) {
             const randomMsg = msgsData[Math.floor(Math.random() * msgsData.length)].message;
             if (randomMsg) {
               const audioObj = new Audio(randomMsg);
-              audioObj.play().catch(e => console.error("Audio playback error:", e));
+              audioObj.play().catch((e) => console.error('Audio playback error:', e));
             }
             loop();
           }, intervalMs);
@@ -489,7 +516,7 @@ export default function CatMascot({ onCatClick, disabled = false }) {
 
         loop();
       } catch (err) {
-        console.error("Error setting up audio loop:", err);
+        console.error('Error setting up audio loop:', err);
       }
     };
 
@@ -501,285 +528,34 @@ export default function CatMascot({ onCatClick, disabled = false }) {
     };
   }, [disabled]);
 
-  const walkTimeoutRef = useRef(null);
-  const audioRef = useRef(null);
-  const lastMoveStartPos = useRef({ x: -10, y: 85 });
-  const lastMoveStartTime = useRef(Date.now());
-  const lastMoveDuration = useRef(0.8);
-  const lastMoveTarget = useRef({ x: -10, y: 85 });
-
+  // --- Click-meow sound + Virtual Pet open — preserved exactly, host-side ---
   useEffect(() => {
     audioRef.current = new Audio('/images/cat-meow.mp3');
-
-    // Walk into screen from left
-    const destX = 20 + Math.random() * 60;
-    const destY = 80 + Math.random() * 10;
-    const duration = 2.8; // Entry walk duration
-
-    lastMoveStartPos.current = { x: -10, y: 85 };
-    lastMoveTarget.current = { x: destX, y: destY };
-    lastMoveStartTime.current = Date.now();
-    lastMoveDuration.current = duration;
-
-    setFacingLeft(false);
-    setWalkDuration(duration);
-    setCatPos({ x: destX, y: destY });
-    setIsWalking(true);
-
-    if (walkTimeoutRef.current) clearTimeout(walkTimeoutRef.current);
-    walkTimeoutRef.current = setTimeout(() => {
-      setIsWalking(false);
-      isEntryWalkComplete.current = true;
-      if (!hasDismissedDialog.current) {
-        setIsDialogActive(true);
-      }
-    }, duration * 1000);
-
-    const getInterpolatedPos = () => {
-      const elapsed = (Date.now() - lastMoveStartTime.current) / 1000;
-      const progress = Math.min(elapsed / lastMoveDuration.current, 1);
-      return {
-        x: lastMoveStartPos.current.x + (lastMoveTarget.current.x - lastMoveStartPos.current.x) * progress,
-        y: lastMoveStartPos.current.y + (lastMoveTarget.current.y - lastMoveStartPos.current.y) * progress,
-      };
-    };
-
-    const handleGlobalClick = (e) => {
-      const target = e.target;
-      if (target.closest('button') || target.closest('a') || target.closest('input') || target.closest('[data-cat]')) return;
-
-      const targetX_px = e.clientX;
-      const targetY_px = e.clientY;
-
-      const targetX = (targetX_px / window.innerWidth) * 100;
-      const targetY = (targetY_px / window.innerHeight) * 100;
-      const currentPos = getInterpolatedPos();
-      const currentX_px = (currentPos.x / 100) * window.innerWidth;
-      const currentY_px = (currentPos.y / 100) * window.innerHeight;
-
-      const distance_px = Math.sqrt(Math.pow(targetX_px - currentX_px, 2) + Math.pow(targetY_px - currentY_px, 2));
-
-      if (distance_px < 5) return;
-
-      const duration = distance_px / 200;
-
-      lastMoveStartPos.current = currentPos;
-      lastMoveTarget.current = { x: targetX, y: targetY };
-      lastMoveStartTime.current = Date.now();
-      lastMoveDuration.current = duration;
-
-      const nextFacingLeft = targetX < currentPos.x;
-      setFacingLeft(nextFacingLeft);
-      setWalkDuration(duration);
-      setCatPos({ x: targetX, y: targetY });
-      setIsWalking(true);
-
-      if (walkTimeoutRef.current) clearTimeout(walkTimeoutRef.current);
-      walkTimeoutRef.current = setTimeout(() => {
-        setIsWalking(false);
-        isEntryWalkComplete.current = true;
-        if (!hasDismissedDialog.current) {
-          setIsDialogActive(true);
-        }
-      }, duration * 1000);
-    };
-
-    document.addEventListener('click', handleGlobalClick);
-    return () => {
-      document.removeEventListener('click', handleGlobalClick);
-      if (autoCloseTimerRef.current) {
-        clearTimeout(autoCloseTimerRef.current);
-      }
-    };
   }, []);
 
-  const handleCatClick = (e) => {
-    e.stopPropagation();
-    // Only close the dialog on click if we are NOT in pre-login mode (disabled=true)
+  const handleCatClick = useCallback(() => {
+    // Same ordering as the pre-migration source: close any open dialogue
+    // first (skipped in disabled/pre-login mode), then play the click
+    // sound, then invoke the host's Virtual Pet open callback.
     if (!disabled) {
-      closeDialog();
+      closeActiveDialogue();
     }
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => { });
-      setIsMeowing(true);
-      setTimeout(() => setIsMeowing(false), 800);
+      audioRef.current.play().catch(() => {});
     }
     if (!disabled && onCatClick) onCatClick();
-  };
+  }, [disabled, closeActiveDialogue, onCatClick]);
 
   return (
-    <>
-      <style>{`
-        @keyframes cat-sound-wave {
-          0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-          100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
-        }
-        .cat-sound-ring {
-          animation: cat-sound-wave 0.6s ease-out forwards;
-        }
-        .cat-tooltip {
-          opacity: 0;
-          transition: opacity 0.2s;
-          pointer-events: none;
-        }
-        .cat-mascot-wrapper:hover .cat-tooltip {
-          opacity: 1;
-        }
-        .cat-mascot-dialog {
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Roboto, Oxygen, Ubuntu, sans-serif;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          text-rendering: optimizeLegibility;
-        }
-        .mallow-mascot {
-          position: relative;
-          width: ${MALLOW_FRAME_WIDTH * MALLOW_SCALE}px;
-          height: ${MALLOW_FRAME_HEIGHT * MALLOW_SCALE}px;
-          background-image: var(--pet-spritesheet);
-          background-repeat: no-repeat;
-          background-size: ${MALLOW_FRAME_WIDTH * 8 * MALLOW_SCALE}px ${MALLOW_FRAME_HEIGHT * 9 * MALLOW_SCALE}px;
-          background-position-y: calc(-1 * var(--sprite-row) * ${MALLOW_FRAME_HEIGHT * MALLOW_SCALE}px);
-          image-rendering: pixelated;
-          pointer-events: auto;
-          cursor: pointer;
-          filter: drop-shadow(0 5px 8px rgba(15, 23, 42, 0.1));
-          animation-duration: var(--sprite-duration);
-          animation-iteration-count: infinite;
-          animation-timing-function: steps(var(--sprite-frames));
-        }
-        .mallow-mascot.idle {
-          animation-name: mallow-sprite;
-        }
-        .mallow-mascot.run-left,
-        .mallow-mascot.run-right,
-        .mallow-mascot.review {
-          animation-name: mallow-sprite;
-        }
-        @keyframes mallow-sprite {
-          from { background-position-x: 0; }
-          to { background-position-x: calc(-1 * var(--sprite-frames) * ${MALLOW_FRAME_WIDTH * MALLOW_SCALE}px); }
-        }
-        @keyframes mascot-sleep-float {
-          0%, 100% { transform: translateY(0); opacity: 0.65; }
-          50% { transform: translateY(-4px); opacity: 1; }
-        }
-      `}</style>
-
-      <div
-        className="cat-mascot-wrapper"
-        style={{
-          position: 'fixed',
-          left: `${catPos.x}%`,
-          top: `${catPos.y}%`,
-          transform: `translate(-50%, -100%)`,
-          transition: `left ${walkDuration}s linear, top ${walkDuration}s linear`,
-          zIndex: 9990,
-          userSelect: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          pointerEvents: 'none',
-        }}
-      >
-        <AnimatePresence mode="wait">
-          {isDialogActive && (
-            <motion.div
-              data-cat="true"
-              key={`dialog-bubble-${dialogStep}`}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="cat-mascot-dialog w-max shrink-0 max-w-[280px] bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col overflow-visible relative pointer-events-auto mb-4 mr-1 cursor-default"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div
-                className="p-4 text-sm font-semibold leading-relaxed flex flex-col relative z-10 bg-white rounded-lg"
-                style={{ color: '#334155', backgroundColor: '#ffffff' }}
-              >
-                <div className="flex-1 flex items-center justify-center text-center">
-                  <p className="whitespace-pre-wrap" style={{ color: '#334155' }}>{dialogSteps[dialogStep]}</p>
-                </div>
-                <div className="pt-4 flex justify-between items-center mt-auto">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setDialogStep(p => Math.max(0, p - 1)); }}
-                    disabled={dialogStep === 0}
-                    className={`flex items-center gap-1 text-xs font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900 cursor-pointer ${dialogStep === 0 ? 'invisible' : ''
-                      }`}
-                  >
-                    <ChevronLeft className="w-4 h-4" /> Back
-                  </button>
-                  {dialogStep === dialogSteps.length - 1 ? (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); closeDialog(); }}
-                      className="flex items-center gap-1 text-xs font-semibold text-[#2A9D8F] underline underline-offset-2 hover:opacity-80 cursor-pointer"
-                    >
-                      Close <X className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setDialogStep(p => Math.min(dialogSteps.length - 1, p + 1)); }}
-                      className="flex items-center gap-1 text-xs font-semibold text-[#2A9D8F] underline underline-offset-2 hover:opacity-80 cursor-pointer"
-                    >
-                      Next <ChevronRight className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="absolute -bottom-2 left-1/2 w-4 h-4 bg-white transform rotate-45 -translate-x-1/2 shadow-md border-r border-b border-slate-100 z-0"></div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          {!disabled && !isDialogActive && meowMsg && (
-            <motion.div
-              initial={{ opacity: 0, y: 5, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -5, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg shadow-sm relative pointer-events-auto mb-4 mr-1 cursor-default"
-            >
-              <span className="text-sm font-semibold text-slate-700 whitespace-nowrap">{meowMsg}</span>
-              <div className="absolute -bottom-2 left-1/2 w-4 h-4 bg-white transform rotate-45 -translate-x-1/2 shadow-md border-r border-b border-slate-100 z-0"></div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Mallow pet mascot */}
-        <div
-          data-cat="true"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCatClick(e);
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseOver={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          style={{ pointerEvents: 'auto' }}
-        >
-          <MallowMascotSprite
-            spriteSheetUrl={selectedPet.spriteSheetUrl}
-            sleepHoldFrame={selectedPet.sleepHoldFrame}
-            idleFrames={selectedPet.idleFrames}
-            idleDuration={selectedPet.idleDuration}
-            hoverRow={selectedPet.hoverRow}
-            hoverFrames={selectedPet.hoverFrames}
-            hoverDuration={selectedPet.hoverDuration}
-            clickRow={selectedPet.clickRow}
-            clickFrames={selectedPet.clickFrames}
-            clickDuration={selectedPet.clickDuration}
-            isWalking={isWalking}
-            facingLeft={facingLeft}
-            isMeowing={isMeowing}
-            isHovered={isHovered}
-            isSleeping={isPetSleeping}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-          />
-        </div>
-      </div>
-    </>
+    <SharedCatMascot
+      disabled={disabled}
+      petId={selectedPetId}
+      isSleeping={isPetSleeping}
+      dialogue={dialogue}
+      meowMessage={meowMsg}
+      onCatClick={handleCatClick}
+      spriteSheetUrls={CAT_SPRITE_SHEET_URLS}
+    />
   );
 }

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure } from '../types';
+import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure, CalculatorDataStatus, CalculatorDataOwnerId } from '../types';
 import { useAuth } from './AuthContext';
 import * as api from '../data/api';
+import { logActivityToOdoo } from '../services/logActivityToOdoo';
 
 const INITIAL_STATE: GlobalState = {
   clinicSettings: { clinicName: '', workingDaysPerWeek: 0, hoursPerDay: 0, currencySymbol: '' },
@@ -26,25 +27,76 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
   const [modalState, setModalState] = useState<{ isOpen: boolean; type: 'ROI' | 'FORECAST' | null; initialData: SavedPlan | null }>({ isOpen: false, type: null, initialData: null });
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const { user } = useAuth(); // Hook into the authenticated session
-  const isFetchingRef = useRef(false);
+  const [calculatorDataStatus, setCalculatorDataStatus] = useState<CalculatorDataStatus>('loading');
+  // Ownership of the currently accepted `state`/`savedPlans`/
+  // `savedProcedures` — see the `CalculatorDataOwnerId` doc comment in
+  // types.ts for why `calculatorDataStatus === 'ready'` alone is not a
+  // safe render-time privacy gate.
+  const [calculatorDataUserId, setCalculatorDataUserId] = useState<CalculatorDataOwnerId>(null);
+  const { user, profile } = useAuth(); // Hook into the authenticated session
+  // Latest-request-wins guard for the fetch effect below. The PREVIOUS
+  // version of this effect used a single shared `isFetchingRef` boolean
+  // that (a) did not stop a late-resolving fetch from user A overwriting
+  // state after the user switched to B (no staleness check was ever
+  // applied to the `setState`/`setSavedPlans`/... calls below), and (b)
+  // could cause user B's fetch to be silently skipped entirely if it
+  // started while A's fetch was still in flight. Both are real
+  // correctness bugs, not hypothetical — required to fix before
+  // `calculatorDataStatus` can safely gate a grounded Data Chat answer.
+  // `requestIdRef` replaces that boolean: every run of this effect owns a
+  // strictly increasing id, and only the run whose id still matches when
+  // its fetch settles is allowed to write state.
+  const requestIdRef = useRef(0);
+
+  // Best-effort: every saved section/plan/procedure also gets pushed to
+  // Odoo (see services/logActivityToOdoo.ts +
+  // CALCULATOR_ACTIVITY_TRACKER_ODOO_SYNC.md), mirroring the same sync
+  // built for the inventory/appointment/todo/e-learning apps. Fire-and-
+  // forget so a slow/unreachable worker or Odoo instance never blocks or
+  // fails the local Supabase write, which stays the source of truth either
+  // way.
+  const logCalculatorActivity = (
+    action: string,
+    details: string,
+    meta: { pagePath?: string; pageDurationSeconds?: number } = {}
+  ) => {
+    if (!user) return;
+    logActivityToOdoo({
+      logId: crypto.randomUUID(),
+      actorEmail: user.email ?? null,
+      actorName: profile?.name ?? null,
+      supabaseUserId: user.id ?? null,
+      action,
+      details,
+      occurredAt: new Date().toISOString(),
+      pagePath: meta.pagePath ?? null,
+      pageDurationSeconds: meta.pageDurationSeconds ?? null,
+    });
+  };
 
   // 1. Central Data Fetching on Login
   useEffect(() => {
-    let isMounted = true;
+    const requestId = ++requestIdRef.current;
 
     if (!user) {
       setState(INITIAL_STATE);
       setSavedPlans([]);
       setSavedProcedures([]);
       setIsDataLoaded(false);
+      // Logged out — a stale previous user's 'ready' status must never
+      // authorize a grounded answer for the (absent) current user. This
+      // effect-driven reset is a backstop, not the primary boundary — the
+      // primary boundary is the read-time `calculatorDataUserId ===
+      // currentAuthenticatedUserId` check callers perform immediately,
+      // which does not wait for this effect to run at all.
+      setCalculatorDataStatus('loading');
+      setCalculatorDataUserId(null);
       return;
     }
 
-    if (isFetchingRef.current) return;
+    setCalculatorDataStatus('loading');
 
     const fetchUserSupabaseData = async () => {
-      isFetchingRef.current = true;
       try {
         const [
           settings,
@@ -75,6 +127,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           api.getPlans(user.id),
           api.getProcedures(user.id)
         ]);
+
+        // Latest-request-wins: a since-superseded run (user switched again
+        // while this fetch was in flight) must never write state over the
+        // current run's data — see the requestIdRef comment above.
+        if (requestId !== requestIdRef.current) return;
 
         setState(prev => ({
           clinicSettings: {
@@ -131,12 +188,21 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setSavedProcedures(procedures || []);
 
         setIsDataLoaded(true);
+        setCalculatorDataStatus('ready');
+        // Ownership is set ONLY together with an accepted success, for the
+        // exact user this request was fetched for — never before, and
+        // never for a stale/superseded request (already excluded by the
+        // `requestId` check above).
+        setCalculatorDataUserId(user.id);
 
       } catch (err) {
         console.error("Failed to load user data from Supabase", err);
         setToast({ message: 'Failed to sync data from cloud.', isVisible: true });
-      } finally {
-        isFetchingRef.current = false;
+        if (requestId !== requestIdRef.current) return;
+        setCalculatorDataStatus('error');
+        // A failed fetch must never leave a previous successful owner's
+        // data groundable — clear ownership rather than retaining it.
+        setCalculatorDataUserId(null);
       }
     };
 
@@ -248,6 +314,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       setToast({ message: customMessage || 'Saved to Cloud Database', isVisible: true });
+      logCalculatorActivity('config_saved', `Saved ${section} settings`);
     } catch (e) {
       console.error("Failed to save section to Supabase", e);
       setToast({ message: 'Error saving data to cloud.', isVisible: true });
@@ -290,6 +357,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await api.upsertPlan(user!.id, plan);
       setSavedPlans(prev => [...prev.filter(p => p.id !== plan.id), plan]);
       setToast({ message: 'Plan saved to Cloud!', isVisible: true });
+      logCalculatorActivity('plan_saved', `Saved plan: ${plan.name}`);
     } catch (e) {
       console.error("Error saving plan:", e);
       setToast({ message: 'Error saving plan.', isVisible: true });
@@ -301,6 +369,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await api.upsertPlan(user!.id, plan);
       setSavedPlans(prev => prev.map(p => p.id === plan.id ? plan : p));
       setToast({ message: 'Plan updated in Cloud!', isVisible: true });
+      logCalculatorActivity('plan_updated', `Updated plan: ${plan.name}`);
     } catch (e) {
       console.error("Error updating plan:", e);
       setToast({ message: 'Error updating plan.', isVisible: true });
@@ -309,9 +378,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deletePlan = async (id: string) => {
     try {
+      const plan = savedPlans.find(p => p.id === id);
       await api.deletePlan(id);
       setSavedPlans(prev => prev.filter(p => p.id !== id));
       setToast({ message: 'Plan removed from Cloud.', isVisible: true });
+      logCalculatorActivity('plan_deleted', `Deleted plan: ${plan?.name || id}`);
     } catch (e) {
       console.error("Error deleting plan:", e);
       setToast({ message: 'Error deleting plan.', isVisible: true });
@@ -321,10 +392,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // --- Remote Procedure Management Functions ---
   const saveProcedure = async (procedure: SavedProcedure) => {
     try {
-      // In Supabase, upsert is driven by ID. 
+      // In Supabase, upsert is driven by ID.
       await api.upsertProcedure(user!.id, procedure);
       setSavedProcedures(prev => [...prev.filter(p => p.id !== procedure.id), procedure]);
       setToast({ message: 'Procedure saved to Cloud!', isVisible: true });
+      logCalculatorActivity('procedure_saved', `Saved procedure: ${procedure.name}`);
     } catch (e) {
       console.error("Error saving procedure:", e);
       setToast({ message: 'Error saving procedure.', isVisible: true });
@@ -336,6 +408,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await api.upsertProcedure(user!.id, procedure);
       setSavedProcedures(prev => prev.map(p => p.id === procedure.id ? procedure : p));
       setToast({ message: 'Procedure updated in Cloud!', isVisible: true });
+      logCalculatorActivity('procedure_updated', `Updated procedure: ${procedure.name}`);
     } catch (e) {
       console.error("Error updating procedure:", e);
       setToast({ message: 'Error updating procedure.', isVisible: true });
@@ -344,9 +417,11 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteProcedure = async (id: string) => {
     try {
+      const procedure = savedProcedures.find(p => p.id === id);
       await api.deleteProcedure(id);
       setSavedProcedures(prev => prev.filter(p => p.id !== id));
       setToast({ message: 'Procedure removed from Cloud.', isVisible: true });
+      logCalculatorActivity('procedure_deleted', `Deleted procedure: ${procedure?.name || id}`);
     } catch (e) {
       console.error("Error deleting procedure:", e);
       setToast({ message: 'Error deleting procedure.', isVisible: true });
@@ -364,6 +439,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   return (
     <CalculatorContext.Provider value={{
       state,
+      calculatorDataStatus,
+      calculatorDataUserId,
       updateSection,
       resetAll,
       saveSection,
@@ -382,7 +459,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       deleteProcedure,
       modalState,
       openModal,
-      closeModal
+      closeModal,
+      logCalculatorActivity
     }}>
       {children}
     </CalculatorContext.Provider>

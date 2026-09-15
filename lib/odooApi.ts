@@ -28,61 +28,70 @@ interface SignUpParams {
     email: string;
     fullName: string;
     password?: string;
+    accountType?: 'individual' | 'company';
+    companyName?: string;
+    phone?: string;
+    position?: string;
+    dob?: string;
+    country?: string;
+    referralCode?: string;
+    agreedToTerms?: boolean;
 }
 
-interface SignInParams {
-    email: string;
-    password?: string;
-}
-
-/**
- * Attempts to register a user in Odoo and mirrors the registration to Supabase.
- * Falls back to direct Supabase registration if the Odoo endpoint fails.
+/** Register only in the central Odoo account system.
+ * Supabase is hydrated later through SSO, so signing up here as well would
+ * create a second account and send a second verification email.
  */
-export async function signUpDual({ email, password, fullName }: SignUpParams) {
-    // We use the password provided by the form, rather than hardcoding it
-    const odooPayload = { email, name: fullName, password };
-    const supaPayload = {
-        email,
-        password: password || 'defaultPassword123!', // Supabase requires >6 char password
-        options: { data: { full_name: fullName } },
+export async function signUpDual({
+    email,
+    password,
+    fullName,
+    accountType = 'individual',
+    companyName,
+    phone,
+    position,
+    dob,
+    country,
+    referralCode,
+    agreedToTerms,
+}: SignUpParams) {
+    const odooPayload = {
+        email: email.trim().toLowerCase(),
+        name: fullName.trim(),
+        password,
+        account_type: accountType,
+        company_name: companyName?.trim() || undefined,
+        phone: phone?.trim() || undefined,
+        position: position?.trim() || undefined,
+        dob,
+        country,
+        referral_code: referralCode?.trim() || undefined,
+        agreed_to_terms: agreedToTerms,
     };
+    // Reuse the deployed central registration gateway used by Inventory.
+    // The route creates the shared Snabbb/Odoo account; it is not an
+    // Inventory-specific Supabase registration.
+    const response = await odooApi.post('/inventory/sign-up', odooPayload);
+    const contentType = String(response.headers?.['content-type'] || '');
+    const data = response.data;
 
-    // 1. Try pushing to the primary Odoo API
-    const odooResponse = await odooApi.post('/calculator/sign-up', odooPayload).catch(async (err) => {
-        console.warn('Odoo fallback triggered during sign-up:', err);
-        return await supabase.auth.signUp(supaPayload);
-    });
-
-    const { data: odooData } = (odooResponse || {}) as any;
-
-    // 2. If Odoo succeeds, duplicate the registration into Supabase implicitly
-    let supaResult;
-    if (odooData?.data?.result?.ok) {
-        supaResult = await supabase.auth.signUp(supaPayload);
+    if (!contentType.includes('application/json') || !data || typeof data !== 'object') {
+        throw new Error('The registration service returned an invalid response.');
     }
 
-    // Gracefully ignore "already registered" errors if mirroring to Supabase
-    if (supaResult?.error && !supaResult.error.message.includes('already registered')) {
-        throw supaResult.error;
+    const result = data?.data?.result ?? data?.result ?? data;
+
+    if (data?.ok !== true || data?.error || result?.ok === false) {
+        throw new Error(
+            data?.error?.data?.message ||
+            data?.error?.message ||
+            result?.message ||
+            result?.error ||
+            'Failed to create account'
+        );
     }
 
-    return supaResult?.data || odooData;
-}
-
-/**
- * Attempts to log in via Odoo, then synchronizes tokens with Supabase.
- * Falls back to Supabase auth natively if Odoo is unreachable.
- */
-export async function signInDual({ email, password }: SignInParams) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: password || '' });
-
-    if (error) throw error;
-    
-    // Explicitly note that this is a direct, non-SSO login
-    localStorage.setItem('is_sso_session', 'false');
-
-    return data;
+    return result;
 }
 
 /**
@@ -90,7 +99,21 @@ export async function signInDual({ email, password }: SignInParams) {
  */
 export async function exchangeSsoToken() {
     try {
-        const sso = await odooApi.get('/sso/exchange');
+        const launchUrl = new URL(window.location.href);
+        const token = launchUrl.searchParams.get('sso_token') || launchUrl.searchParams.get('token');
+
+        // Only a token should override an existing identity. Without one,
+        // reuse the locally persisted Supabase session and avoid a slow
+        // central SSO request on every page load.
+        if (!token) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) return true;
+        }
+
+        const sso = await odooApi.get('/sso/exchange', token ? {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 3000,
+        } : { timeout: 3000 });
         if (sso?.data?.access_token && sso?.data?.refresh_token) {
             const { error } = await supabase.auth.setSession({
                 access_token: sso.data.access_token,
@@ -98,6 +121,11 @@ export async function exchangeSsoToken() {
             });
             if (error) throw error;
             localStorage.setItem('is_sso_session', 'true');
+            if (token) {
+                launchUrl.searchParams.delete('sso_token');
+                launchUrl.searchParams.delete('token');
+                window.history.replaceState({}, document.title, `${launchUrl.pathname}${launchUrl.search}${launchUrl.hash}`);
+            }
             return true;
         }
     } catch (err: any) {
@@ -112,4 +140,4 @@ export async function exchangeSsoToken() {
         return false;
     }
     return false;
-}  
+}

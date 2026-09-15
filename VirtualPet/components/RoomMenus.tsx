@@ -38,11 +38,22 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
 
     return (
         <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 pointer-events-none">
-            <div className="pointer-events-auto flex max-w-[min(92vw,430px)] items-center gap-3 rounded-2xl border border-white/50 bg-white/60 backdrop-blur-xl p-2 shadow-2xl shadow-orange-900/10 backdrop-blur-xl">
+            <div className="
+                pointer-events-auto
+                flex max-w-[min(92vw,430px)]
+                items-center gap-3
+                rounded-2xl
+                border border-white/50
+                bg-white/60
+                backdrop-blur-xl
+                p-2
+                shadow-2xl
+                shadow-orange-900/10
+            ">
                 <div
                     ref={scrollRef}
                     onWheel={handleWheel}
-                    className="pet-food-scrollbar flex h-22 min-w-0 flex-1 snap-x items-center gap-4 overflow-x-auto overflow-y-hidden px-4 pt-3"
+                    className="hide-scrollbar flex h-22 min-w-0 flex-1 snap-x items-center gap-4 overflow-x-auto overflow-y-hidden px-4 pt-3"
                 >
                     {availableItems.length === 0 && (
                         <button
@@ -56,14 +67,47 @@ export const FoodMenu: React.FC<FoodMenuProps> = ({ onDragStart, inventory, onOp
                     {availableItems.map((item) => (
                         <div
                             key={item.id}
-                            onPointerDown={(e) => onDragStart(e, item)}
-                            className="relative flex h-16 w-16 shrink-0 snap-center cursor-grab items-center justify-center transition-all hover:-translate-y-0.5 active:cursor-grabbing active:scale-95"
-                        >
-                            <div className="select-none touch-none text-4xl drop-shadow-sm">{item.icon}</div>
-                            <div className="pointer-events-none absolute -right-0 -top-0 z-10 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 text-[11px] font-black text-white shadow">
+                            onPointerDown={(e) =>
+                                onDragStart(e, item)
+                            }
+                            className="
+                                relative flex
+                                h-16 w-16 shrink-0
+                                snap-center
+                                cursor-grab
+                                items-center justify-center
+                                !border-0
+                                !bg-transparent
+                                !shadow-none
+                                transition-all
+                                hover:-translate-y-0.5
+                                active:cursor-grabbing
+                                active:scale-95
+                            "
+                            >
+                            <div className="
+                                pet-icon-no-tile
+                                select-none touch-none
+                                text-4xl
+                            ">
+                                {item.icon}
+                            </div>
+
+                            <div className="
+                                pointer-events-none
+                                absolute -right-0 -top-0
+                                z-10
+                                flex h-5 min-w-5
+                                items-center justify-center
+                                rounded-full
+                                bg-orange-500
+                                text-[11px]
+                                font-black text-white
+                                shadow
+                            ">
                                 {inventory[item.id]}
                             </div>
-                        </div>
+                            </div>
                     ))}
                     {availableItems.length > 0 && (
                         <button
@@ -93,8 +137,19 @@ const BATHROOM_TOOL_ICONS: Record<ToolType, { src: string; alt: string }> = {
 };
 
 export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoapedUp, isDirty }) => (
-    <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
-        <div className="bg-white/60 backdrop-blur-xl p-4 rounded-2xl shadow-xl flex gap-6 border border-white/50 items-end">
+    <div className="pointer-events-none absolute bottom-6 left-0 right-0 z-20 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
+        <div
+            className="
+                pointer-events-auto
+                flex items-end gap-6
+                rounded-2xl
+                border border-white/50
+                bg-white/60
+                px-6 pb-3 pt-4
+                shadow-2xl shadow-cyan-900/10
+                backdrop-blur-xl
+            "
+        >
             {(['soap'] as const).map((tool) => {
                 const disabled = !!isSoapedUp;
                 return (
@@ -107,12 +162,18 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
                                 : 'cursor-grab active:cursor-grabbing hover:scale-110'
                         }`}
                     >
-                        <div className={`select-none touch-none ${isDirty && !isSoapedUp ? 'animate-breathe [animation-duration:800ms] ease-in-out' : ''}`}>
+                        <div
+                            className={`pet-asset-no-tile select-none touch-none ${
+                                isDirty && !isSoapedUp
+                                ? 'animate-breathe [animation-duration:800ms] ease-in-out'
+                                : ''
+                            }`}
+                        >
                             <img
                                 src={BATHROOM_TOOL_ICONS[tool].src}
                                 alt={BATHROOM_TOOL_ICONS[tool].alt}
                                 draggable={false}
-                                className="h-[72px] w-[72px] object-contain drop-shadow-md"
+                                className="pet-asset-no-tile h-[72px] w-[72px] object-contain"
                             />
                         </div>
                         <span className={`text-[13px] tracking-wider font-bold uppercase transition-colors ${!disabled ? 'text-pink-500' : 'text-slate-400'}`}>
@@ -130,12 +191,18 @@ export const BathroomMenu: React.FC<BathroomMenuProps> = ({ onDragStart, isSoape
                         : 'opacity-30 grayscale cursor-not-allowed'
                 }`}
             >
-                <div className={`select-none touch-none transition-all ${isSoapedUp ? 'animate-breathe [animation-duration:800ms] ease-in-out' : ''}`}>
+                <div
+                    className={`pet-asset-no-tile select-none touch-none transition-all ${
+                        isSoapedUp
+                        ? 'animate-breathe [animation-duration:800ms] ease-in-out'
+                        : ''
+                    }`}
+                >
                     <img
                         src={BATHROOM_TOOL_ICONS.shower.src}
                         alt={BATHROOM_TOOL_ICONS.shower.alt}
                         draggable={false}
-                        className="h-16 w-16 object-contain drop-shadow-md"
+                        className="pet-asset-no-tile h-16 w-16 object-contain"
                     />
                 </div>
                 <span className={`text-[13px] pt-1 tracking-wider font-bold uppercase transition-colors ${isSoapedUp ? 'text-cyan-600' : 'text-slate-400'}`}>
@@ -152,14 +219,15 @@ interface GamesMenuProps {
 
 export const GamesMenu: React.FC<GamesMenuProps> = ({ onStartGame }) => (
     <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center animate-in slide-in-from-bottom-10 fade-in duration-300">
-        <div className="bg-violet-900/60 backdrop-blur-xl p-4 rounded-3xl shadow-xl border border-violet-500/50 flex gap-4">
+        <div className="bg-violet-900/60 backdrop-blur-xl p-4 rounded-3xl shadow-xl border border-violet-500/50 flex gap-4 max-w-[94vw] overflow-x-auto">
             <button
                 onClick={() => onStartGame('flappy')}
                 className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95"
             >
-                <div className="w-20 h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl shadow-lg flex items-center justify-center text-3xl font-black text-white group-hover:-rotate-12 transition-transform border-4 border-white/50">
-                    F
-                </div>
+                <div
+                    className="w-20 h-20 bg-cover bg-center rounded-2xl shadow-lg flex items-center justify-center text-3xl font-black text-white group-hover:-rotate-12 transition-transform border-4 border-white/50"
+                    style={{ backgroundImage: "url('/games/flappy-cat/143.jpg')" }}
+                />
                 <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Flappy</span>
             </button>
 
@@ -167,9 +235,10 @@ export const GamesMenu: React.FC<GamesMenuProps> = ({ onStartGame }) => (
                 onClick={() => onStartGame('paccat')}
                 className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95"
             >
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl shadow-lg flex items-center justify-center text-3xl font-black text-white group-hover:rotate-12 transition-transform border-4 border-white/50">
-                    P
-                </div>
+                <div
+                    className="w-20 h-20 bg-cover bg-center rounded-2xl shadow-lg flex items-center justify-center text-3xl font-black text-white group-hover:-rotate-12 transition-transform border-4 border-white/50"
+                    style={{ backgroundImage: "url('/games/pac-cat/img/145.jpg')" }}
+                />
                 <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Pac-Cat</span>
             </button>
 
@@ -177,10 +246,22 @@ export const GamesMenu: React.FC<GamesMenuProps> = ({ onStartGame }) => (
                 onClick={() => onStartGame('tetris')}
                 className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95"
             >
-                <div className="w-20 h-20 bg-gradient-to-br from-red-400 to-pink-500 rounded-2xl shadow-lg flex items-center justify-center text-3xl font-black text-white group-hover:translate-y-1 transition-transform border-4 border-white/50">
-                    T
-                </div>
+                <div
+                    className="w-20 h-20 bg-cover bg-center rounded-2xl shadow-lg flex items-center justify-center text-3xl font-black text-white group-hover:-rotate-12 transition-transform border-4 border-white/50"
+                                    style={{ backgroundImage: "url('/games/tetris/144.jpg')" }}
+                />
                 <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Tetris</span>
+            </button>
+
+            <button
+                onClick={() => onStartGame('meowdoku')}
+                className="flex flex-col items-center group transition-all duration-200 hover:scale-105 active:scale-95 shrink-0"
+            >
+                <div
+                    className="w-20 h-20 bg-cover bg-center rounded-2xl shadow-lg group-hover:-rotate-6 transition-transform border-4 border-white/70"
+                    style={{ backgroundImage: "url('/games/meowdoku/cover-148.png')" }}
+                />
+                <span className="text-[10px] font-black text-white mt-1.5 uppercase tracking-wide drop-shadow-md">Meowdoku</span>
             </button>
         </div>
     </div>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ShieldCheck, TrendingUp, ChevronRight, Calculator, BarChart3, Clock, CheckCircle2, Quote, Star, Zap, XCircle, Check, MousePointerClick, ArrowRight } from 'lucide-react';
-import LoginModal from './Auth/LoginModal';
+import { useNavigate } from 'react-router-dom';
+import { SNABBB_SIGNUP_URL } from '../constants/authLinks';
 
 const LandingPage: React.FC = () => {
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [defaultIsLogin, setDefaultIsLogin] = useState(true);
+    const navigate = useNavigate();
 
     const [demoVolume, setDemoVolume] = useState(50);
     const demoOverhead = 15000;
@@ -24,25 +24,19 @@ const LandingPage: React.FC = () => {
     };
 
     const openLogin = () => {
-        setDefaultIsLogin(true);
-        setIsLoginModalOpen(true);
-    };
-
-    const openSignUp = () => {
-        setDefaultIsLogin(false);
-        setIsLoginModalOpen(true);
+        navigate('/login');
     };
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
             {/* Header / Navbar */}
             <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-20">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                    <div className="flex min-w-0 items-center justify-between gap-2 h-16 sm:h-20">
                         {/* Logo */}
                         <div className="flex items-center gap-3">
                             <a href="https://app.snabbb.com/">
-                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo " className="h-10 w-auto hover:opacity-80 transition-opacity" />
+                                <img src="/Snabbb (Teal).png" alt="Snabbb Logo " className="h-8 sm:h-10 w-auto shrink-0 hover:opacity-80 transition-opacity" />
                             </a>
                         </div>
 
@@ -56,19 +50,20 @@ const LandingPage: React.FC = () => {
                         </nav>
 
                         {/* Navigation / Actions */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
                             <button
                                 onClick={openLogin}
-                                className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors hidden sm:block px-2"
+                                className="whitespace-nowrap px-1 sm:px-2 text-[11px] sm:text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
                             >
-                                Log in
+                                Log In
                             </button>
-                            <button
-                                onClick={openSignUp}
-                                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all hover:shadow-md transform hover:-translate-y-[1px]"
+
+                            <a
+                                href={SNABBB_SIGNUP_URL}
+                                className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-sm font-semibold py-2 px-2.5 sm:px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all hover:shadow-md transform hover:-translate-y-[1px]"
                             >
-                                Get Started
-                            </button>
+                                Sign Up
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -105,12 +100,12 @@ const LandingPage: React.FC = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 fill-mode-both">
-                            <button
-                                onClick={openSignUp}
+                            <a
+                                href={SNABBB_SIGNUP_URL}
                                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-base py-3.5 px-8 rounded-xl font-bold shadow-lg shadow-slate-900/20 transition-all hover:shadow-xl transform hover:-translate-y-1"
                             >
                                 Start Calculating <ChevronRight className="w-5 h-5" />
-                            </button>
+                            </a>
                             <button
                                 onClick={openLogin}
                                 className="w-full sm:w-auto text-slate-600 hover:text-slate-900 font-bold py-3.5 px-8 rounded-xl hover:bg-slate-100 transition-colors text-base"
@@ -392,9 +387,9 @@ const LandingPage: React.FC = () => {
                                         </div>
                                     </li>
                                 </ul>
-                                <button onClick={openSignUp} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors relative z-10 shadow-lg shadow-blue-500/20">
+                                <a href={SNABBB_SIGNUP_URL} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors relative z-10 shadow-lg shadow-blue-500/20">
                                     Get Started <ArrowRight className="w-5 h-5" />
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -513,7 +508,13 @@ const LandingPage: React.FC = () => {
                                         <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${openFaqIndex === 0 ? 'rotate-90 text-blue-600' : 'text-slate-400 group-hover:text-blue-500'}`} />
                                     </div>
                                 </button>
-                                <div className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === 0 ? 'max-h-40 pb-6 lg:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div
+                                    className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                                        openFaqIndex === 0
+                                        ? 'max-h-[500px] pb-6 lg:pb-8 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                >
                                     <p className="text-slate-600 text-lg leading-relaxed">Not at all. Our intuitive interface is designed specifically for dentists and clinic managers, automating the complex financial formulas in the background so you can focus on making clinical decisions.</p>
                                 </div>
                             </div>
@@ -529,7 +530,13 @@ const LandingPage: React.FC = () => {
                                         <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${openFaqIndex === 1 ? 'rotate-90 text-blue-600' : 'text-slate-400 group-hover:text-blue-500'}`} />
                                     </div>
                                 </button>
-                                <div className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === 1 ? 'max-h-40 pb-6 lg:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div
+                                    className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                                        openFaqIndex === 1
+                                        ? 'max-h-[500px] pb-6 lg:pb-8 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                >
                                     <p className="text-slate-600 text-lg leading-relaxed">Yes. We use Supabase backend infrastructure with row-level security and bank-grade encryption to ensure your competitive financial models and pricing structures remain entirely private to your authorized accounts.</p>
                                 </div>
                             </div>
@@ -545,7 +552,13 @@ const LandingPage: React.FC = () => {
                                         <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${openFaqIndex === 2 ? 'rotate-90 text-blue-600' : 'text-slate-400 group-hover:text-blue-500'}`} />
                                     </div>
                                 </button>
-                                <div className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === 2 ? 'max-h-40 pb-6 lg:pb-8 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div
+                                    className={`px-6 lg:px-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                                        openFaqIndex === 2
+                                        ? 'max-h-[500px] pb-6 lg:pb-8 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                >
                                     <p className="text-slate-600 text-lg leading-relaxed">Snabbb acts as a standalone modeling tool but supports seamless Single Sign-On (SSO) with your existing Odoo infrastructure, meaning your clinic staff don't need to remember new passwords.</p>
                                 </div>
                             </div>
@@ -555,26 +568,26 @@ const LandingPage: React.FC = () => {
 
                 {/* Pricing / CTA Section */}
                 <div id="pricing" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10">
-                    <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-[3rem] p-8 md:p-16 lg:px-24 border border-blue-100/50 shadow-xl flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden">
+                    <div className="pricing-cta-panel bg-gradient-to-br from-blue-50 to-teal-50 rounded-[3rem] p-8 md:p-16 lg:px-24 border border-blue-100/50 shadow-xl flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-50 pointer-events-none" />
                         
                         <div className="flex-1 text-center lg:text-left relative z-10">
-                            <h2 className="text-3xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
+                            <h2 className="pricing-cta-heading text-3xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
                                 Ready to maximize your <br className="hidden lg:block"/> clinic's potential?
                             </h2>
-                            <ul className="space-y-4 mb-8 text-slate-700 font-medium max-w-md mx-auto lg:mx-0">
+                            <ul className="pricing-cta-list space-y-4 mb-8 text-slate-700 font-medium max-w-md mx-auto lg:mx-0">
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Unlimited Procedure Models</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Real-time Overhead Syncing</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Smart Forecasting Tools</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 className="w-6 h-6 text-teal-500" /> Secure Cloud Backup</li>
                             </ul>
                             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button
-                                    onClick={openSignUp}
+                                <a
+                                    href={SNABBB_SIGNUP_URL}
                                     className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-lg py-4 px-8 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl transform hover:-translate-y-1"
                                 >
                                     Create Free Account
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -587,12 +600,12 @@ const LandingPage: React.FC = () => {
                                 <span className="text-5xl font-black text-slate-900">USD 99</span>
                                 <span className="text-slate-500 font-medium">/mo</span>
                             </div>
-                            <button
-                                onClick={openSignUp}
+                            <a
+                                href={SNABBB_SIGNUP_URL}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-bold transition-colors"
                             >
                                 Start 14-Day Free Trial
-                            </button>
+                            </a>
                             <p className="text-center text-xs text-slate-400 mt-4">No credit card required to start.</p>
                         </div>
                     </div>
@@ -641,11 +654,6 @@ const LandingPage: React.FC = () => {
                 </footer>
             </main>
 
-            <LoginModal
-                isOpen={isLoginModalOpen}
-                onClose={() => setIsLoginModalOpen(false)}
-                defaultIsLogin={defaultIsLogin}
-            />
         </div>
     );
 };

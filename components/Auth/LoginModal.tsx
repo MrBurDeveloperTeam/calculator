@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signInDual, signUpDual } from '../../lib/odooApi';
+import { signUpDual } from '../../lib/odooApi';
 import { Mail, Lock, LogIn, UserPlus, AlertCircle, X } from 'lucide-react';
 import { loginOdoo } from '@/lib/loginOdoo';
 import applink from '@/lib/app_link';
@@ -18,8 +17,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
     const [fullName, setFullName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
     const [rememberMe, setRememberMe] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         // Load saved email if it exists
@@ -30,6 +29,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
         }
         setIsLogin(defaultIsLogin);
         setError(null);
+        setSuccess(null);
     }, [isOpen, defaultIsLogin]);
 
     const handleAuth = async (e: React.FormEvent) => {
@@ -45,23 +45,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
             }
 
             if (isLogin) {
-                await signInDual({ email, password });
-                onClose();
-                navigate('/');
+                const response = await loginOdoo(email, password);
+                const odooUser = response?.data?.result ?? response?.result ?? response?.sessionInfo;
+                if (!odooUser?.uid) throw new Error('Invalid login credentials');
+                await applink(odooUser);
             } else {
                 await signUpDual({ email, password, fullName });
-                onClose();
-                navigate('/');
+                setSuccess('Registration successful. Please check your email to verify your account.');
+                setIsLogin(true);
             }
         } catch (err: any) {
-            const { data } =  await loginOdoo(email, password); 
-          data && data?.result && data.result?.uid
-          if (data && data.result && data.result.uid) {
-            const applinkData = await applink(data.result);
-            console.log('Applink response:', applinkData);
-          }
-          return data;
-            // setError(err.message || 'An error occurred during authentication.');
+            setError(
+                err?.response?.data?.error?.data?.message ||
+                err?.response?.data?.error?.message ||
+                err.message ||
+                'An error occurred during authentication.'
+            );
         } finally {
             setLoading(false);
         }
@@ -185,6 +184,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, defaultIsLogin
                         <div className="bg-red-50 border border-red-100/60 rounded-xl p-3 flex items-start gap-2">
                             <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
                             <p className="text-sm font-medium text-red-900 leading-snug">{error}</p>
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="bg-green-50 border border-green-100 rounded-xl p-3 text-sm font-medium text-green-800">
+                            {success}
                         </div>
                     )}
 

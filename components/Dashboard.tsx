@@ -8,17 +8,28 @@ interface DashboardProps {
     onNavigate: (view: ViewState) => void;
 }
 
-const SummaryCard: React.FC<{ label: string; value: string; onClick: () => void; color?: string }> = ({ label, value, onClick, color = "bg-white" }) => (
-    <div
-        onClick={onClick}
-        className={`${color} p-6 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-all group`}
-    >
-        <p className="text-sm font-medium text-slate-500 mb-1">{label}</p>
-        <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-slate-800">{value}</span>
-            <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-teal-600 transition-colors" />
-        </div>
+const SummaryCard: React.FC<{
+  label: string;
+  value: string;
+  onClick: () => void;
+  color?: string;
+}> = ({ label, value, onClick, color = "bg-white" }) => (
+  <div
+    onClick={onClick}
+    className={`${color} min-w-0 overflow-hidden p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-all group`}
+  >
+    <p className="text-sm font-medium text-slate-500 mb-1">
+      {label}
+    </p>
+
+    <div className="flex min-w-0 items-center justify-between gap-3">
+      <span className="min-w-0 break-all text-xl sm:text-2xl font-bold text-slate-800">
+        {value}
+      </span>
+
+      <ArrowRight className="w-5 h-5 shrink-0 text-slate-300 group-hover:text-teal-600 transition-colors" />
     </div>
+  </div>
 );
 
 type Timeframe = 'hourly' | 'daily' | 'monthly' | 'quarterly' | 'yearly';
@@ -112,7 +123,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
     const currentData = getTimeframeData();
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 relative">
+        <div className="dashboard-page w-full min-w-0 space-y-8 overflow-x-hidden animate-in fade-in duration-500 relative">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Clinic Pulse Dashboard</h1>
@@ -125,32 +136,39 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
             </div>
 
             {/* Hero Card: Interactive OpEx Timeframe Toggle */}
-            <div className={`rounded-2xl p-1 shadow-sm border ${currentData.borderClass} ${currentData.bgClass} transition-colors duration-300`}>
-                <div className="bg-white/50 rounded-xl p-6 md:p-8 backdrop-blur-sm">
+            <div
+                className={`w-full min-w-0 overflow-hidden rounded-2xl p-1 shadow-sm border ${currentData.borderClass} ${currentData.bgClass} transition-colors duration-300`}
+            >
+                <div className="min-w-0 bg-white/50 rounded-xl p-4 sm:p-6 md:p-8 backdrop-blur-sm">
                     {/* Segmented Control */}
-                    <div className="flex justify-center mb-8">
-                        <div className="bg-slate-100 p-1 rounded-lg inline-flex shadow-inner">
+                    <div className="w-full mb-8">
+                        <div className="grid w-full grid-cols-5 gap-1 rounded-lg bg-slate-100 p-1 shadow-inner">
                             {(['hourly', 'daily', 'monthly', 'quarterly', 'yearly'] as Timeframe[]).map((tf) => (
-                                <button
-                                    key={tf}
-                                    onClick={() => setTimeframe(tf)}
-                                    className={`
-                                        px-4 py-1.5 rounded-md text-sm font-medium transition-all capitalize
-                                        ${timeframe === tf
-                                            ? 'bg-white text-slate-900 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
-                                        }
-                                    `}
-                                >
-                                    {tf}
-                                </button>
+                            <button
+                                key={tf}
+                                onClick={() => setTimeframe(tf)}
+                                className={`
+                                min-w-0 whitespace-nowrap rounded-md
+                                px-1 py-1.5 text-[10px] sm:px-3 sm:text-sm
+                                font-medium transition-all capitalize
+                                ${
+                                    timeframe === tf
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                                }
+                                `}
+                            >
+                                {tf}
+                            </button>
                             ))}
                         </div>
                     </div>
 
                     <div className="text-center">
                         <p className="text-slate-500 font-semibold uppercase tracking-widest text-xs mb-3">{currentData.label}</p>
-                        <h2 className={`text-5xl md:text-6xl font-bold mb-4 ${currentData.colorClass} transition-all duration-300`}>
+                        <h2
+                            className={`max-w-full break-all text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4 ${currentData.colorClass} transition-all duration-300`}
+                        >
                             {state.clinicSettings.currencySymbol} {currentData.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </h2>
                         <p className="text-slate-400 text-sm max-w-md mx-auto mb-4">
@@ -158,12 +176,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                         </p>
 
                         {/* Time Sensitivity Note */}
-                        <div className="inline-block bg-indigo-50 border border-indigo-100 rounded-lg px-4 py-2 text-center text-xs text-indigo-800">
-                            <p className="font-medium">
-                                Time Engine Active: Based on {state.clinicSettings.workingDaysPerWeek} days/week × {state.clinicSettings.hoursPerDay} hours/day
+                        <div className="dashboard-time-note block w-full max-w-md mx-auto break-words bg-indigo-50 border border-indigo-100 rounded-lg px-3 sm:px-4 py-2 text-center text-xs text-indigo-800">
+                            <p className="dashboard-time-note-primary font-medium">
+                                Time Engine Active: Based on{' '}
+                                {state.clinicSettings.workingDaysPerWeek} days/week ×{' '}
+                                {state.clinicSettings.hoursPerDay} hours/day
                             </p>
-                            <p className="opacity-80 mt-0.5">
-                                Total Clinical Capacity: <strong>{totalMonthlyHours.toFixed(1)} hours/month</strong>
+
+                            <p className="dashboard-time-note-secondary mt-0.5">
+                                Total Clinical Capacity:{' '}
+                                <strong>{totalMonthlyHours.toFixed(1)} hours/month</strong>
                             </p>
                         </div>
                     </div>
@@ -206,8 +228,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
             </div>
 
             {/* Note & Action Card */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
-                <div className="flex gap-4 items-start">
+            <div className="w-full min-w-0 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 sm:p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="flex min-w-0 gap-4 items-start">
                     <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
                     <div>
                         <h4 className="font-semibold text-blue-800">Financial Planning & Scenarios</h4>
@@ -228,7 +250,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                     </button> */}
                     <button
                         onClick={() => openModal('FORECAST')}
-                        className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg shadow-indigo-200 font-bold flex items-center gap-2 transition-all"
+                        className="w-full sm:w-auto flex-shrink-0 justify-center text-center whitespace-normal bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-6 py-3 rounded-xl shadow-lg shadow-indigo-200 font-bold flex items-center gap-2 transition-all"
                     >
                         <Wand2 className="w-5 h-5" />
                         {/* Forecast Profit Targets */}

@@ -430,28 +430,39 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
          <div className="relative bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
 
-            <div className="bg-white border-b border-gray-200 p-5 flex items-center justify-between shrink-0">
-               <div className="flex items-center gap-3">
-                  <div className="bg-blue-600 p-2 rounded-md text-white shadow-sm">
+            <div className="bg-white border-b border-gray-200 p-5 flex items-start gap-3 shrink-0">
+               {/* Title area */}
+               <div className="flex min-w-0 flex-1 items-start gap-3 pr-3">
+                  <div className="shrink-0 bg-blue-600 p-2 rounded-md text-white shadow-sm">
                      <Wand2 className="w-5 h-5" />
                   </div>
-                  <div>
-                     <h2 className="text-xl font-bold text-gray-900">
-                        {/* Profit Target Simulator */}
-                        ROI Calculation Simulator
+
+                  <div className="min-w-0">
+                     <h2 className="text-xl font-bold leading-tight text-gray-900">
+                     ROI Calculation Simulator
                      </h2>
-                     <p className="text-xs text-gray-500">Goal-Seek Engine {initialPlan && '• Editing Saved Plan'}</p>
+
+                     <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                     Goal-Seek Engine
+                     {initialPlan && ' • Editing Saved Plan'}
+                     </p>
                   </div>
                </div>
-               <div className="flex items-center gap-2">
+
+               {/* Header actions */}
+               <div className="ml-auto flex shrink-0 items-start gap-2">
                   <button
                      onClick={() => setShowSaveModal(true)}
-                     className="px-4 py-2 text-sm font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-sm hover:bg-blue-100 flex items-center gap-2 transition-colors"
+                     className="flex shrink-0 items-center gap-2 rounded-sm border border-blue-200 bg-blue-50 px-3 sm:px-4 py-2 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-100"
                   >
-                     <Save className="w-4 h-4" />
-                     {initialPlan ? 'Update Plan' : 'Save Plan'}
+                     <Save className="w-4 h-4 shrink-0" />
+                     <span>{initialPlan ? 'Update Plan' : 'Save Plan'}</span>
                   </button>
-                  <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 hover:bg-gray-50 rounded-full transition-colors">
+
+                  <button
+                     onClick={onClose}
+                     className="shrink-0 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-red-500"
+                  >
                      <X className="w-6 h-6" />
                   </button>
                </div>
@@ -507,30 +518,62 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                   {/* 3. Algorithm */}
                   <div>
                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">3. Strategy Engine</label>
-                     <div className="grid grid-cols-1 gap-3">
+                     <div className="roi-strategy-engine grid grid-cols-1 gap-3">
                         <button
                            onClick={() => setAlgorithm('balanced')}
-                           className={`flex items-center p-3 rounded-sm border transition-all text-left ${algorithm === 'balanced' ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-gray-300 hover:border-gray-400'}`}
-                        >
-                           <div className={`p-2 rounded-full mr-3 ${algorithm === 'balanced' ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-400'}`}>
+                           className={`roi-strategy-option flex w-full items-center rounded-sm border p-3 text-left transition-all ${
+                              algorithm === 'balanced'
+                                 ? 'roi-strategy-option-selected bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500'
+                                 : 'bg-white border-gray-300 hover:border-gray-400'
+                           }`}
+                           >
+                           <div
+                              className={`roi-strategy-icon mr-3 shrink-0 rounded-full p-2 ${
+                                 algorithm === 'balanced'
+                                 ? 'bg-indigo-200 text-indigo-700'
+                                 : 'bg-gray-100 text-gray-400'
+                              }`}
+                           >
                               <Scale className="w-5 h-5" />
                            </div>
-                           <div>
-                              <span className="block text-sm font-bold text-gray-900">Balanced Mix</span>
-                              <span className="block text-xs text-gray-500">Round-Robin fill across all procedures.</span>
+
+                           <div className="min-w-0">
+                              <span className="roi-strategy-title block text-sm font-bold text-gray-900">
+                                 Balanced Mix
+                              </span>
+
+                              <span className="roi-strategy-description block text-xs text-gray-500">
+                                 Round-Robin fill across all procedures.
+                              </span>
                            </div>
                         </button>
 
                         <button
                            onClick={() => setAlgorithm('efficiency')}
-                           className={`flex items-center p-3 rounded-sm border transition-all text-left ${algorithm === 'efficiency' ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-gray-300 hover:border-gray-400'}`}
-                        >
-                           <div className={`p-2 rounded-full mr-3 ${algorithm === 'efficiency' ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-400'}`}>
+                           className={`roi-strategy-option flex w-full items-center rounded-sm border p-3 text-left transition-all ${
+                              algorithm === 'efficiency'
+                                 ? 'roi-strategy-option-selected bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500'
+                                 : 'bg-white border-gray-300 hover:border-gray-400'
+                           }`}
+                           >
+                           <div
+                              className={`roi-strategy-icon mr-3 shrink-0 rounded-full p-2 ${
+                                 algorithm === 'efficiency'
+                                 ? 'bg-indigo-200 text-indigo-700'
+                                 : 'bg-gray-100 text-gray-400'
+                              }`}
+                           >
                               <Zap className="w-5 h-5" />
                            </div>
-                           <div>
-                              <span className="block text-sm font-bold text-gray-900">Max Efficiency</span>
-                              <span className="block text-xs text-gray-500">Fill capacity with Top 3 earners first.</span>
+
+                           <div className="min-w-0">
+                              <span className="roi-strategy-title block text-sm font-bold text-gray-900">
+                                 Max Efficiency
+                              </span>
+
+                              <span className="roi-strategy-description block text-xs text-gray-500">
+                                 Fill capacity with Top 3 earners first.
+                              </span>
                            </div>
                         </button>
                      </div>
