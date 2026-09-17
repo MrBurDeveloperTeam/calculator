@@ -249,6 +249,55 @@ const ClinicSettings: React.FC = () => {
 
     return (
         <div className="clinic-settings-page max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
+            <style>{`
+                html[data-theme="dark"] .clinic-settings-page .capacity-card {
+                    background-color: #DCEDEA !important;
+                    border-color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-icon {
+                    background-color: #7AB5AE !important;
+                    color: #ffffff !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-title {
+                    color: #245E58 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-description {
+                    color: #4A8B83 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-help {
+                    background-color: #CDE5E1 !important;
+                    border-color: #7AB5AE !important;
+                    color: #2F7D74 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-help:hover {
+                    background-color: #C1DDD8 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-value {
+                    color: #2F7D74 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-unit {
+                    color: #4A8B83 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-save-button {
+                    background-color: #7AB5AE !important;
+                    color: #ffffff !important;
+                    border-color: #7AB5AE !important;
+                    box-shadow: none !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-save-button:hover {
+                    background-color: #88C2BB !important;
+                    color: #ffffff !important;
+                }
+            `}</style>
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
@@ -320,7 +369,7 @@ const ClinicSettings: React.FC = () => {
                 {/* Capacity Engine Result Bar */}
                 <div className="capacity-card bg-teal-50 dark:bg-[#1D2C2A] rounded-xl border border-teal-100 dark:border-[#2A4440] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="bg-teal-600 dark:bg-[#7AB5AE] p-3 rounded-lg text-white shadow-sm">
+                        <div className="capacity-card-icon bg-teal-600 dark:bg-[#7AB5AE] p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
                         <div>
@@ -330,7 +379,7 @@ const ClinicSettings: React.FC = () => {
 
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
-                                    <button className="flex items-center gap-1 text-[10px] font-bold text-teal-600 dark:text-[#7AB5AE] bg-teal-100/50 dark:bg-[#1D2C2A] px-2 py-0.5 rounded-md hover:bg-teal-100 dark:hover:bg-[#233B37] transition-colors border border-teal-200 dark:border-[#2A4440] cursor-help">
+                                    <button className="capacity-card-help flex items-center gap-1 text-[10px] font-bold text-teal-600 dark:text-[#7AB5AE] bg-teal-100/50 dark:bg-[#1D2C2A] px-2 py-0.5 rounded-md hover:bg-teal-100 dark:hover:bg-[#233B37] transition-colors border border-teal-200 dark:border-[#2A4440] cursor-help">
                                         <Info className="w-3 h-3" /> Why 4.33 wks?
                                     </button>
 
@@ -367,7 +416,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
                     <button
                         onClick={handleSaveParams}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Parameters</span>
@@ -412,7 +461,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveOverhead}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Overhead</span>
@@ -543,7 +592,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveStaff}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Staff Roster</span>
@@ -610,7 +659,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveAssets}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Assets</span>
