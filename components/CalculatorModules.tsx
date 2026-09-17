@@ -1429,7 +1429,71 @@ export const ConsumablesCalculator = () => {
       visualData={visualData}
       tooltipData={{ title: "Variable Costs", content: "These costs scale with patient volume." }}
       theme="clinical"
+      pageClassName="consumables-page"
     >
+      <style>{`
+        /* Consumables & Materials: Light theme */
+        :root[data-theme="light"] .consumables-page .calculator-card-content > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .consumables-page .space-y-2 > div {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Consumables & Materials: Dark theme */
+        :root[data-theme="dark"] .consumables-page .calculator-card-panel,
+        :root[data-theme="dark"] .consumables-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-header-title,
+        :root[data-theme="dark"] .consumables-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content > .bg-gray-50,
+        :root[data-theme="dark"] .consumables-page .space-y-2 > div,
+        :root[data-theme="dark"] .consumables-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .space-y-2 > div > span:first-child {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .consumables-page .space-y-2 > div span.font-bold {
+          color: #8FC9C2 !important;
+        }
+      `}</style>
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
         <div className="flex gap-4">
           <div className="flex-1">
@@ -1466,6 +1530,63 @@ export const SterilizationCalculator = () => {
   const visualData = [{ name: 'Pouch', value: pouchCost, color: '#0f766e' }, { name: 'Chemicals', value: chemicalCost, color: '#14b8a6' }, { name: 'PPE', value: ppeCost, color: '#2dd4bf' }];
   return (
     <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical" pageClassName="sterilization-page">
+      <style>{`
+        /* Sterilization Costs: Light theme */
+        :root[data-theme="light"] .sterilization-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .sterilization-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Sterilization Costs: Dark theme */
+        :root[data-theme="dark"] .sterilization-page .calculator-card-panel,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-header-title,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Autoclave Pouch Cost" value={pouchCost} onChange={(v) => updateSection('sterilization', { pouchCost: v })} type="currency" />
       <StyledInput label="Chemical Indicator Cost" value={chemicalCost} onChange={(v) => updateSection('sterilization', { chemicalCost: v })} type="currency" />
       <StyledInput label="PPE Cost (Gloves/Masks)" value={ppeCost} onChange={(v) => updateSection('sterilization', { ppeCost: v })} type="currency" />
@@ -1485,6 +1606,64 @@ export const LabCalculator = () => {
   const visualData = [{ name: 'Base Fee', value: labFee, color: '#0d9488' }, { name: 'Shipping', value: shippingCost, color: '#14b8a6' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#22c55e' }];
   return (
     <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical" pageClassName="lab-outsourcing-page">
+
+      <style>{`
+        /* Lab & Outsourcing: Light theme */
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Lab & Outsourcing: Dark theme */
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-panel,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-header-title,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Lab Fee" value={labFee} onChange={(v) => updateSection('lab', { labFee: v })} type="currency" />
       <StyledInput label="Shipping" value={shippingCost} onChange={(v) => updateSection('lab', { shippingCost: v })} type="currency" />
       <div className="pt-2"><StyledInput label="Desired Markup %" value={markupPercent} onChange={(v) => updateSection('lab', { markupPercent: v })} type="percent" /></div>
@@ -1502,6 +1681,64 @@ export const MarketingCalculator = () => {
   const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#be123c' }, { name: 'Agency Fee', value: agencyFees, color: '#e11d48' }];
   return (
     <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="growth" pageClassName="marketing-page">
+
+      <style>{`
+        /* Marketing & Acquisition: Light theme */
+        :root[data-theme="light"] .marketing-page .calculator-card-content label {
+          color: #9f1239 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content input {
+          border-color: #ffe4e6 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content input:focus {
+          border-color: #e11d48 !important;
+          box-shadow: 0 0 0 1px #e11d48 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .marketing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #fff1f2 !important;
+          border-color: #ffe4e6 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content .border-t {
+          border-color: #ffe4e6 !important;
+        }
+
+        /* Marketing & Acquisition: Dark theme */
+        :root[data-theme="dark"] .marketing-page .calculator-card-panel,
+        :root[data-theme="dark"] .marketing-page .calculator-card-content {
+          background-color: #171113 !important;
+          border-color: #4A2A33 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-header {
+          background-color: #2D1B20 !important;
+          border-color: #4A2A33 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-header-icon {
+          background-color: #3A2229 !important;
+          color: #FDA4AF !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-header-title,
+        :root[data-theme="dark"] .marketing-page .calculator-card-content label {
+          color: #FFE4E6 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content input {
+          background-color: #26171B !important;
+          border-color: #4A2A33 !important;
+          color: #FFE4E6 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content input::placeholder {
+          color: #B77A88 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .marketing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .marketing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #26171B !important;
+          border-color: #4A2A33 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content .border-t {
+          border-color: #4A2A33 !important;
+        }
+      `}</style>
       <StyledInput label="Monthly Ad Spend" value={adSpend} onChange={(v) => updateSection('marketing', { adSpend: v })} type="currency" />
       <StyledInput label="Agency Fees" value={agencyFees} onChange={(v) => updateSection('marketing', { agencyFees: v })} type="currency" />
       <StyledInput label="Production Costs" value={productionCosts} onChange={(v) => updateSection('marketing', { productionCosts: v })} type="currency" />
@@ -1520,6 +1757,64 @@ export const RegulatoryCalculator = () => {
   const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#e11d48' }, { name: 'Insurance', value: annualInsurance / 12, color: '#f43f5e' }];
   return (
     <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="growth" pageClassName="regulatory-page">
+
+      <style>{`
+        /* Regulatory & Insurance: Light theme */
+        :root[data-theme="light"] .regulatory-page .calculator-card-content label {
+          color: #9f1239 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content input {
+          border-color: #ffe4e6 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content input:focus {
+          border-color: #e11d48 !important;
+          box-shadow: 0 0 0 1px #e11d48 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .regulatory-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #fff1f2 !important;
+          border-color: #ffe4e6 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content .border-t {
+          border-color: #ffe4e6 !important;
+        }
+
+        /* Regulatory & Insurance: Dark theme */
+        :root[data-theme="dark"] .regulatory-page .calculator-card-panel,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content {
+          background-color: #171113 !important;
+          border-color: #4A2A33 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-header {
+          background-color: #2D1B20 !important;
+          border-color: #4A2A33 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-header-icon {
+          background-color: #3A2229 !important;
+          color: #FDA4AF !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-header-title,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content label {
+          color: #FFE4E6 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content input {
+          background-color: #26171B !important;
+          border-color: #4A2A33 !important;
+          color: #FFE4E6 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content input::placeholder {
+          color: #B77A88 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #26171B !important;
+          border-color: #4A2A33 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content .border-t {
+          border-color: #4A2A33 !important;
+        }
+      `}</style>
       <StyledInput label="Annual APC Fee" value={annualApc} onChange={(v) => updateSection('regulatory', { annualApc: v })} type="currency" />
       <StyledInput label="Annual X-Ray License" value={annualXray} onChange={(v) => updateSection('regulatory', { annualXray: v })} type="currency" />
       <StyledInput label="Annual Indemnity Insurance" value={annualInsurance} onChange={(v) => updateSection('regulatory', { annualInsurance: v })} type="currency" />
@@ -1539,6 +1834,64 @@ export const FinancialCalculator = () => {
   const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#334155' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#475569' }];
   return (
     <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="foundation" pageClassName="financial-tax-page">
+
+      <style>{`
+        /* Financial & Tax: Light theme */
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content label {
+          color: #334155 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content input {
+          border-color: #cbd5e1 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content input:focus {
+          border-color: #475569 !important;
+          box-shadow: 0 0 0 1px #475569 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .financial-tax-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f8fafc !important;
+          border-color: #e2e8f0 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content .border-t {
+          border-color: #e2e8f0 !important;
+        }
+
+        /* Financial & Tax: Dark theme */
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-panel,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content {
+          background-color: #111827 !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-header {
+          background-color: #1E293B !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-header-icon {
+          background-color: #273449 !important;
+          color: #CBD5E1 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-header-title,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content label {
+          color: #E2E8F0 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content input {
+          background-color: #1E293B !important;
+          border-color: #334155 !important;
+          color: #F8FAFC !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content input::placeholder {
+          color: #64748B !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1E293B !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content .border-t {
+          border-color: #334155 !important;
+        }
+      `}</style>
       <StyledInput label="Monthly Loan Interest" value={monthlyInterest} onChange={(v) => updateSection('financial', { monthlyInterest: v })} type="currency" />
       <StyledInput label="Bank Charges / Software" value={monthlyBankCharges} onChange={(v) => updateSection('financial', { monthlyBankCharges: v })} type="currency" />
       <div className="grid grid-cols-2 gap-4"><StyledInput label="Est. Monthly Revenue" value={estMonthlyRevenue} onChange={(v) => updateSection('financial', { estMonthlyRevenue: v })} type="currency" /><StyledInput label="Trans. Fee %" value={transactionFeesPercent} onChange={(v) => updateSection('financial', { transactionFeesPercent: v })} type="percent" /></div>
@@ -1577,6 +1930,100 @@ export const OwnerCalculator = () => {
       pageClassName="owner-comp-page"
       tooltipData={{ title: "Risk Buffer", content: `To safely take home ${currencySymbol} ${desiredNetIncome.toLocaleString()}, your clinic needs to generate an extra ${currencySymbol} ${riskBufferAmount.toLocaleString()} to cover unexpected downturns or taxes.` }}
     >
+
+      <style>{`
+        /* Owner Compensation: Light theme */
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content label {
+          color: #334155 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content input {
+          border-color: #cbd5e1 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content input:focus {
+          border-color: #475569 !important;
+          box-shadow: 0 0 0 1px #475569 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .owner-comp-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f8fafc !important;
+          border-color: #e2e8f0 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table {
+          border-color: #cbd5e1 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table > div,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table thead,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table tbody tr:last-child {
+          background-color: #f8fafc !important;
+          border-color: #e2e8f0 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-row {
+          background-color: #f1f5f9 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-label,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-value,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-percent {
+          color: #64748b !important;
+        }
+
+        /* Owner Compensation: Dark theme */
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-panel,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content {
+          background-color: #111827 !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-header {
+          background-color: #1E293B !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-header-icon {
+          background-color: #273449 !important;
+          color: #CBD5E1 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-header-title,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content label {
+          color: #E2E8F0 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content input {
+          background-color: #1E293B !important;
+          border-color: #334155 !important;
+          color: #F8FAFC !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content input::placeholder {
+          color: #64748B !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1E293B !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table {
+          background-color: #172033 !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table > div,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table thead,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table tbody,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table tbody tr,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table tbody tr:last-child {
+          background-color: #172033 !important;
+          border-color: #334155 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table h4,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table th,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table td {
+          color: #CBD5E1 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-row {
+          background-color: #1E293B !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-label,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-value,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-percent {
+          color: #94A3B8 !important;
+        }
+      `}</style>
       <StyledInput
         label="Target Monthly Net Income"
         value={desiredNetIncome}
