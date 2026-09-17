@@ -72,10 +72,10 @@ const SharpInput = ({
 
   return (
     <div className="group relative mb-4">
-      {label && <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>}
-      <div className="relative flex items-center border border-gray-300 bg-white hover:border-blue-400 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors rounded-sm overflow-hidden">
+      {label && <label className="profitability-input-label block text-sm font-bold text-gray-700 mb-1">{label}</label>}
+      <div className="profitability-input-shell relative flex items-center border border-gray-300 bg-white hover:border-teal-400 focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 transition-colors rounded-sm overflow-hidden">
         {type === 'currency' && (
-          <div className="pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10">
+          <div className="profitability-currency-prefix pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10">
             <span className="text-gray-500 text-sm font-bold whitespace-nowrap">{currencySymbol}</span>
           </div>
         )}
@@ -93,7 +93,7 @@ const SharpInput = ({
             }
           }}
           className={`
-            block flex-1 w-full min-w-0 border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
+            profitability-input block flex-1 w-full min-w-0 border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
             focus:ring-0 sm:text-sm font-medium
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
         `}
@@ -161,7 +161,7 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
     <div className={`${pageClassName} max-w-6xl mx-auto animate-in fade-in duration-500`}>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Input Panel */}
-        <div className="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-0 flex flex-col overflow-hidden">
+        <div className="calculator-card-panel lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-0 flex flex-col overflow-hidden">
           {/* Themed Header */}
           <div className={`calculator-card-header flex items-center gap-3 px-6 py-4 border-b ${styles.headerBg} ${styles.headerBorder}`}>
             <div className={`calculator-card-header-icon p-2 rounded-lg ${styles.iconContainer} ${styles.iconColor} shadow-sm`}>
@@ -173,7 +173,7 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
             </div>
           </div>
 
-          <div className="p-6 space-y-1 flex-grow">
+          <div className="calculator-card-content p-6 space-y-1 flex-grow">
             {children}
           </div>
 
@@ -362,7 +362,7 @@ export const ProcedureBuilder = () => {
 
   const visualData = [
     { name: 'Fixed Overhead', value: currentFixedAllocated, color: '#94a3b8' },
-    { name: 'Variable Recipe', value: currentTotalVariable, color: '#3b82f6' },
+    { name: 'Variable Recipe', value: currentTotalVariable, color: '#14b8a6' },
     { name: 'Net Profit', value: currentNetProfit > 0 ? currentNetProfit : 0, color: '#22c55e' }
   ];
 
@@ -370,10 +370,10 @@ export const ProcedureBuilder = () => {
     title: "Understanding Profitability",
     content: (
       <span>
-        Based on your clinic's operating costs, every minute in the chair costs <span className="group relative inline-block border-b-2 border-dotted border-blue-400 cursor-help font-bold text-blue-700">
+        Based on your clinic's operating costs, every minute in the chair costs <span className="group relative inline-block border-b-2 border-dotted border-teal-400 cursor-help font-bold text-teal-700">
           RM {globalMinuteRate.toFixed(2)}
           <span className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full right-0 mb-2 w-max max-w-xs z-[9999] p-3 bg-slate-800 text-slate-50 text-xs rounded-lg shadow-xl pointer-events-none text-center">
-            <span className="block font-bold text-blue-300 mb-1">Cost Per Minute Formula</span>
+            <span className="block font-bold text-teal-300 mb-1">Cost Per Minute Formula</span>
             <span className="block mb-2 opacity-90">[ Total Monthly OpEx ] ÷ [ Total Monthly Minutes ]</span>
             <span className="block bg-slate-900/50 rounded p-2 border border-slate-700 font-mono">
               <span className="block border-b border-slate-600 pb-1 mb-1">
@@ -403,10 +403,128 @@ export const ProcedureBuilder = () => {
       visualType="profit"
       projectionData={{ dailyRevenue: inputPrice, dailyCost: currentTotalCost, dailyProfit: currentNetProfit }}
       tooltipData={tooltipData}
-      theme="foundation"
+      theme="clinical"
+      pageClassName="procedure-builder-page"
     >
-      <div className={`p-4 rounded-lg border mb-6 transition-colors ${editingId ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
-        <h4 className={`text-sm font-bold mb-4 flex items-center gap-2 ${editingId ? 'text-amber-800' : 'text-slate-700'}`}>
+      <style>{`
+        /* Profitability Builder: Light theme */
+        :root[data-theme="light"] .procedure-builder-page .profitability-form-card:not(.is-editing) {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-section-title { color: #0f766e !important; }
+        :root[data-theme="light"] .procedure-builder-page .profitability-panel-header {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-hourly-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-hourly-label,
+        :root[data-theme="light"] .procedure-builder-page .profitability-hourly-value { color: #0f766e !important; }
+        :root[data-theme="light"] .procedure-builder-page .profitability-save-button:not(.is-editing) {
+          background-color: #0d9488 !important;
+          color: #ffffff !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-save-button:not(.is-editing):hover {
+          background-color: #0f766e !important;
+        }
+
+        /* Profitability Builder: Dark theme */
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-panel,
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card:not(.is-editing),
+        :root[data-theme="dark"] .procedure-builder-page .profitability-consumables-card,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-analysis-card,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-library {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-section-title,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input-label,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-library-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input-shell,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-shell,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-qty-input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-input {
+          background-color: #1D2C2A !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input::placeholder,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-input::placeholder { color: #6F9691 !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-currency-prefix {
+          background-color: #233B37 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-dropdown,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-body,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-modal {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-option { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-option:hover,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-row:hover { background-color: #233B37 !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-header,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-footer,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-panel-header,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-empty-state,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-modal-footer {
+          background-color: #182321 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-metric-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-hourly-card {
+          background-color: #1D2C2A !important;
+          border-color: #3A5B56 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-hourly-label,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-hourly-value,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-accent-text { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-save-button:not(.is-editing) {
+          background-color: #1D2C2A !important;
+          color: #7AB5AE !important;
+          border: 1px solid #2A4440 !important;
+          box-shadow: none !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-save-button:not(.is-editing):hover {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+          border-color: #3A5B56 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-cancel-edit {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #7AB5AE !important;
+        }
+      `}</style>
+
+      <div className={`profitability-form-card ${editingId ? 'is-editing' : ''} p-4 rounded-lg border mb-6 transition-colors ${editingId ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
+        <h4 className={`profitability-section-title text-sm font-bold mb-4 flex items-center gap-2 ${editingId ? 'text-amber-800' : 'text-slate-700'}`}>
           {editingId ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4 text-teal-600" />}
           {editingId ? 'Editing Procedure' : 'Add New Procedure'}
         </h4>
@@ -443,19 +561,19 @@ export const ProcedureBuilder = () => {
         </div>
 
         {/* Row 3: DYNAMIC CONSUMABLES SELECTOR */}
-        <div className="mb-6 bg-white p-4 rounded-sm border border-gray-200 shadow-sm">
-          <h5 className="font-bold text-gray-700 text-sm mb-2 flex items-center gap-2">
+        <div className="profitability-consumables-card mb-6 bg-white p-4 rounded-sm border border-gray-200 shadow-sm">
+          <h5 className="profitability-section-title font-bold text-gray-700 text-sm mb-2 flex items-center gap-2">
             <Package className="w-4 h-4 text-teal-600" /> Procedure Consumables & Lab
           </h5>
 
           {/* Search & Add Dropdown */}
           <div className="relative mb-4" ref={dropdownRef}>
-            <div className="relative flex items-center border border-gray-300 bg-white focus-within:ring-1 focus-within:ring-blue-500 rounded-sm">
+            <div className="profitability-search-shell relative flex items-center border border-gray-300 bg-white focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 rounded-sm">
               <Search className="absolute left-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search Consumables List..."
-                className="w-full pl-10 pr-4 py-2 text-sm focus:outline-none bg-white text-gray-900 placeholder-gray-400 rounded-sm border-0"
+                className="profitability-search-input w-full pl-10 pr-4 py-2 text-sm focus:outline-none bg-white text-gray-900 placeholder-gray-400 rounded-sm border-0"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -466,12 +584,12 @@ export const ProcedureBuilder = () => {
             </div>
 
             {isDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
+              <div className="profitability-search-dropdown absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
                 {filteredConsumables.length > 0 ? (
                   filteredConsumables.map(item => (
                     <button
                       key={item.id}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex justify-between items-center group text-gray-900"
+                      className="profitability-search-option w-full text-left px-4 py-2 text-sm hover:bg-teal-50 flex justify-between items-center group text-gray-900"
                       onClick={() => handleAddConsumable(item)}
                     >
                       <span className="font-medium group-hover:text-teal-700">{item.name}</span>
@@ -490,9 +608,9 @@ export const ProcedureBuilder = () => {
 
           {/* Selected Recipe Table */}
           {recipe.length > 0 ? (
-            <div className="overflow-hidden border border-gray-200 rounded-sm mb-2">
+            <div className="profitability-table overflow-hidden border border-gray-200 rounded-sm mb-2">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="profitability-table-header bg-gray-50">
                   <tr>
                     <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Item</th>
                     <th className="px-3 py-2 text-right text-[10px] font-bold text-gray-500 uppercase">Unit Cost</th>
@@ -501,21 +619,21 @@ export const ProcedureBuilder = () => {
                     <th className="px-3 py-2 w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 bg-white">
+                <tbody className="profitability-table-body divide-y divide-gray-100 bg-white">
                   {recipe.map(item => (
                     <tr key={item.id}>
-                      <td className="px-3 py-2 text-xs font-medium text-gray-700">{item.name}</td>
-                      <td className="px-3 py-2 text-xs text-gray-500 text-right">{currencySymbol} {item.cost.toFixed(2)}</td>
+                      <td className="px-3 py-2 text-xs font-medium profitability-main-text text-gray-700">{item.name}</td>
+                      <td className="px-3 py-2 text-xs profitability-muted-text text-gray-500 text-right">{currencySymbol} {item.cost.toFixed(2)}</td>
                       <td className="px-3 py-2 text-center">
                         <input
                           type="number"
                           min="0"
-                          className="w-12 h-6 text-center text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 rounded-sm bg-white text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="profitability-qty-input w-12 h-6 text-center text-xs border border-gray-300 focus:ring-1 focus:ring-teal-500 rounded-sm bg-white text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           value={item.quantity}
                           onChange={(e) => handleUpdateQuantity(item.id, Math.max(0, parseFloat(e.target.value) || 0))}
                         />
                       </td>
-                      <td className="px-3 py-2 text-xs font-bold text-gray-700 text-right">
+                      <td className="px-3 py-2 text-xs profitability-main-text font-bold text-gray-700 text-right">
                         {currencySymbol} {(item.cost * item.quantity).toFixed(2)}
                       </td>
                       <td className="px-3 py-2 text-right">
@@ -529,7 +647,7 @@ export const ProcedureBuilder = () => {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-gray-50">
+                <tfoot className="profitability-table-footer bg-gray-50">
                   <tr>
                     <td colSpan={3} className="px-3 py-2 text-xs font-bold text-gray-600 text-right">Total Consumable Cost:</td>
                     <td className="px-3 py-2 text-xs font-black text-gray-800 text-right">{currencySymbol} {currentTotalVariable.toFixed(2)}</td>
@@ -539,7 +657,7 @@ export const ProcedureBuilder = () => {
               </table>
             </div>
           ) : (
-            <div className="text-center py-6 bg-gray-50 border border-dashed border-gray-200 rounded-sm mb-2">
+            <div className="profitability-empty-state text-center py-6 bg-gray-50 border border-dashed border-gray-200 rounded-sm mb-2">
               <p className="text-xs text-gray-400">No consumables added yet.</p>
             </div>
           )}
@@ -550,9 +668,9 @@ export const ProcedureBuilder = () => {
         </div>
 
         {/* Live Analysis Card */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+        <div className="profitability-analysis-card bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center mb-3">
-            <h5 className="font-bold text-gray-700 text-sm">Projected Financial Performance</h5>
+            <h5 className="profitability-section-title font-bold text-gray-700 text-sm">Projected Financial Performance</h5>
             {currentNetProfit < 0 && (
               <div className="flex items-center gap-1 text-red-600 text-xs font-bold animate-pulse">
                 <AlertTriangle className="w-3 h-3" /> Loss Making Procedure
@@ -562,13 +680,13 @@ export const ProcedureBuilder = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Metric 1: Break Even */}
-            <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+            <div className="profitability-metric-card p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Min Cost to Cover</p>
               <p className="text-lg font-bold text-gray-700 mt-1">{state.clinicSettings.currencySymbol} {currentTotalCost.toFixed(0)}</p>
             </div>
 
             {/* Metric 2: Net Profit */}
-            <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+            <div className="profitability-metric-card p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Net Profit / Case</p>
               <div className={`flex items-center gap-1 mt-1 ${currentNetProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {currentNetProfit >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
@@ -577,7 +695,7 @@ export const ProcedureBuilder = () => {
             </div>
 
             {/* Metric 3: Margin */}
-            <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+            <div className="profitability-metric-card p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Margin</p>
               <p className={`text-lg font-bold mt-1 ${currentMargin >= 30 ? 'text-emerald-600' : 'text-amber-600'}`}>
                 {currentMargin.toFixed(1)}%
@@ -585,28 +703,28 @@ export const ProcedureBuilder = () => {
             </div>
 
             {/* Metric 4: Hourly Profit */}
-            <div className="p-3 bg-blue-50 rounded-md border border-blue-100 shadow-sm">
-              <p className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Profit Per Chair Hour</p>
-              <p className="text-lg font-bold text-blue-700 mt-1">{state.clinicSettings.currencySymbol} {currentHourlyProfit.toFixed(0)}</p>
+            <div className="profitability-hourly-card p-3 bg-teal-50 rounded-md border border-teal-100 shadow-sm">
+              <p className="profitability-hourly-label text-[10px] text-teal-600 uppercase font-bold tracking-wider">Profit Per Chair Hour</p>
+              <p className="profitability-hourly-value text-lg font-bold text-teal-700 mt-1">{state.clinicSettings.currencySymbol} {currentHourlyProfit.toFixed(0)}</p>
             </div>
           </div>
         </div>
 
         <div className="flex gap-3">
-          <button onClick={handleSaveProcedure} disabled={inputPrice <= 0 || inputDuration <= 0} className={`flex-1 text-white py-3 rounded-sm font-medium shadow-sm flex justify-center items-center gap-2 transition-all disabled:opacity-50 ${editingId ? 'bg-amber-600' : 'bg-slate-800'}`}>
+          <button onClick={handleSaveProcedure} disabled={inputPrice <= 0 || inputDuration <= 0} className={`profitability-save-button ${editingId ? 'is-editing' : ''} flex-1 text-white py-3 rounded-sm font-medium shadow-sm flex justify-center items-center gap-2 transition-all disabled:opacity-50 ${editingId ? 'bg-amber-600' : 'bg-teal-600 hover:bg-teal-700'}`}>
             {editingId ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />} {editingId ? 'Update Procedure' : 'Save to Library'}
           </button>
-          {editingId && <button onClick={resetForm} className="px-4 py-3 rounded-sm border border-gray-300 bg-white text-gray-600"><X className="w-4 h-4" /></button>}
+          {editingId && <button onClick={resetForm} className="profitability-cancel-edit px-4 py-3 rounded-sm border border-gray-300 bg-white text-gray-600"><X className="w-4 h-4" /></button>}
         </div>
       </div>
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="font-bold text-gray-700 text-sm flex items-center gap-2"><Table2 className="w-4 h-4 text-gray-400" /> Saved Treatments</h3>
+      <div className="profitability-library border border-gray-200 rounded-lg overflow-hidden">
+        <div className="profitability-panel-header bg-teal-50 px-4 py-3 border-b border-teal-100 flex justify-between items-center">
+          <h3 className="profitability-library-title font-bold text-gray-700 text-sm flex items-center gap-2"><Table2 className="w-4 h-4 text-gray-400" /> Saved Treatments</h3>
           <span className="text-xs text-gray-500">Live Recalculation Active</span>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="profitability-table-header bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Procedure</th>
                 <th className="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Break-Even</th>
@@ -615,16 +733,16 @@ export const ProcedureBuilder = () => {
                 <th className="px-4 py-3 w-20"></th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
+            <tbody className="profitability-table-body bg-white divide-y divide-gray-100">
               {savedProcedures.map((item) => {
                 const itemFixedCost = item.duration * globalMinuteRate;
                 const itemBreakEven = item.variableCost + itemFixedCost;
                 const itemProfit = item.price - itemBreakEven;
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => handleEdit(item)}>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 text-right font-medium">{state.clinicSettings.currencySymbol} {itemBreakEven.toFixed(0)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{state.clinicSettings.currencySymbol} {item.price.toFixed(0)}</td>
+                  <tr key={item.id} className="profitability-table-row hover:bg-teal-50 cursor-pointer" onClick={() => handleEdit(item)}>
+                    <td className="px-4 py-3 text-sm font-medium profitability-main-text text-gray-900">{item.name}</td>
+                    <td className="px-4 py-3 text-sm profitability-muted-text text-gray-500 text-right font-medium">{state.clinicSettings.currencySymbol} {itemBreakEven.toFixed(0)}</td>
+                    <td className="px-4 py-3 text-sm profitability-main-text text-gray-900 text-right">{state.clinicSettings.currencySymbol} {item.price.toFixed(0)}</td>
                     <td className={`px-4 py-3 text-sm font-bold text-right ${itemProfit >= 0 ? 'text-teal-600' : 'text-red-500'}`}>{state.clinicSettings.currencySymbol} {itemProfit.toFixed(0)}</td>
                     <td className="px-4 py-3 text-right flex justify-end gap-2">
                       <button
@@ -649,14 +767,14 @@ export const ProcedureBuilder = () => {
       {/* Custom Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+          <div className="profitability-modal bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
             <div className="p-6">
-              <h3 className="text-lg font-bold text-gray-900">Delete Procedure?</h3>
-              <p className="text-sm text-gray-500 mt-2">
+              <h3 className="profitability-main-text text-lg font-bold text-gray-900">Delete Procedure?</h3>
+              <p className="profitability-muted-text text-sm text-gray-500 mt-2">
                 Are you sure you want to remove this saved treatment? This action cannot be undone.
               </p>
             </div>
-            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+            <div className="profitability-modal-footer bg-gray-50 px-6 py-4 flex justify-end gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-gray-300 transition-colors"
@@ -693,7 +811,7 @@ export const OverheadCalculator = () => {
   const visualData = sortedItems.slice(0, 5).map((item, i) => ({
     name: item.name,
     value: item.monthlyCost,
-    color: ['#4f46e5', '#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'][i] || '#e0e7ff'
+    color: ['#0f766e', '#0d9488', '#14b8a6', '#5eead4', '#99f6e4'][i] || '#ccfbf1'
   }));
 
   const tooltipData = {
@@ -709,17 +827,80 @@ export const OverheadCalculator = () => {
       section="overhead"
       visualData={visualData}
       tooltipData={tooltipData}
-      theme="external"
+      theme="clinical"
       readOnly={true}
       pageClassName="fixed-overhead-page"
     >
-      <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 flex justify-between items-center">
+      <style>{`
+        /* Fixed Overhead Analysis: Light theme */
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-calculation {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-calculation-result,
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-total-value { color: #0f766e !important; }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-info-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+          color: #0f766e !important;
+        }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-info-icon { color: #0d9488 !important; }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-table { border-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-table-head,
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-table-footer { background-color: #f0fdfa !important; }
+
+        /* Fixed Overhead Analysis: Dark theme */
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-panel,
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header-subtitle { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-calculation {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+          color: #7AB5AE !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-calculation-result { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-icon { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table {
+          border-color: #2A4440 !important;
+          background-color: #171F1E !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table-head,
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table-footer {
+          background-color: #182321 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table-body {
+          background-color: #171F1E !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-total-value { color: #8FC9C2 !important; }
+      `}</style>
+
+      <div className="fixed-overhead-calculation mb-4 p-3 bg-teal-50 border border-teal-100 rounded-lg text-xs text-teal-800 flex justify-between items-center">
         <span>Calculation Logic:</span>
         <span className="font-mono font-medium">
-          {currencySymbol} {totalExpenses.toLocaleString()} ÷ {operatingHours.toFixed(1)} hrs = <span className="text-indigo-600 font-bold">{currencySymbol} {costPerHour.toFixed(2)}/hr</span>
+          {currencySymbol} {totalExpenses.toLocaleString()} ÷ {operatingHours.toFixed(1)} hrs = <span className="fixed-overhead-calculation-result text-teal-700 font-bold">{currencySymbol} {costPerHour.toFixed(2)}/hr</span>
         </span>
       </div>
-      <div className="fixed-overhead-info-card mb-6 bg-blue-50 text-blue-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-blue-100">
+      <div className="fixed-overhead-info-card mb-6 bg-teal-50 text-teal-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-teal-100">
         <TrendingUp className="fixed-overhead-info-icon w-5 h-5 flex-shrink-0" />
 
         <span className="fixed-overhead-info-text">
@@ -728,27 +909,27 @@ export const OverheadCalculator = () => {
         </span>
       </div>
 
-      <div className="overflow-hidden border border-slate-200 rounded-lg">
+      <div className="fixed-overhead-table overflow-hidden border border-teal-100 rounded-lg">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="fixed-overhead-table-head bg-teal-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Expense Item</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Monthly Cost</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="fixed-overhead-table-body divide-y divide-slate-100 bg-white">
             {items.map(item => (
               <tr key={item.id}>
-                <td className="px-4 py-3 text-sm text-slate-700">{item.name}</td>
-                <td className="px-4 py-3 text-sm font-medium text-slate-900 text-right">{currencySymbol} {item.monthlyCost.toLocaleString()}</td>
+                <td className="fixed-overhead-main-text px-4 py-3 text-sm text-slate-700">{item.name}</td>
+                <td className="fixed-overhead-main-text px-4 py-3 text-sm font-medium text-slate-900 text-right">{currencySymbol} {item.monthlyCost.toLocaleString()}</td>
               </tr>
             ))}
             {items.length === 0 && <tr><td colSpan={2} className="px-4 py-4 text-center text-slate-400">No overhead items defined.</td></tr>}
           </tbody>
-          <tfoot className="bg-slate-50 font-bold">
+          <tfoot className="fixed-overhead-table-footer bg-teal-50 font-bold">
             <tr>
-              <td className="px-4 py-3 text-slate-800">Total Monthly Overhead</td>
-              <td className="px-4 py-3 text-right text-indigo-700">{currencySymbol} {totalExpenses.toLocaleString()}</td>
+              <td className="fixed-overhead-main-text px-4 py-3 text-slate-800">Total Monthly Overhead</td>
+              <td className="fixed-overhead-total-value px-4 py-3 text-right text-teal-700">{currencySymbol} {totalExpenses.toLocaleString()}</td>
             </tr>
           </tfoot>
         </table>
@@ -775,9 +956,9 @@ export const StaffCalculator = () => {
   const totalBonus = members.reduce((sum, m) => sum + m.bonus, 0);
 
   const visualData = [
-    { name: 'Base Salaries', value: totalSalaries, color: '#4338ca' },
-    { name: 'Benefits (EPF)', value: totalBenefits, color: '#4f46e5' },
-    { name: 'Bonuses', value: totalBonus, color: '#6366f1' }
+    { name: 'Base Salaries', value: totalSalaries, color: '#0f766e' },
+    { name: 'Benefits (EPF)', value: totalBenefits, color: '#0d9488' },
+    { name: 'Bonuses', value: totalBonus, color: '#14b8a6' }
   ];
 
   // Process data for the Bar Chart & Table (Efficiency)
@@ -813,11 +994,82 @@ export const StaffCalculator = () => {
       section="staff"
       visualData={visualData}
       tooltipData={{ title: "Labor Efficiency", content: `Total payroll is ${currencySymbol} ${totalMonthlyCost.toLocaleString()}/mo. With ${clinicTotalHours.toFixed(0)} clinical hours, you spend ${currencySymbol} ${clinicHourlyCost.toFixed(2)} on staff for every open hour.` }}
-      theme="external"
+      theme="clinical"
       readOnly={true}
       pageClassName="staff-cost-page"
     >
-      <div className="staff-analytics-card mb-6 bg-indigo-50 text-indigo-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-indigo-100">
+      <style>{`
+        /* Staff Cost Analytics: Light theme */
+        :root[data-theme="light"] .staff-cost-page .staff-analytics-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+          color: #0f766e !important;
+        }
+        :root[data-theme="light"] .staff-cost-page .staff-analytics-icon,
+        :root[data-theme="light"] .staff-cost-page .staff-chart-icon,
+        :root[data-theme="light"] .staff-cost-page .staff-table-title-icon { color: #0d9488 !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-chart-card,
+        :root[data-theme="light"] .staff-cost-page .staff-table { border-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-chart-title,
+        :root[data-theme="light"] .staff-cost-page .staff-table-title { color: #115e59 !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-table-head { background-color: #f0fdfa !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-true-hourly { color: #0f766e !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-table-row:hover { background-color: #f0fdfa !important; }
+        :root[data-theme="light"] .staff-cost-page .recharts-bar-rectangle path { fill: #0d9488 !important; }
+
+        /* Staff Cost Analytics: Dark theme */
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-panel,
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header-subtitle { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-analytics-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-analytics-icon,
+        :root[data-theme="dark"] .staff-cost-page .staff-chart-icon,
+        :root[data-theme="dark"] .staff-cost-page .staff-table-title-icon { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-chart-card {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-chart-title,
+        :root[data-theme="dark"] .staff-cost-page .staff-table-title,
+        :root[data-theme="dark"] .staff-cost-page .staff-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-secondary-text { color: #5F8F89 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-true-hourly { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-table {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-table-head { background-color: #182321 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-table-body { background-color: #171F1E !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-table-row:hover { background-color: #1D2C2A !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-cartesian-grid line { stroke: #2A4440 !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-cartesian-axis-tick-value { fill: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-tooltip-cursor { fill: #233B37 !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-bar-rectangle path { fill: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-default-tooltip {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+      `}</style>
+
+      <div className="staff-analytics-card mb-6 bg-teal-50 text-teal-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-teal-100">
         <Users className="staff-analytics-icon w-5 h-5 flex-shrink-0" />
 
         <span className="staff-analytics-text">
@@ -827,9 +1079,9 @@ export const StaffCalculator = () => {
       </div>
 
       {/* BAR CHART: True Hourly Rate Comparison */}
-      <div className="mb-8 p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-        <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-indigo-500" /> True Hourly Cost Comparison
+      <div className="staff-chart-card mb-8 p-4 bg-white border border-teal-100 rounded-xl shadow-sm">
+        <h4 className="staff-chart-title text-sm font-bold text-teal-800 mb-4 flex items-center gap-2">
+          <TrendingUp className="staff-chart-icon w-4 h-4 text-teal-600" /> True Hourly Cost Comparison
         </h4>
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -841,40 +1093,40 @@ export const StaffCalculator = () => {
                 cursor={{ fill: '#f1f5f9' }}
                 formatter={(val: number) => [`${currencySymbol} ${val.toFixed(2)}/hr`, 'True Cost']}
               />
-              <Bar dataKey="trueHourlyRate" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={20} />
+              <Bar dataKey="trueHourlyRate" fill="#0d9488" radius={[0, 4, 4, 0]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <h4 className="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
-        <Table2 className="w-4 h-4 text-slate-500" /> Staff Efficiency Table
+      <h4 className="staff-table-title font-bold text-teal-900 text-sm mb-3 flex items-center gap-2">
+        <Table2 className="staff-table-title-icon w-4 h-4 text-teal-600" /> Staff Efficiency Table
       </h4>
-      <div className="overflow-hidden border border-slate-200 rounded-lg">
+      <div className="staff-table overflow-hidden border border-teal-100 rounded-lg">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="staff-table-head bg-teal-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Staff Member</th>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Schedule</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Monthly Pay</th>
-              <th className="px-4 py-3 text-right text-xs font-bold text-indigo-600 uppercase">True Hourly</th>
+              <th className="staff-true-hourly px-4 py-3 text-right text-xs font-bold text-teal-700 uppercase">True Hourly</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Clinic Burden</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="staff-table-body divide-y divide-slate-100 bg-white">
             {staffEfficiencyData.map(m => (
-              <tr key={m.id} className="hover:bg-slate-50">
+              <tr key={m.id} className="staff-table-row hover:bg-teal-50">
                 <td className="px-4 py-3 text-sm">
-                  <span className="font-medium text-slate-900 block">{m.name}</span>
-                  <span className="text-xs text-slate-500">{m.role}</span>
+                  <span className="staff-main-text font-medium text-slate-900 block">{m.name}</span>
+                  <span className="staff-muted-text text-xs text-slate-500">{m.role}</span>
                 </td>
-                <td className="px-4 py-3 text-xs text-slate-500 font-mono">
+                <td className="staff-muted-text px-4 py-3 text-xs text-slate-500 font-mono">
                   {m.schedule}
-                  <div className="text-[10px] text-slate-400">({m.personalMonthlyHours.toFixed(0)} hrs)</div>
+                  <div className="staff-secondary-text text-[10px] text-slate-400">({m.personalMonthlyHours.toFixed(0)} hrs)</div>
                 </td>
-                <td className="px-4 py-3 text-sm text-slate-800 text-right font-medium">{currencySymbol} {m.totalPay.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm font-bold text-indigo-600 text-right">{currencySymbol} {m.trueHourlyRate.toFixed(2)}</td>
-                <td className="px-4 py-3 text-xs font-medium text-slate-400 text-right">{currencySymbol} {m.clinicBurden.toFixed(2)}/hr</td>
+                <td className="staff-main-text px-4 py-3 text-sm text-slate-800 text-right font-medium">{currencySymbol} {m.totalPay.toLocaleString()}</td>
+                <td className="staff-true-hourly px-4 py-3 text-sm font-bold text-teal-700 text-right">{currencySymbol} {m.trueHourlyRate.toFixed(2)}</td>
+                <td className="staff-secondary-text px-4 py-3 text-xs font-medium text-slate-400 text-right">{currencySymbol} {m.clinicBurden.toFixed(2)}/hr</td>
               </tr>
             ))}
           </tbody>
@@ -941,7 +1193,7 @@ export const DepreciationCalculator = () => {
   const visualData = sortedAssets.slice(0, 5).map((a, i) => ({
     name: a.name,
     value: a.purchasePrice,
-    color: ['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a'][i] || '#fef3c7'
+    color: ['#0f766e', '#0d9488', '#14b8a6', '#5eead4'][i] || '#99f6e4'
   }));
 
   return (
@@ -952,11 +1204,84 @@ export const DepreciationCalculator = () => {
       section="depreciation"
       visualData={visualData}
       tooltipData={{ title: "Hidden Costs", content: `Your equipment loses ${currencySymbol} ${totalMonthlyDepreciation.toFixed(0)} in value every month. Spread over your clinical hours, this adds to your hourly base cost.` }}
-      theme="external"
+      theme="clinical"
       readOnly={true}
       pageClassName="depreciation-page"
     >
-      <div className="depreciation-analytics-card mb-6 bg-amber-50 text-amber-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-amber-100">
+      <style>{`
+        /* Depreciation Analytics: Light theme */
+        :root[data-theme="light"] .depreciation-page .depreciation-analytics-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+          color: #0f766e !important;
+        }
+        :root[data-theme="light"] .depreciation-page .depreciation-analytics-icon,
+        :root[data-theme="light"] .depreciation-page .depreciation-chart-icon,
+        :root[data-theme="light"] .depreciation-page .depreciation-accent { color: #0d9488 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-chart-card,
+        :root[data-theme="light"] .depreciation-page .depreciation-asset-table,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule { border-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-chart-title,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-title { color: #115e59 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-asset-table-head,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-head,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-toggle { background-color: #f0fdfa !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-toggle:hover { background-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-expense { color: #0d9488 !important; }
+
+        /* Depreciation Analytics: Dark theme */
+        :root[data-theme="dark"] .depreciation-page .calculator-card-panel,
+        :root[data-theme="dark"] .depreciation-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header-subtitle { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-analytics-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .depreciation-analytics-icon,
+        :root[data-theme="dark"] .depreciation-page .depreciation-chart-icon,
+        :root[data-theme="dark"] .depreciation-page .depreciation-accent { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-chart-card,
+        :root[data-theme="dark"] .depreciation-page .depreciation-asset-table,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .depreciation-chart-title,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-title,
+        :root[data-theme="dark"] .depreciation-page .depreciation-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-asset-table-head,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-head,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-toggle { background-color: #182321 !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-asset-table-body,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-body { background-color: #171F1E !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-toggle:hover,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-row:nth-child(even) { background-color: #1D2C2A !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-row:nth-child(odd) { background-color: #171F1E !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-expense { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .depreciation-page .recharts-cartesian-grid line { stroke: #2A4440 !important; }
+        :root[data-theme="dark"] .depreciation-page .recharts-cartesian-axis-tick-value { fill: #7AB5AE !important; }
+        :root[data-theme="dark"] .depreciation-page .recharts-default-tooltip {
+          background-color: #1D2C2A !important;
+          border: 1px solid #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+      `}</style>
+
+      <div className="depreciation-analytics-card mb-6 bg-teal-50 text-teal-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-teal-100">
         <Armchair className="depreciation-analytics-icon w-5 h-5 flex-shrink-0" />
 
         <span className="depreciation-analytics-text">
@@ -965,9 +1290,9 @@ export const DepreciationCalculator = () => {
       </div>
 
       {/* CHART SECTION */}
-      <div className="mb-8 p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-        <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-amber-500" /> Aggregate Depreciation Curve
+      <div className="depreciation-chart-card mb-8 p-4 bg-white border border-teal-100 rounded-xl shadow-sm">
+        <h4 className="depreciation-chart-title text-sm font-bold text-teal-800 mb-4 flex items-center gap-2">
+          <TrendingUp className="depreciation-chart-icon w-4 h-4 text-teal-600" /> Aggregate Depreciation Curve
         </h4>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -979,16 +1304,16 @@ export const DepreciationCalculator = () => {
                 formatter={(val: number) => [`${currencySymbol} ${val.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 'Book Value']}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
               />
-              <Line type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, fill: '#f59e0b' }} activeDot={{ r: 6 }} />
+              <Line type="monotone" dataKey="value" stroke="#0d9488" strokeWidth={3} dot={{ r: 4, fill: '#0d9488' }} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* ASSET LIST */}
-      <div className="overflow-hidden border border-slate-200 rounded-lg mb-4">
+      <div className="depreciation-asset-table overflow-hidden border border-teal-100 rounded-lg mb-4">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="depreciation-asset-table-head bg-teal-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Asset</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Purchase Price</th>
@@ -996,13 +1321,13 @@ export const DepreciationCalculator = () => {
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Resale</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="depreciation-asset-table-body divide-y divide-slate-100 bg-white">
             {assets.map(a => (
               <tr key={a.id}>
-                <td className="px-4 py-3 text-sm text-slate-700 font-medium">{a.name}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.purchasePrice.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-slate-500 text-center">{a.lifespanYears} yrs</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.resaleValue.toLocaleString()}</td>
+                <td className="depreciation-main-text px-4 py-3 text-sm text-slate-700 font-medium">{a.name}</td>
+                <td className="depreciation-muted-text px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.purchasePrice.toLocaleString()}</td>
+                <td className="depreciation-muted-text px-4 py-3 text-sm text-slate-500 text-center">{a.lifespanYears} yrs</td>
+                <td className="depreciation-muted-text px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.resaleValue.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -1010,34 +1335,34 @@ export const DepreciationCalculator = () => {
       </div>
 
       {/* SCHEDULE TOGGLE */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+      <div className="depreciation-schedule border border-teal-100 rounded-xl overflow-hidden bg-white">
         <button
           onClick={() => setIsScheduleOpen(!isScheduleOpen)}
-          className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors"
+          className="depreciation-schedule-toggle w-full flex items-center justify-between p-4 bg-teal-50 hover:bg-teal-100 transition-colors"
         >
-          <span className="text-sm font-bold text-slate-700 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-slate-400" /> View Annual Schedule
+          <span className="depreciation-schedule-title text-sm font-bold text-teal-800 flex items-center gap-2">
+            <Calendar className="depreciation-accent w-4 h-4 text-teal-600" /> View Annual Schedule
           </span>
-          {isScheduleOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+          {isScheduleOpen ? <ChevronUp className="depreciation-muted-text w-4 h-4 text-teal-600" /> : <ChevronDown className="depreciation-muted-text w-4 h-4 text-teal-600" />}
         </button>
         {isScheduleOpen && (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+              <thead className="depreciation-schedule-head bg-teal-50">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">Year</th>
                   <th className="px-4 py-2 text-right text-xs font-bold text-slate-500 uppercase">Opening Value</th>
-                  <th className="px-4 py-2 text-right text-xs font-bold text-amber-600 uppercase">Expense</th>
+                  <th className="depreciation-expense px-4 py-2 text-right text-xs font-bold text-teal-600 uppercase">Expense</th>
                   <th className="px-4 py-2 text-right text-xs font-bold text-slate-500 uppercase">Closing Value</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="depreciation-schedule-body divide-y divide-slate-100 bg-white">
                 {scheduleData.map((row) => (
-                  <tr key={row.year} className="odd:bg-white even:bg-slate-50">
-                    <td className="px-4 py-2 text-xs font-bold text-slate-800">Year {row.year}</td>
-                    <td className="px-4 py-2 text-xs text-slate-600 text-right">{currencySymbol} {row.opening.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="px-4 py-2 text-xs font-bold text-amber-600 text-right">- {currencySymbol} {row.expense.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="px-4 py-2 text-xs font-bold text-slate-800 text-right">{currencySymbol} {row.closing.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                  <tr key={row.year} className="depreciation-schedule-row odd:bg-white even:bg-teal-50/50">
+                    <td className="depreciation-main-text px-4 py-2 text-xs font-bold text-slate-800">Year {row.year}</td>
+                    <td className="depreciation-muted-text px-4 py-2 text-xs text-slate-600 text-right">{currencySymbol} {row.opening.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="depreciation-expense px-4 py-2 text-xs font-bold text-teal-600 text-right">- {currencySymbol} {row.expense.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="depreciation-main-text px-4 py-2 text-xs font-bold text-slate-800 text-right">{currencySymbol} {row.closing.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1104,7 +1429,71 @@ export const ConsumablesCalculator = () => {
       visualData={visualData}
       tooltipData={{ title: "Variable Costs", content: "These costs scale with patient volume." }}
       theme="clinical"
+      pageClassName="consumables-page"
     >
+      <style>{`
+        /* Consumables & Materials: Light theme */
+        :root[data-theme="light"] .consumables-page .calculator-card-content > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .consumables-page .space-y-2 > div {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .consumables-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Consumables & Materials: Dark theme */
+        :root[data-theme="dark"] .consumables-page .calculator-card-panel,
+        :root[data-theme="dark"] .consumables-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-header-title,
+        :root[data-theme="dark"] .consumables-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content > .bg-gray-50,
+        :root[data-theme="dark"] .consumables-page .space-y-2 > div,
+        :root[data-theme="dark"] .consumables-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .space-y-2 > div > span:first-child {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .consumables-page .space-y-2 > div span.font-bold {
+          color: #8FC9C2 !important;
+        }
+      `}</style>
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
         <div className="flex gap-4">
           <div className="flex-1">
@@ -1141,6 +1530,63 @@ export const SterilizationCalculator = () => {
   const visualData = [{ name: 'Pouch', value: pouchCost, color: '#0f766e' }, { name: 'Chemicals', value: chemicalCost, color: '#14b8a6' }, { name: 'PPE', value: ppeCost, color: '#2dd4bf' }];
   return (
     <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical" pageClassName="sterilization-page">
+      <style>{`
+        /* Sterilization Costs: Light theme */
+        :root[data-theme="light"] .sterilization-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .sterilization-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .sterilization-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Sterilization Costs: Dark theme */
+        :root[data-theme="dark"] .sterilization-page .calculator-card-panel,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-header-title,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .sterilization-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .sterilization-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Autoclave Pouch Cost" value={pouchCost} onChange={(v) => updateSection('sterilization', { pouchCost: v })} type="currency" />
       <StyledInput label="Chemical Indicator Cost" value={chemicalCost} onChange={(v) => updateSection('sterilization', { chemicalCost: v })} type="currency" />
       <StyledInput label="PPE Cost (Gloves/Masks)" value={ppeCost} onChange={(v) => updateSection('sterilization', { ppeCost: v })} type="currency" />
@@ -1160,6 +1606,64 @@ export const LabCalculator = () => {
   const visualData = [{ name: 'Base Fee', value: labFee, color: '#0d9488' }, { name: 'Shipping', value: shippingCost, color: '#14b8a6' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#22c55e' }];
   return (
     <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical" pageClassName="lab-outsourcing-page">
+
+      <style>{`
+        /* Lab & Outsourcing: Light theme */
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Lab & Outsourcing: Dark theme */
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-panel,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-header-title,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .lab-outsourcing-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Lab Fee" value={labFee} onChange={(v) => updateSection('lab', { labFee: v })} type="currency" />
       <StyledInput label="Shipping" value={shippingCost} onChange={(v) => updateSection('lab', { shippingCost: v })} type="currency" />
       <div className="pt-2"><StyledInput label="Desired Markup %" value={markupPercent} onChange={(v) => updateSection('lab', { markupPercent: v })} type="percent" /></div>
@@ -1174,9 +1678,67 @@ export const MarketingCalculator = () => {
   const { adSpend, agencyFees, productionCosts, newPatients } = state.marketing;
   const totalSpend = adSpend + agencyFees + productionCosts;
   const cac = newPatients > 0 ? totalSpend / newPatients : 0;
-  const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#be123c' }, { name: 'Agency Fee', value: agencyFees, color: '#e11d48' }];
+  const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#0f766e' }, { name: 'Agency Fee', value: agencyFees, color: '#14b8a6' }];
   return (
-    <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="growth" pageClassName="marketing-page">
+    <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="clinical" pageClassName="marketing-page">
+
+      <style>{`
+        /* Marketing & Acquisition: Light theme */
+        :root[data-theme="light"] .marketing-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .marketing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .marketing-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Marketing & Acquisition: Dark theme */
+        :root[data-theme="dark"] .marketing-page .calculator-card-panel,
+        :root[data-theme="dark"] .marketing-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-header-title,
+        :root[data-theme="dark"] .marketing-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .marketing-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .marketing-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .marketing-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Monthly Ad Spend" value={adSpend} onChange={(v) => updateSection('marketing', { adSpend: v })} type="currency" />
       <StyledInput label="Agency Fees" value={agencyFees} onChange={(v) => updateSection('marketing', { agencyFees: v })} type="currency" />
       <StyledInput label="Production Costs" value={productionCosts} onChange={(v) => updateSection('marketing', { productionCosts: v })} type="currency" />
@@ -1192,9 +1754,67 @@ export const RegulatoryCalculator = () => {
   const { annualApc, annualXray, annualInsurance, monthlyWaste } = state.regulatory;
   const monthlyAmortized = (annualApc + annualXray + annualInsurance) / 12;
   const totalMonthly = monthlyAmortized + monthlyWaste;
-  const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#e11d48' }, { name: 'Insurance', value: annualInsurance / 12, color: '#f43f5e' }];
+  const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#0f766e' }, { name: 'Insurance', value: annualInsurance / 12, color: '#14b8a6' }];
   return (
-    <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="growth" pageClassName="regulatory-page">
+    <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="clinical" pageClassName="regulatory-page">
+
+      <style>{`
+        /* Regulatory & Insurance: Light theme */
+        :root[data-theme="light"] .regulatory-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .regulatory-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .regulatory-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Regulatory & Insurance: Dark theme */
+        :root[data-theme="dark"] .regulatory-page .calculator-card-panel,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-header-title,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .regulatory-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .regulatory-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Annual APC Fee" value={annualApc} onChange={(v) => updateSection('regulatory', { annualApc: v })} type="currency" />
       <StyledInput label="Annual X-Ray License" value={annualXray} onChange={(v) => updateSection('regulatory', { annualXray: v })} type="currency" />
       <StyledInput label="Annual Indemnity Insurance" value={annualInsurance} onChange={(v) => updateSection('regulatory', { annualInsurance: v })} type="currency" />
@@ -1211,9 +1831,67 @@ export const FinancialCalculator = () => {
   const transFeeAmount = estMonthlyRevenue * (transactionFeesPercent / 100);
   const taxEstimate = estMonthlyRevenue * (taxRate / 100);
   const totalFinancial = monthlyInterest + monthlyBankCharges + transFeeAmount + taxEstimate;
-  const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#334155' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#475569' }];
+  const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#0f766e' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#14b8a6' }];
   return (
-    <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="foundation" pageClassName="financial-tax-page">
+    <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="clinical" pageClassName="financial-tax-page">
+
+      <style>{`
+        /* Financial & Tax: Light theme */
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .financial-tax-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .financial-tax-page .calculator-card-content .border-t {
+          border-color: #ccfbf1 !important;
+        }
+
+        /* Financial & Tax: Dark theme */
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-panel,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-header-title,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .financial-tax-page .calculator-card-content .border-t {
+          border-color: #2A4440 !important;
+        }
+      `}</style>
       <StyledInput label="Monthly Loan Interest" value={monthlyInterest} onChange={(v) => updateSection('financial', { monthlyInterest: v })} type="currency" />
       <StyledInput label="Bank Charges / Software" value={monthlyBankCharges} onChange={(v) => updateSection('financial', { monthlyBankCharges: v })} type="currency" />
       <div className="grid grid-cols-2 gap-4"><StyledInput label="Est. Monthly Revenue" value={estMonthlyRevenue} onChange={(v) => updateSection('financial', { estMonthlyRevenue: v })} type="currency" /><StyledInput label="Trans. Fee %" value={transactionFeesPercent} onChange={(v) => updateSection('financial', { transactionFeesPercent: v })} type="percent" /></div>
@@ -1237,8 +1915,8 @@ export const OwnerCalculator = () => {
   const annualTotal = requiredProfit * 12;
 
   const visualData = [
-    { name: 'Net Income', value: desiredNetIncome, color: '#22c55e' },
-    { name: 'Risk Buffer', value: riskBufferAmount, color: '#f59e0b' } // Orange for risk
+    { name: 'Net Income', value: desiredNetIncome, color: '#0f766e' },
+    { name: 'Risk Buffer', value: riskBufferAmount, color: '#14b8a6' } // Orange for risk
   ];
 
   return (
@@ -1248,10 +1926,104 @@ export const OwnerCalculator = () => {
       resultValue={`${currencySymbol} ${requiredProfit.toFixed(2)}`}
       section="owner"
       visualData={visualData}
-      theme="foundation"
+      theme="clinical"
       pageClassName="owner-comp-page"
       tooltipData={{ title: "Risk Buffer", content: `To safely take home ${currencySymbol} ${desiredNetIncome.toLocaleString()}, your clinic needs to generate an extra ${currencySymbol} ${riskBufferAmount.toLocaleString()} to cover unexpected downturns or taxes.` }}
     >
+
+      <style>{`
+        /* Owner Compensation: Light theme */
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content label {
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content input {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content input:focus {
+          border-color: #0d9488 !important;
+          box-shadow: 0 0 0 1px #0d9488 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="light"] .owner-comp-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table {
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table > div,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table thead,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-table tbody tr:last-child {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-row {
+          background-color: #f0fdfa !important;
+        }
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-label,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-value,
+        :root[data-theme="light"] .owner-comp-page .owner-comp-risk-percent {
+          color: #0f766e !important;
+        }
+
+        /* Owner Compensation: Dark theme */
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-panel,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-header-title,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content label {
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content input::placeholder {
+          color: #6F9691 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content .bg-white,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-content .bg-gray-50,
+        :root[data-theme="dark"] .owner-comp-page .calculator-card-panel > .bg-gray-50 {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table > div,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table thead,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table tbody,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table tbody tr,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table tbody tr:last-child {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table h4,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table th,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-table td {
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-row {
+          background-color: #1D2C2A !important;
+        }
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-label,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-value,
+        :root[data-theme="dark"] .owner-comp-page .owner-comp-risk-percent {
+          color: #8FC9C2 !important;
+        }
+      `}</style>
       <StyledInput
         label="Target Monthly Net Income"
         value={desiredNetIncome}
