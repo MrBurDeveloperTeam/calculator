@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useProfileImage } from "../hooks/useProfileImage";
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, LifeBuoy, LogOut, Mail, Phone, Settings as SettingsIcon, Tv, User as UserIcon, Wallet } from 'lucide-react';
+import { ChevronRight, LogOut, Mail, Phone, User as UserIcon } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Profile } from '../types';
 import { useGetUserId } from '../lib/useAppLink';
@@ -169,14 +169,64 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
             transition={{ duration: 0.15 }}
             className="absolute right-0 mt-3 w-80 bg-[var(--app-surface)] border border-[var(--app-border)] rounded-3xl shadow-2xl overflow-hidden z-50"
           >
+            <style>{`
+              /* Profile Info: Light theme */
+              :root[data-theme="light"] .profile-menu-info {
+                background-color: #F0FDFA !important;
+                border-color: #CCFBF1 !important;
+              }
+              :root[data-theme="light"] .profile-menu-info-label {
+                color: #64748B !important;
+              }
+              :root[data-theme="light"] .profile-menu-avatar {
+                background-color: #0D9488 !important;
+                color: #FFFFFF !important;
+              }
+              :root[data-theme="light"] .profile-menu-name {
+                color: #0F172A !important;
+              }
+              :root[data-theme="light"] .profile-menu-badge {
+                background-color: #CCFBF1 !important;
+                border-color: #CCFBF1 !important;
+                color: #0F766E !important;
+              }
+              :root[data-theme="light"] .profile-menu-contact {
+                color: #334155 !important;
+              }
+
+              /* Profile Info: Dark theme */
+              :root[data-theme="dark"] .profile-menu-info {
+                background-color: #1D2C2A !important;
+                border-color: #2A4440 !important;
+              }
+              :root[data-theme="dark"] .profile-menu-info-label {
+                color: #94A3B8 !important;
+              }
+              :root[data-theme="dark"] .profile-menu-avatar {
+                background-color: #7AB5AE !important;
+                color: #FFFFFF !important;
+              }
+              :root[data-theme="dark"] .profile-menu-name {
+                color: #FFFFFF !important;
+              }
+              :root[data-theme="dark"] .profile-menu-badge {
+                background-color: #233B37 !important;
+                border-color: #3A5B56 !important;
+                color: #7AB5AE !important;
+              }
+              :root[data-theme="dark"] .profile-menu-contact {
+                color: #D8F0ED !important;
+              }
+            `}</style>
+
             {/* Profile Info */}
-            <div className="p-6 border-b border-[var(--app-border)] bg-[var(--app-surface-soft)]">
-              <p className="text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-[0.2em] mb-4">
+            <div className="profile-menu-info p-6 border-b border-[var(--app-border)] bg-[var(--app-surface-soft)]">
+              <p className="profile-menu-info-label text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-[0.2em] mb-4">
                 Profile Info
               </p>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-full bg-[var(--snabbb-primary)] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
+                <div className="profile-menu-avatar w-11 h-11 rounded-full bg-[var(--snabbb-primary)] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
                   {avatarSrc ? (
                     <img src={avatarSrc} alt={displayName} className="w-full h-full object-cover" />
                   ) : (
@@ -184,9 +234,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-base font-bold text-[var(--app-text)] truncate leading-tight">{displayName}</p>
+                  <p className="profile-menu-name text-base font-bold text-[var(--app-text)] truncate leading-tight">{displayName}</p>
                   {badgeLabel && (
-                    <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--app-surface-muted)] text-[var(--snabbb-primary)] text-[9px] font-black uppercase tracking-wider border border-[var(--app-border)]">
+                    <div className="profile-menu-badge mt-1.5 inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--app-surface-muted)] text-[var(--snabbb-primary)] text-[9px] font-black uppercase tracking-wider border border-[var(--app-border)]">
                       {badgeLabel}
                     </div>
                   )}
@@ -194,13 +244,13 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-[var(--app-text-soft)]">
+                <div className="profile-menu-contact flex items-center gap-2 text-[var(--app-text-soft)]">
                   <Mail className="w-3 h-3 shrink-0" />
                   <p className="text-xs font-semibold truncate">{user?.email}</p>
                 </div>
 
                 {profile?.phone && (
-                  <div className="flex items-center gap-2 text-[var(--app-text-soft)]">
+                  <div className="profile-menu-contact flex items-center gap-2 text-[var(--app-text-soft)]">
                     <Phone className="w-3 h-3 shrink-0" />
                     <p className="text-xs font-semibold truncate">{profile.phone}</p>
                   </div>
@@ -227,9 +277,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                         }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <Wallet className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Snabbb Credit</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">
@@ -262,9 +309,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                         }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <Tv className="w-3.5 h-3.5 text-[var(--snabbb-accent)]" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">My Channel</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Manage your channel</p>
@@ -284,9 +328,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
                 >
-                  <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                    <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[var(--app-text)] leading-tight">
                       {profile?.account_type === 'admin' ? 'Admin Dashboard' : 'User Dashboard'}
@@ -318,9 +359,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
               >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <SettingsIcon className="w-3.5 h-3.5 text-[var(--app-text-soft)]" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Settings</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Account & preferences</p>
