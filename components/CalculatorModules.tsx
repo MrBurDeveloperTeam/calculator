@@ -1193,7 +1193,7 @@ export const DepreciationCalculator = () => {
   const visualData = sortedAssets.slice(0, 5).map((a, i) => ({
     name: a.name,
     value: a.purchasePrice,
-    color: ['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a'][i] || '#fef3c7'
+    color: ['#0f766e', '#0d9488', '#14b8a6', '#5eead4'][i] || '#99f6e4'
   }));
 
   return (
@@ -1204,11 +1204,84 @@ export const DepreciationCalculator = () => {
       section="depreciation"
       visualData={visualData}
       tooltipData={{ title: "Hidden Costs", content: `Your equipment loses ${currencySymbol} ${totalMonthlyDepreciation.toFixed(0)} in value every month. Spread over your clinical hours, this adds to your hourly base cost.` }}
-      theme="external"
+      theme="clinical"
       readOnly={true}
       pageClassName="depreciation-page"
     >
-      <div className="depreciation-analytics-card mb-6 bg-amber-50 text-amber-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-amber-100">
+      <style>{`
+        /* Depreciation Analytics: Light theme */
+        :root[data-theme="light"] .depreciation-page .depreciation-analytics-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+          color: #0f766e !important;
+        }
+        :root[data-theme="light"] .depreciation-page .depreciation-analytics-icon,
+        :root[data-theme="light"] .depreciation-page .depreciation-chart-icon,
+        :root[data-theme="light"] .depreciation-page .depreciation-accent { color: #0d9488 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-chart-card,
+        :root[data-theme="light"] .depreciation-page .depreciation-asset-table,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule { border-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-chart-title,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-title { color: #115e59 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-asset-table-head,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-head,
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-toggle { background-color: #f0fdfa !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-schedule-toggle:hover { background-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .depreciation-page .depreciation-expense { color: #0d9488 !important; }
+
+        /* Depreciation Analytics: Dark theme */
+        :root[data-theme="dark"] .depreciation-page .calculator-card-panel,
+        :root[data-theme="dark"] .depreciation-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .depreciation-page .calculator-card-header-subtitle { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-analytics-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .depreciation-analytics-icon,
+        :root[data-theme="dark"] .depreciation-page .depreciation-chart-icon,
+        :root[data-theme="dark"] .depreciation-page .depreciation-accent { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-chart-card,
+        :root[data-theme="dark"] .depreciation-page .depreciation-asset-table,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .depreciation-chart-title,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-title,
+        :root[data-theme="dark"] .depreciation-page .depreciation-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-asset-table-head,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-head,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-toggle { background-color: #182321 !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-asset-table-body,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-body { background-color: #171F1E !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-toggle:hover,
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-row:nth-child(even) { background-color: #1D2C2A !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-schedule-row:nth-child(odd) { background-color: #171F1E !important; }
+        :root[data-theme="dark"] .depreciation-page .depreciation-expense { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .depreciation-page .recharts-cartesian-grid line { stroke: #2A4440 !important; }
+        :root[data-theme="dark"] .depreciation-page .recharts-cartesian-axis-tick-value { fill: #7AB5AE !important; }
+        :root[data-theme="dark"] .depreciation-page .recharts-default-tooltip {
+          background-color: #1D2C2A !important;
+          border: 1px solid #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+      `}</style>
+
+      <div className="depreciation-analytics-card mb-6 bg-teal-50 text-teal-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-teal-100">
         <Armchair className="depreciation-analytics-icon w-5 h-5 flex-shrink-0" />
 
         <span className="depreciation-analytics-text">
@@ -1217,9 +1290,9 @@ export const DepreciationCalculator = () => {
       </div>
 
       {/* CHART SECTION */}
-      <div className="mb-8 p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-        <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-amber-500" /> Aggregate Depreciation Curve
+      <div className="depreciation-chart-card mb-8 p-4 bg-white border border-teal-100 rounded-xl shadow-sm">
+        <h4 className="depreciation-chart-title text-sm font-bold text-teal-800 mb-4 flex items-center gap-2">
+          <TrendingUp className="depreciation-chart-icon w-4 h-4 text-teal-600" /> Aggregate Depreciation Curve
         </h4>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -1231,16 +1304,16 @@ export const DepreciationCalculator = () => {
                 formatter={(val: number) => [`${currencySymbol} ${val.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 'Book Value']}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
               />
-              <Line type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, fill: '#f59e0b' }} activeDot={{ r: 6 }} />
+              <Line type="monotone" dataKey="value" stroke="#0d9488" strokeWidth={3} dot={{ r: 4, fill: '#0d9488' }} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* ASSET LIST */}
-      <div className="overflow-hidden border border-slate-200 rounded-lg mb-4">
+      <div className="depreciation-asset-table overflow-hidden border border-teal-100 rounded-lg mb-4">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="depreciation-asset-table-head bg-teal-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Asset</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Purchase Price</th>
@@ -1248,13 +1321,13 @@ export const DepreciationCalculator = () => {
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Resale</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="depreciation-asset-table-body divide-y divide-slate-100 bg-white">
             {assets.map(a => (
               <tr key={a.id}>
-                <td className="px-4 py-3 text-sm text-slate-700 font-medium">{a.name}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.purchasePrice.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-slate-500 text-center">{a.lifespanYears} yrs</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.resaleValue.toLocaleString()}</td>
+                <td className="depreciation-main-text px-4 py-3 text-sm text-slate-700 font-medium">{a.name}</td>
+                <td className="depreciation-muted-text px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.purchasePrice.toLocaleString()}</td>
+                <td className="depreciation-muted-text px-4 py-3 text-sm text-slate-500 text-center">{a.lifespanYears} yrs</td>
+                <td className="depreciation-muted-text px-4 py-3 text-sm text-slate-600 text-right">{currencySymbol} {a.resaleValue.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -1262,34 +1335,34 @@ export const DepreciationCalculator = () => {
       </div>
 
       {/* SCHEDULE TOGGLE */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+      <div className="depreciation-schedule border border-teal-100 rounded-xl overflow-hidden bg-white">
         <button
           onClick={() => setIsScheduleOpen(!isScheduleOpen)}
-          className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors"
+          className="depreciation-schedule-toggle w-full flex items-center justify-between p-4 bg-teal-50 hover:bg-teal-100 transition-colors"
         >
-          <span className="text-sm font-bold text-slate-700 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-slate-400" /> View Annual Schedule
+          <span className="depreciation-schedule-title text-sm font-bold text-teal-800 flex items-center gap-2">
+            <Calendar className="depreciation-accent w-4 h-4 text-teal-600" /> View Annual Schedule
           </span>
-          {isScheduleOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+          {isScheduleOpen ? <ChevronUp className="depreciation-muted-text w-4 h-4 text-teal-600" /> : <ChevronDown className="depreciation-muted-text w-4 h-4 text-teal-600" />}
         </button>
         {isScheduleOpen && (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+              <thead className="depreciation-schedule-head bg-teal-50">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">Year</th>
                   <th className="px-4 py-2 text-right text-xs font-bold text-slate-500 uppercase">Opening Value</th>
-                  <th className="px-4 py-2 text-right text-xs font-bold text-amber-600 uppercase">Expense</th>
+                  <th className="depreciation-expense px-4 py-2 text-right text-xs font-bold text-teal-600 uppercase">Expense</th>
                   <th className="px-4 py-2 text-right text-xs font-bold text-slate-500 uppercase">Closing Value</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="depreciation-schedule-body divide-y divide-slate-100 bg-white">
                 {scheduleData.map((row) => (
-                  <tr key={row.year} className="odd:bg-white even:bg-slate-50">
-                    <td className="px-4 py-2 text-xs font-bold text-slate-800">Year {row.year}</td>
-                    <td className="px-4 py-2 text-xs text-slate-600 text-right">{currencySymbol} {row.opening.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="px-4 py-2 text-xs font-bold text-amber-600 text-right">- {currencySymbol} {row.expense.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="px-4 py-2 text-xs font-bold text-slate-800 text-right">{currencySymbol} {row.closing.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                  <tr key={row.year} className="depreciation-schedule-row odd:bg-white even:bg-teal-50/50">
+                    <td className="depreciation-main-text px-4 py-2 text-xs font-bold text-slate-800">Year {row.year}</td>
+                    <td className="depreciation-muted-text px-4 py-2 text-xs text-slate-600 text-right">{currencySymbol} {row.opening.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="depreciation-expense px-4 py-2 text-xs font-bold text-teal-600 text-right">- {currencySymbol} {row.expense.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="depreciation-main-text px-4 py-2 text-xs font-bold text-slate-800 text-right">{currencySymbol} {row.closing.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                   </tr>
                 ))}
               </tbody>
