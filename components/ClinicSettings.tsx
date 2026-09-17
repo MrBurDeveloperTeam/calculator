@@ -23,7 +23,7 @@ const ListItem: React.FC<{
     onRemove,
     children
 }) => (
-        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-blue-300 transition-colors mb-3">
+        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-teal-300 transition-colors mb-3">
             <div className="flex-grow grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 {children}
             </div>
@@ -318,25 +318,19 @@ const ClinicSettings: React.FC = () => {
                 </div>
 
                 {/* Capacity Engine Result Bar */}
-                <div className="capacity-card bg-teal-50 rounded-xl border border-teal-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
+                <div className="capacity-card bg-teal-50 dark:bg-teal-950/40 rounded-xl border border-teal-100 dark:border-teal-800 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="bg-teal-600 p-3 rounded-lg text-white shadow-sm">
+                        <div className="bg-teal-600 dark:bg-teal-500 p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
-
                         <div>
-                            <p className="capacity-card-title text-teal-900 font-bold text-base">
-                                Calculated Monthly Capacity
-                            </p>
-
+                            <p className="capacity-card-title text-teal-900 dark:text-teal-200 font-bold text-base">Calculated Monthly Capacity</p>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <p className="capacity-card-description text-teal-600 text-xs">
-                                    Used for hourly rate calculations.
-                                </p>
+                                <p className="capacity-card-description text-teal-600 dark:text-teal-300 text-xs">Used for hourly rate calculations.</p>
 
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
-                                    <button className="flex items-center gap-1 text-[10px] font-bold text-teal-600 bg-teal-100/50 px-2 py-0.5 rounded-md hover:bg-teal-100 transition-colors border border-teal-200 cursor-help">
+                                    <button className="flex items-center gap-1 text-[10px] font-bold text-teal-600 dark:text-teal-300 bg-teal-100/50 dark:bg-teal-900/40 px-2 py-0.5 rounded-md hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors border border-teal-200 dark:border-teal-700 cursor-help">
                                         <Info className="w-3 h-3" /> Why 4.33 wks?
                                     </button>
 
@@ -346,32 +340,24 @@ const ClinicSettings: React.FC = () => {
                                             <div className="bg-slate-700 p-1.5 rounded-lg text-teal-300">
                                                 <Info className="w-4 h-4" />
                                             </div>
-
                                             <div>
-                                                <p className="font-bold text-white text-sm">
-                                                    Standard Accounting Year
-                                                </p>
-                                                <p className="font-mono text-teal-300 mt-0.5">
-                                                    52 weeks ÷ 12 months = 4.3333
-                                                </p>
+                                                <p className="font-bold text-white text-sm">Standard Accounting Year</p>
+                                                <p className="font-mono text-teal-300 mt-0.5">52 weeks ÷ 12 months = 4.3333</p>
                                             </div>
                                         </div>
-
                                         <p className="leading-relaxed opacity-90 border-t border-slate-700 pt-2 mt-2">
                                             We use this multiplier to account for months with 30/31 days. Using just "4 weeks" (28 days) would underestimate your yearly capacity by almost a full month of revenue.
                                         </p>
-
                                         <div className="absolute left-6 bottom-[-6px] w-3 h-3 bg-slate-800 rotate-45"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div className="text-right">
-                        <p className="capacity-card-value text-3xl font-bold text-teal-800">
+                        <p className="capacity-card-value text-3xl font-bold text-teal-800 dark:text-teal-300">
                             ≈ {monthlyCapacityHours.toFixed(1)}{' '}
-                            <span className="capacity-card-unit text-sm font-medium text-teal-600">
+                            <span className="capacity-card-unit text-sm font-medium text-teal-600 dark:text-teal-400">
                                 hrs/mo
                             </span>
                         </p>
@@ -381,7 +367,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
                     <button
                         onClick={handleSaveParams}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-500 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Parameters</span>
