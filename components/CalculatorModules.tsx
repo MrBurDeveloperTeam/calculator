@@ -956,9 +956,9 @@ export const StaffCalculator = () => {
   const totalBonus = members.reduce((sum, m) => sum + m.bonus, 0);
 
   const visualData = [
-    { name: 'Base Salaries', value: totalSalaries, color: '#4338ca' },
-    { name: 'Benefits (EPF)', value: totalBenefits, color: '#4f46e5' },
-    { name: 'Bonuses', value: totalBonus, color: '#6366f1' }
+    { name: 'Base Salaries', value: totalSalaries, color: '#0f766e' },
+    { name: 'Benefits (EPF)', value: totalBenefits, color: '#0d9488' },
+    { name: 'Bonuses', value: totalBonus, color: '#14b8a6' }
   ];
 
   // Process data for the Bar Chart & Table (Efficiency)
@@ -994,11 +994,82 @@ export const StaffCalculator = () => {
       section="staff"
       visualData={visualData}
       tooltipData={{ title: "Labor Efficiency", content: `Total payroll is ${currencySymbol} ${totalMonthlyCost.toLocaleString()}/mo. With ${clinicTotalHours.toFixed(0)} clinical hours, you spend ${currencySymbol} ${clinicHourlyCost.toFixed(2)} on staff for every open hour.` }}
-      theme="external"
+      theme="clinical"
       readOnly={true}
       pageClassName="staff-cost-page"
     >
-      <div className="staff-analytics-card mb-6 bg-indigo-50 text-indigo-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-indigo-100">
+      <style>{`
+        /* Staff Cost Analytics: Light theme */
+        :root[data-theme="light"] .staff-cost-page .staff-analytics-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+          color: #0f766e !important;
+        }
+        :root[data-theme="light"] .staff-cost-page .staff-analytics-icon,
+        :root[data-theme="light"] .staff-cost-page .staff-chart-icon,
+        :root[data-theme="light"] .staff-cost-page .staff-table-title-icon { color: #0d9488 !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-chart-card,
+        :root[data-theme="light"] .staff-cost-page .staff-table { border-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-chart-title,
+        :root[data-theme="light"] .staff-cost-page .staff-table-title { color: #115e59 !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-table-head { background-color: #f0fdfa !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-true-hourly { color: #0f766e !important; }
+        :root[data-theme="light"] .staff-cost-page .staff-table-row:hover { background-color: #f0fdfa !important; }
+        :root[data-theme="light"] .staff-cost-page .recharts-bar-rectangle path { fill: #0d9488 !important; }
+
+        /* Staff Cost Analytics: Dark theme */
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-panel,
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .staff-cost-page .calculator-card-header-subtitle { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-analytics-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-analytics-icon,
+        :root[data-theme="dark"] .staff-cost-page .staff-chart-icon,
+        :root[data-theme="dark"] .staff-cost-page .staff-table-title-icon { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-chart-card {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-chart-title,
+        :root[data-theme="dark"] .staff-cost-page .staff-table-title,
+        :root[data-theme="dark"] .staff-cost-page .staff-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-secondary-text { color: #5F8F89 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-true-hourly { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-table {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-table-head { background-color: #182321 !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-table-body { background-color: #171F1E !important; }
+        :root[data-theme="dark"] .staff-cost-page .staff-table-row:hover { background-color: #1D2C2A !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-cartesian-grid line { stroke: #2A4440 !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-cartesian-axis-tick-value { fill: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-tooltip-cursor { fill: #233B37 !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-bar-rectangle path { fill: #7AB5AE !important; }
+        :root[data-theme="dark"] .staff-cost-page .recharts-default-tooltip {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+      `}</style>
+
+      <div className="staff-analytics-card mb-6 bg-teal-50 text-teal-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-teal-100">
         <Users className="staff-analytics-icon w-5 h-5 flex-shrink-0" />
 
         <span className="staff-analytics-text">
@@ -1008,9 +1079,9 @@ export const StaffCalculator = () => {
       </div>
 
       {/* BAR CHART: True Hourly Rate Comparison */}
-      <div className="mb-8 p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-        <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-indigo-500" /> True Hourly Cost Comparison
+      <div className="staff-chart-card mb-8 p-4 bg-white border border-teal-100 rounded-xl shadow-sm">
+        <h4 className="staff-chart-title text-sm font-bold text-teal-800 mb-4 flex items-center gap-2">
+          <TrendingUp className="staff-chart-icon w-4 h-4 text-teal-600" /> True Hourly Cost Comparison
         </h4>
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -1022,40 +1093,40 @@ export const StaffCalculator = () => {
                 cursor={{ fill: '#f1f5f9' }}
                 formatter={(val: number) => [`${currencySymbol} ${val.toFixed(2)}/hr`, 'True Cost']}
               />
-              <Bar dataKey="trueHourlyRate" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={20} />
+              <Bar dataKey="trueHourlyRate" fill="#0d9488" radius={[0, 4, 4, 0]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <h4 className="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
-        <Table2 className="w-4 h-4 text-slate-500" /> Staff Efficiency Table
+      <h4 className="staff-table-title font-bold text-teal-900 text-sm mb-3 flex items-center gap-2">
+        <Table2 className="staff-table-title-icon w-4 h-4 text-teal-600" /> Staff Efficiency Table
       </h4>
-      <div className="overflow-hidden border border-slate-200 rounded-lg">
+      <div className="staff-table overflow-hidden border border-teal-100 rounded-lg">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="staff-table-head bg-teal-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Staff Member</th>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Schedule</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Monthly Pay</th>
-              <th className="px-4 py-3 text-right text-xs font-bold text-indigo-600 uppercase">True Hourly</th>
+              <th className="staff-true-hourly px-4 py-3 text-right text-xs font-bold text-teal-700 uppercase">True Hourly</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Clinic Burden</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="staff-table-body divide-y divide-slate-100 bg-white">
             {staffEfficiencyData.map(m => (
-              <tr key={m.id} className="hover:bg-slate-50">
+              <tr key={m.id} className="staff-table-row hover:bg-teal-50">
                 <td className="px-4 py-3 text-sm">
-                  <span className="font-medium text-slate-900 block">{m.name}</span>
-                  <span className="text-xs text-slate-500">{m.role}</span>
+                  <span className="staff-main-text font-medium text-slate-900 block">{m.name}</span>
+                  <span className="staff-muted-text text-xs text-slate-500">{m.role}</span>
                 </td>
-                <td className="px-4 py-3 text-xs text-slate-500 font-mono">
+                <td className="staff-muted-text px-4 py-3 text-xs text-slate-500 font-mono">
                   {m.schedule}
-                  <div className="text-[10px] text-slate-400">({m.personalMonthlyHours.toFixed(0)} hrs)</div>
+                  <div className="staff-secondary-text text-[10px] text-slate-400">({m.personalMonthlyHours.toFixed(0)} hrs)</div>
                 </td>
-                <td className="px-4 py-3 text-sm text-slate-800 text-right font-medium">{currencySymbol} {m.totalPay.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm font-bold text-indigo-600 text-right">{currencySymbol} {m.trueHourlyRate.toFixed(2)}</td>
-                <td className="px-4 py-3 text-xs font-medium text-slate-400 text-right">{currencySymbol} {m.clinicBurden.toFixed(2)}/hr</td>
+                <td className="staff-main-text px-4 py-3 text-sm text-slate-800 text-right font-medium">{currencySymbol} {m.totalPay.toLocaleString()}</td>
+                <td className="staff-true-hourly px-4 py-3 text-sm font-bold text-teal-700 text-right">{currencySymbol} {m.trueHourlyRate.toFixed(2)}</td>
+                <td className="staff-secondary-text px-4 py-3 text-xs font-medium text-slate-400 text-right">{currencySymbol} {m.clinicBurden.toFixed(2)}/hr</td>
               </tr>
             ))}
           </tbody>
