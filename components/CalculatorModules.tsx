@@ -873,11 +873,17 @@ export const OverheadCalculator = () => {
         }
         :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-calculation-result { color: #8FC9C2 !important; }
         :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-card {
-          background-color: #1D2C2A !important;
-          border-color: #2A4440 !important;
-          color: #8FC9C2 !important;
+          background-color: #233B37 !important;
+          border-color: #3A5B56 !important;
+          color: #D8F0ED !important;
         }
-        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-icon { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-icon {
+          color: #5EEAD4 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-text strong {
+          color: #8FC9C2 !important;
+          font-weight: 800 !important;
+        }
         :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table {
           border-color: #2A4440 !important;
           background-color: #171F1E !important;
