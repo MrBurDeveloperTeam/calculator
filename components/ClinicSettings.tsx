@@ -390,7 +390,7 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 2: Fixed Overhead */}
-            <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="text-blue-600">
+            <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="text-teal-600">
                 <div className="space-y-2">
                     {localOverheadItems.map((item) => (
                         <ListItem key={item.id} onRemove={() => removeOverhead(item.id)}>
@@ -418,15 +418,15 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addOverhead}
-                        className="w-full py-4 border-2 border-dashed border-blue-200 rounded-xl text-blue-600 font-bold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Overhead Item
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-blue-50">
+                <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveOverhead}
-                        className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Overhead</span>
