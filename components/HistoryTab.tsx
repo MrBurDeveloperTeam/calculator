@@ -32,17 +32,38 @@ const HistoryTab: React.FC = () => {
     if (savedPlans.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh] text-center animate-in fade-in">
+
+                <style>{`
+                html[data-theme="dark"] .history-create-forecast-button {
+                    background-color: #1D2C2A !important;
+                    color: #7AB5AE !important;
+                    border: 1px solid #2A4440 !important;
+                    box-shadow: none !important;
+                }
+
+                html[data-theme="dark"] .history-create-forecast-button:hover {
+                    background-color: #233B37 !important;
+                    color: #8FC9C2 !important;
+                    border-color: #3A5B56 !important;
+                }
+            `}</style>
+
                 <div className="bg-slate-100 p-6 rounded-full mb-4">
                     <Calendar className="w-12 h-12 text-slate-400" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">No Saved Plans Yet</h3>
+
+                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                    No Saved Plans Yet
+                </h3>
+
                 <p className="text-slate-500 max-w-md mx-auto mb-6">
                     Create forecasts in the Dashboard using the "Forecast Profit" or "ROI Check" tools, then save them here to track your goals.
                 </p>
+
                 <div className="flex gap-4">
                     <button
                         onClick={() => openModal('FORECAST')}
-                        className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg"
+                        className="history-create-forecast-button px-6 py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors shadow-lg"
                     >
                         Create New Forecast
                     </button>
