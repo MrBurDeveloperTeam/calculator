@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useProfileImage } from "../hooks/useProfileImage";
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, LifeBuoy, LogOut, Mail, Phone, Settings as SettingsIcon, Tv, User as UserIcon, Wallet } from 'lucide-react';
+import { ChevronRight, LogOut, Mail, Phone, User as UserIcon } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Profile } from '../types';
 import { useGetUserId } from '../lib/useAppLink';
@@ -227,9 +227,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                         }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <Wallet className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Snabbb Credit</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">
@@ -262,9 +259,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                         }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <Tv className="w-3.5 h-3.5 text-[var(--snabbb-accent)]" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">My Channel</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Manage your channel</p>
@@ -284,9 +278,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
                 >
-                  <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                    <LifeBuoy className="w-3.5 h-3.5 text-[var(--snabbb-primary)]" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[var(--app-text)] leading-tight">
                       {profile?.account_type === 'admin' ? 'Admin Dashboard' : 'User Dashboard'}
@@ -318,9 +309,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
               >
-                <div className="w-7 h-7 rounded-xl bg-[var(--app-surface-muted)] flex items-center justify-center shrink-0">
-                  <SettingsIcon className="w-3.5 h-3.5 text-[var(--app-text-soft)]" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Settings</p>
                   <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">Account & preferences</p>
