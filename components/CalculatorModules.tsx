@@ -72,10 +72,10 @@ const SharpInput = ({
 
   return (
     <div className="group relative mb-4">
-      {label && <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>}
-      <div className="relative flex items-center border border-gray-300 bg-white hover:border-blue-400 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors rounded-sm overflow-hidden">
+      {label && <label className="profitability-input-label block text-sm font-bold text-gray-700 mb-1">{label}</label>}
+      <div className="profitability-input-shell relative flex items-center border border-gray-300 bg-white hover:border-teal-400 focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 transition-colors rounded-sm overflow-hidden">
         {type === 'currency' && (
-          <div className="pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10">
+          <div className="profitability-currency-prefix pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10">
             <span className="text-gray-500 text-sm font-bold whitespace-nowrap">{currencySymbol}</span>
           </div>
         )}
@@ -93,7 +93,7 @@ const SharpInput = ({
             }
           }}
           className={`
-            block flex-1 w-full min-w-0 border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
+            profitability-input block flex-1 w-full min-w-0 border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
             focus:ring-0 sm:text-sm font-medium
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
         `}
@@ -161,7 +161,7 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
     <div className={`${pageClassName} max-w-6xl mx-auto animate-in fade-in duration-500`}>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Input Panel */}
-        <div className="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-0 flex flex-col overflow-hidden">
+        <div className="calculator-card-panel lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-0 flex flex-col overflow-hidden">
           {/* Themed Header */}
           <div className={`calculator-card-header flex items-center gap-3 px-6 py-4 border-b ${styles.headerBg} ${styles.headerBorder}`}>
             <div className={`calculator-card-header-icon p-2 rounded-lg ${styles.iconContainer} ${styles.iconColor} shadow-sm`}>
@@ -173,7 +173,7 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
             </div>
           </div>
 
-          <div className="p-6 space-y-1 flex-grow">
+          <div className="calculator-card-content p-6 space-y-1 flex-grow">
             {children}
           </div>
 
@@ -362,7 +362,7 @@ export const ProcedureBuilder = () => {
 
   const visualData = [
     { name: 'Fixed Overhead', value: currentFixedAllocated, color: '#94a3b8' },
-    { name: 'Variable Recipe', value: currentTotalVariable, color: '#3b82f6' },
+    { name: 'Variable Recipe', value: currentTotalVariable, color: '#14b8a6' },
     { name: 'Net Profit', value: currentNetProfit > 0 ? currentNetProfit : 0, color: '#22c55e' }
   ];
 
@@ -370,10 +370,10 @@ export const ProcedureBuilder = () => {
     title: "Understanding Profitability",
     content: (
       <span>
-        Based on your clinic's operating costs, every minute in the chair costs <span className="group relative inline-block border-b-2 border-dotted border-blue-400 cursor-help font-bold text-blue-700">
+        Based on your clinic's operating costs, every minute in the chair costs <span className="group relative inline-block border-b-2 border-dotted border-teal-400 cursor-help font-bold text-teal-700">
           RM {globalMinuteRate.toFixed(2)}
           <span className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full right-0 mb-2 w-max max-w-xs z-[9999] p-3 bg-slate-800 text-slate-50 text-xs rounded-lg shadow-xl pointer-events-none text-center">
-            <span className="block font-bold text-blue-300 mb-1">Cost Per Minute Formula</span>
+            <span className="block font-bold text-teal-300 mb-1">Cost Per Minute Formula</span>
             <span className="block mb-2 opacity-90">[ Total Monthly OpEx ] ÷ [ Total Monthly Minutes ]</span>
             <span className="block bg-slate-900/50 rounded p-2 border border-slate-700 font-mono">
               <span className="block border-b border-slate-600 pb-1 mb-1">
@@ -403,10 +403,128 @@ export const ProcedureBuilder = () => {
       visualType="profit"
       projectionData={{ dailyRevenue: inputPrice, dailyCost: currentTotalCost, dailyProfit: currentNetProfit }}
       tooltipData={tooltipData}
-      theme="foundation"
+      theme="clinical"
+      pageClassName="procedure-builder-page"
     >
-      <div className={`p-4 rounded-lg border mb-6 transition-colors ${editingId ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
-        <h4 className={`text-sm font-bold mb-4 flex items-center gap-2 ${editingId ? 'text-amber-800' : 'text-slate-700'}`}>
+      <style>{`
+        /* Profitability Builder: Light theme */
+        :root[data-theme="light"] .procedure-builder-page .profitability-form-card:not(.is-editing) {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-section-title { color: #0f766e !important; }
+        :root[data-theme="light"] .procedure-builder-page .profitability-panel-header {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-hourly-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-hourly-label,
+        :root[data-theme="light"] .procedure-builder-page .profitability-hourly-value { color: #0f766e !important; }
+        :root[data-theme="light"] .procedure-builder-page .profitability-save-button:not(.is-editing) {
+          background-color: #0d9488 !important;
+          color: #ffffff !important;
+        }
+        :root[data-theme="light"] .procedure-builder-page .profitability-save-button:not(.is-editing):hover {
+          background-color: #0f766e !important;
+        }
+
+        /* Profitability Builder: Dark theme */
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-panel,
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card:not(.is-editing),
+        :root[data-theme="dark"] .procedure-builder-page .profitability-consumables-card,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-analysis-card,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-library {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-section-title,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input-label,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-library-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input-shell,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-shell,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-qty-input {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-input {
+          background-color: #1D2C2A !important;
+          color: #D8F0ED !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input::placeholder,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-input::placeholder { color: #6F9691 !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-currency-prefix {
+          background-color: #233B37 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-dropdown,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-body,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-modal {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-option { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-option:hover,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-row:hover { background-color: #233B37 !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-header,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-table-footer,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-panel-header,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-empty-state,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-modal-footer {
+          background-color: #182321 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-metric-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-hourly-card {
+          background-color: #1D2C2A !important;
+          border-color: #3A5B56 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-hourly-label,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-hourly-value,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-accent-text { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-save-button:not(.is-editing) {
+          background-color: #1D2C2A !important;
+          color: #7AB5AE !important;
+          border: 1px solid #2A4440 !important;
+          box-shadow: none !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-save-button:not(.is-editing):hover {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+          border-color: #3A5B56 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-cancel-edit {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #7AB5AE !important;
+        }
+      `}</style>
+
+      <div className={`profitability-form-card ${editingId ? 'is-editing' : ''} p-4 rounded-lg border mb-6 transition-colors ${editingId ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
+        <h4 className={`profitability-section-title text-sm font-bold mb-4 flex items-center gap-2 ${editingId ? 'text-amber-800' : 'text-slate-700'}`}>
           {editingId ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4 text-teal-600" />}
           {editingId ? 'Editing Procedure' : 'Add New Procedure'}
         </h4>
@@ -443,19 +561,19 @@ export const ProcedureBuilder = () => {
         </div>
 
         {/* Row 3: DYNAMIC CONSUMABLES SELECTOR */}
-        <div className="mb-6 bg-white p-4 rounded-sm border border-gray-200 shadow-sm">
-          <h5 className="font-bold text-gray-700 text-sm mb-2 flex items-center gap-2">
+        <div className="profitability-consumables-card mb-6 bg-white p-4 rounded-sm border border-gray-200 shadow-sm">
+          <h5 className="profitability-section-title font-bold text-gray-700 text-sm mb-2 flex items-center gap-2">
             <Package className="w-4 h-4 text-teal-600" /> Procedure Consumables & Lab
           </h5>
 
           {/* Search & Add Dropdown */}
           <div className="relative mb-4" ref={dropdownRef}>
-            <div className="relative flex items-center border border-gray-300 bg-white focus-within:ring-1 focus-within:ring-blue-500 rounded-sm">
+            <div className="profitability-search-shell relative flex items-center border border-gray-300 bg-white focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 rounded-sm">
               <Search className="absolute left-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search Consumables List..."
-                className="w-full pl-10 pr-4 py-2 text-sm focus:outline-none bg-white text-gray-900 placeholder-gray-400 rounded-sm border-0"
+                className="profitability-search-input w-full pl-10 pr-4 py-2 text-sm focus:outline-none bg-white text-gray-900 placeholder-gray-400 rounded-sm border-0"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -466,12 +584,12 @@ export const ProcedureBuilder = () => {
             </div>
 
             {isDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
+              <div className="profitability-search-dropdown absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
                 {filteredConsumables.length > 0 ? (
                   filteredConsumables.map(item => (
                     <button
                       key={item.id}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex justify-between items-center group text-gray-900"
+                      className="profitability-search-option w-full text-left px-4 py-2 text-sm hover:bg-teal-50 flex justify-between items-center group text-gray-900"
                       onClick={() => handleAddConsumable(item)}
                     >
                       <span className="font-medium group-hover:text-teal-700">{item.name}</span>
@@ -490,9 +608,9 @@ export const ProcedureBuilder = () => {
 
           {/* Selected Recipe Table */}
           {recipe.length > 0 ? (
-            <div className="overflow-hidden border border-gray-200 rounded-sm mb-2">
+            <div className="profitability-table overflow-hidden border border-gray-200 rounded-sm mb-2">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="profitability-table-header bg-gray-50">
                   <tr>
                     <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Item</th>
                     <th className="px-3 py-2 text-right text-[10px] font-bold text-gray-500 uppercase">Unit Cost</th>
@@ -501,21 +619,21 @@ export const ProcedureBuilder = () => {
                     <th className="px-3 py-2 w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 bg-white">
+                <tbody className="profitability-table-body divide-y divide-gray-100 bg-white">
                   {recipe.map(item => (
                     <tr key={item.id}>
-                      <td className="px-3 py-2 text-xs font-medium text-gray-700">{item.name}</td>
-                      <td className="px-3 py-2 text-xs text-gray-500 text-right">{currencySymbol} {item.cost.toFixed(2)}</td>
+                      <td className="px-3 py-2 text-xs font-medium profitability-main-text text-gray-700">{item.name}</td>
+                      <td className="px-3 py-2 text-xs profitability-muted-text text-gray-500 text-right">{currencySymbol} {item.cost.toFixed(2)}</td>
                       <td className="px-3 py-2 text-center">
                         <input
                           type="number"
                           min="0"
-                          className="w-12 h-6 text-center text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 rounded-sm bg-white text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="profitability-qty-input w-12 h-6 text-center text-xs border border-gray-300 focus:ring-1 focus:ring-teal-500 rounded-sm bg-white text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           value={item.quantity}
                           onChange={(e) => handleUpdateQuantity(item.id, Math.max(0, parseFloat(e.target.value) || 0))}
                         />
                       </td>
-                      <td className="px-3 py-2 text-xs font-bold text-gray-700 text-right">
+                      <td className="px-3 py-2 text-xs profitability-main-text font-bold text-gray-700 text-right">
                         {currencySymbol} {(item.cost * item.quantity).toFixed(2)}
                       </td>
                       <td className="px-3 py-2 text-right">
@@ -529,7 +647,7 @@ export const ProcedureBuilder = () => {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-gray-50">
+                <tfoot className="profitability-table-footer bg-gray-50">
                   <tr>
                     <td colSpan={3} className="px-3 py-2 text-xs font-bold text-gray-600 text-right">Total Consumable Cost:</td>
                     <td className="px-3 py-2 text-xs font-black text-gray-800 text-right">{currencySymbol} {currentTotalVariable.toFixed(2)}</td>
@@ -539,7 +657,7 @@ export const ProcedureBuilder = () => {
               </table>
             </div>
           ) : (
-            <div className="text-center py-6 bg-gray-50 border border-dashed border-gray-200 rounded-sm mb-2">
+            <div className="profitability-empty-state text-center py-6 bg-gray-50 border border-dashed border-gray-200 rounded-sm mb-2">
               <p className="text-xs text-gray-400">No consumables added yet.</p>
             </div>
           )}
@@ -550,9 +668,9 @@ export const ProcedureBuilder = () => {
         </div>
 
         {/* Live Analysis Card */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+        <div className="profitability-analysis-card bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center mb-3">
-            <h5 className="font-bold text-gray-700 text-sm">Projected Financial Performance</h5>
+            <h5 className="profitability-section-title font-bold text-gray-700 text-sm">Projected Financial Performance</h5>
             {currentNetProfit < 0 && (
               <div className="flex items-center gap-1 text-red-600 text-xs font-bold animate-pulse">
                 <AlertTriangle className="w-3 h-3" /> Loss Making Procedure
@@ -562,13 +680,13 @@ export const ProcedureBuilder = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Metric 1: Break Even */}
-            <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+            <div className="profitability-metric-card p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Min Cost to Cover</p>
               <p className="text-lg font-bold text-gray-700 mt-1">{state.clinicSettings.currencySymbol} {currentTotalCost.toFixed(0)}</p>
             </div>
 
             {/* Metric 2: Net Profit */}
-            <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+            <div className="profitability-metric-card p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Net Profit / Case</p>
               <div className={`flex items-center gap-1 mt-1 ${currentNetProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {currentNetProfit >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
@@ -577,7 +695,7 @@ export const ProcedureBuilder = () => {
             </div>
 
             {/* Metric 3: Margin */}
-            <div className="p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+            <div className="profitability-metric-card p-3 bg-white rounded-md border border-gray-100 shadow-sm">
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Margin</p>
               <p className={`text-lg font-bold mt-1 ${currentMargin >= 30 ? 'text-emerald-600' : 'text-amber-600'}`}>
                 {currentMargin.toFixed(1)}%
@@ -585,28 +703,28 @@ export const ProcedureBuilder = () => {
             </div>
 
             {/* Metric 4: Hourly Profit */}
-            <div className="p-3 bg-blue-50 rounded-md border border-blue-100 shadow-sm">
-              <p className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Profit Per Chair Hour</p>
-              <p className="text-lg font-bold text-blue-700 mt-1">{state.clinicSettings.currencySymbol} {currentHourlyProfit.toFixed(0)}</p>
+            <div className="profitability-hourly-card p-3 bg-teal-50 rounded-md border border-teal-100 shadow-sm">
+              <p className="profitability-hourly-label text-[10px] text-teal-600 uppercase font-bold tracking-wider">Profit Per Chair Hour</p>
+              <p className="profitability-hourly-value text-lg font-bold text-teal-700 mt-1">{state.clinicSettings.currencySymbol} {currentHourlyProfit.toFixed(0)}</p>
             </div>
           </div>
         </div>
 
         <div className="flex gap-3">
-          <button onClick={handleSaveProcedure} disabled={inputPrice <= 0 || inputDuration <= 0} className={`flex-1 text-white py-3 rounded-sm font-medium shadow-sm flex justify-center items-center gap-2 transition-all disabled:opacity-50 ${editingId ? 'bg-amber-600' : 'bg-slate-800'}`}>
+          <button onClick={handleSaveProcedure} disabled={inputPrice <= 0 || inputDuration <= 0} className={`profitability-save-button ${editingId ? 'is-editing' : ''} flex-1 text-white py-3 rounded-sm font-medium shadow-sm flex justify-center items-center gap-2 transition-all disabled:opacity-50 ${editingId ? 'bg-amber-600' : 'bg-teal-600 hover:bg-teal-700'}`}>
             {editingId ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />} {editingId ? 'Update Procedure' : 'Save to Library'}
           </button>
-          {editingId && <button onClick={resetForm} className="px-4 py-3 rounded-sm border border-gray-300 bg-white text-gray-600"><X className="w-4 h-4" /></button>}
+          {editingId && <button onClick={resetForm} className="profitability-cancel-edit px-4 py-3 rounded-sm border border-gray-300 bg-white text-gray-600"><X className="w-4 h-4" /></button>}
         </div>
       </div>
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="font-bold text-gray-700 text-sm flex items-center gap-2"><Table2 className="w-4 h-4 text-gray-400" /> Saved Treatments</h3>
+      <div className="profitability-library border border-gray-200 rounded-lg overflow-hidden">
+        <div className="profitability-panel-header bg-teal-50 px-4 py-3 border-b border-teal-100 flex justify-between items-center">
+          <h3 className="profitability-library-title font-bold text-gray-700 text-sm flex items-center gap-2"><Table2 className="w-4 h-4 text-gray-400" /> Saved Treatments</h3>
           <span className="text-xs text-gray-500">Live Recalculation Active</span>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="profitability-table-header bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Procedure</th>
                 <th className="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Break-Even</th>
@@ -615,16 +733,16 @@ export const ProcedureBuilder = () => {
                 <th className="px-4 py-3 w-20"></th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
+            <tbody className="profitability-table-body bg-white divide-y divide-gray-100">
               {savedProcedures.map((item) => {
                 const itemFixedCost = item.duration * globalMinuteRate;
                 const itemBreakEven = item.variableCost + itemFixedCost;
                 const itemProfit = item.price - itemBreakEven;
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => handleEdit(item)}>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 text-right font-medium">{state.clinicSettings.currencySymbol} {itemBreakEven.toFixed(0)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{state.clinicSettings.currencySymbol} {item.price.toFixed(0)}</td>
+                  <tr key={item.id} className="profitability-table-row hover:bg-teal-50 cursor-pointer" onClick={() => handleEdit(item)}>
+                    <td className="px-4 py-3 text-sm font-medium profitability-main-text text-gray-900">{item.name}</td>
+                    <td className="px-4 py-3 text-sm profitability-muted-text text-gray-500 text-right font-medium">{state.clinicSettings.currencySymbol} {itemBreakEven.toFixed(0)}</td>
+                    <td className="px-4 py-3 text-sm profitability-main-text text-gray-900 text-right">{state.clinicSettings.currencySymbol} {item.price.toFixed(0)}</td>
                     <td className={`px-4 py-3 text-sm font-bold text-right ${itemProfit >= 0 ? 'text-teal-600' : 'text-red-500'}`}>{state.clinicSettings.currencySymbol} {itemProfit.toFixed(0)}</td>
                     <td className="px-4 py-3 text-right flex justify-end gap-2">
                       <button
@@ -649,14 +767,14 @@ export const ProcedureBuilder = () => {
       {/* Custom Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+          <div className="profitability-modal bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
             <div className="p-6">
-              <h3 className="text-lg font-bold text-gray-900">Delete Procedure?</h3>
-              <p className="text-sm text-gray-500 mt-2">
+              <h3 className="profitability-main-text text-lg font-bold text-gray-900">Delete Procedure?</h3>
+              <p className="profitability-muted-text text-sm text-gray-500 mt-2">
                 Are you sure you want to remove this saved treatment? This action cannot be undone.
               </p>
             </div>
-            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+            <div className="profitability-modal-footer bg-gray-50 px-6 py-4 flex justify-end gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-gray-300 transition-colors"
