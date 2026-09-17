@@ -43,7 +43,7 @@ const hoursOptions = Array.from({ length: 48 }, (_, i) => (i + 1) * 0.5);
 const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", selectClassName = "h-12" }: any) => (
     <div className={className}>
         {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
-        <div className="clinic-field-shell relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-1">
+        <div className="clinic-field-shell relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-1">
             <select
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
@@ -381,7 +381,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
                     <button
                         onClick={handleSaveParams}
-                        className="flex items-center space-x-2 bg-slate-700 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Parameters</span>
