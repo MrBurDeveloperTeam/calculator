@@ -161,15 +161,15 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
     <div className={`${pageClassName} max-w-6xl mx-auto animate-in fade-in duration-500`}>
       <style>{`
         :root[data-theme="dark"] .calculator-card-panel > .bg-gray-50 > button {
-          background-color: #212B2A !important;
-          border: 1px solid #324340 !important;
-          color: #8BB3AE !important;
+          background-color: #8BB3AE !important;
+          border: 1px solid #8BB3AE !important;
+          color: #FFFFFF !important;
         }
 
         :root[data-theme="dark"] .calculator-card-panel > .bg-gray-50 > button:hover {
-          background-color: #283936 !important;
-          border-color: #4A706E !important;
-          color: #A5D0CB !important;
+          background-color: #A5D0CB !important;
+          border-color: #A5D0CB !important;
+          color: #FFFFFF !important;
         }
       `}</style>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1515,6 +1515,14 @@ export const ConsumablesCalculator = () => {
         }
         :root[data-theme="dark"] .consumables-page .space-y-2 > div span.font-bold {
           color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content > .bg-gray-50 button {
+          background-color: #8BB3AE !important;
+          color: #FFFFFF !important;
+        }
+        :root[data-theme="dark"] .consumables-page .calculator-card-content > .bg-gray-50 button:hover {
+          background-color: #A5D0CB !important;
+          color: #FFFFFF !important;
         }
       `}</style>
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
