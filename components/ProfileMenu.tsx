@@ -172,23 +172,23 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
             <style>{`
               /* Profile Info: Light theme */
               :root[data-theme="light"] .profile-menu-info {
-                background-color: #F3F6FB !important;
-                border-color: #DCE3EC !important;
+                background-color: #F0FDFA !important;
+                border-color: #CCFBF1 !important;
               }
               :root[data-theme="light"] .profile-menu-info-label {
                 color: #64748B !important;
               }
               :root[data-theme="light"] .profile-menu-avatar {
-                background-color: #3F5FA8 !important;
+                background-color: #0D9488 !important;
                 color: #FFFFFF !important;
               }
               :root[data-theme="light"] .profile-menu-name {
                 color: #0F172A !important;
               }
               :root[data-theme="light"] .profile-menu-badge {
-                background-color: #E7ECF5 !important;
-                border-color: #E7ECF5 !important;
-                color: #2F5597 !important;
+                background-color: #CCFBF1 !important;
+                border-color: #CCFBF1 !important;
+                color: #0F766E !important;
               }
               :root[data-theme="light"] .profile-menu-contact {
                 color: #334155 !important;
@@ -196,26 +196,26 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
 
               /* Profile Info: Dark theme */
               :root[data-theme="dark"] .profile-menu-info {
-                background-color: #222833 !important;
-                border-color: #343C4A !important;
+                background-color: #1D2C2A !important;
+                border-color: #2A4440 !important;
               }
               :root[data-theme="dark"] .profile-menu-info-label {
                 color: #94A3B8 !important;
               }
               :root[data-theme="dark"] .profile-menu-avatar {
-                background-color: #7EA6F5 !important;
+                background-color: #7AB5AE !important;
                 color: #FFFFFF !important;
               }
               :root[data-theme="dark"] .profile-menu-name {
                 color: #FFFFFF !important;
               }
               :root[data-theme="dark"] .profile-menu-badge {
-                background-color: #2D3544 !important;
-                border-color: #384254 !important;
-                color: #7EA6F5 !important;
+                background-color: #233B37 !important;
+                border-color: #3A5B56 !important;
+                color: #7AB5AE !important;
               }
               :root[data-theme="dark"] .profile-menu-contact {
-                color: #E7EDF7 !important;
+                color: #D8F0ED !important;
               }
             `}</style>
 
