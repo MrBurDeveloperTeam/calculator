@@ -124,6 +124,83 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
 
     return (
         <div className="dashboard-page w-full min-w-0 space-y-8 overflow-x-hidden animate-in fade-in duration-500 relative">
+            <style>{`
+                /* Dashboard teal theme balance: Light mode */
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-time-note {
+                    background-color: #F0FDFA !important;
+                    border-color: #CCFBF1 !important;
+                    color: #115E59 !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-time-note-secondary {
+                    color: #0F766E !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-financial-planning {
+                    background: linear-gradient(to right, #F0FDFA, #ECFDF5) !important;
+                    border-color: #CCFBF1 !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-financial-planning-icon {
+                    color: #0D9488 !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-financial-planning-title {
+                    color: #115E59 !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-financial-planning-description {
+                    color: #0F766E !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-financial-planning-button {
+                    background-color: #0D9488 !important;
+                    color: #FFFFFF !important;
+                    box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.18), 0 4px 6px -4px rgba(13, 148, 136, 0.18) !important;
+                }
+
+                html:not([data-theme="dark"]) .dashboard-page .dashboard-financial-planning-button:hover {
+                    background-color: #0F766E !important;
+                }
+
+                /* Dashboard teal theme balance: Dark mode */
+                html[data-theme="dark"] .dashboard-page .dashboard-time-note {
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
+                    color: #D8F0ED !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-time-note-secondary {
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-financial-planning {
+                    background: linear-gradient(to right, #1D2C2A, #20312E) !important;
+                    border-color: #2A4440 !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-financial-planning-icon {
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-financial-planning-title {
+                    color: #D8F0ED !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-financial-planning-description {
+                    color: #8FC9C2 !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-financial-planning-button {
+                    background-color: #7AB5AE !important;
+                    color: #FFFFFF !important;
+                    box-shadow: none !important;
+                }
+
+                html[data-theme="dark"] .dashboard-page .dashboard-financial-planning-button:hover {
+                    background-color: #88C2BB !important;
+                }
+            `}</style>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Clinic Pulse Dashboard</h1>
@@ -176,7 +253,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                         </p>
 
                         {/* Time Sensitivity Note */}
-                        <div className="dashboard-time-note block w-full max-w-md mx-auto break-words bg-indigo-50 border border-indigo-100 rounded-lg px-3 sm:px-4 py-2 text-center text-xs text-indigo-800">
+                        <div className="dashboard-time-note block w-full max-w-md mx-auto break-words bg-teal-50 border border-teal-100 rounded-lg px-3 sm:px-4 py-2 text-center text-xs text-teal-800">
                             <p className="dashboard-time-note-primary font-medium">
                                 Time Engine Active: Based on{' '}
                                 {state.clinicSettings.workingDaysPerWeek} days/week ×{' '}
@@ -228,12 +305,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
             </div>
 
             {/* Note & Action Card */}
-            <div className="w-full min-w-0 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 sm:p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+            <div className="dashboard-financial-planning w-full min-w-0 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 rounded-xl p-4 sm:p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
                 <div className="flex min-w-0 gap-4 items-start">
-                    <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                    <AlertCircle className="dashboard-financial-planning-icon w-6 h-6 text-teal-600 flex-shrink-0 mt-1" />
                     <div>
-                        <h4 className="font-semibold text-blue-800">Financial Planning & Scenarios</h4>
-                        <p className="text-blue-600 text-sm mt-1 max-w-xl">
+                        <h4 className="dashboard-financial-planning-title font-semibold text-teal-800">Financial Planning & Scenarios</h4>
+                        <p className="dashboard-financial-planning-description text-teal-700 text-sm mt-1 max-w-xl">
                             This dashboard summarizes your <strong>Fixed OpEx</strong>.
                             Variable costs (Consumables, Lab Fees) are incurred per-patient.
                             Use the Scenario Planner tools to simulate profit and capacity.
@@ -250,7 +327,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                     </button> */}
                     <button
                         onClick={() => openModal('FORECAST')}
-                        className="w-full sm:w-auto flex-shrink-0 justify-center text-center whitespace-normal bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-6 py-3 rounded-xl shadow-lg shadow-indigo-200 font-bold flex items-center gap-2 transition-all"
+                        className="dashboard-financial-planning-button w-full sm:w-auto flex-shrink-0 justify-center text-center whitespace-normal bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-3 rounded-xl shadow-lg shadow-teal-200 font-bold flex items-center gap-2 transition-all"
                     >
                         <Wand2 className="w-5 h-5" />
                         {/* Forecast Profit Targets */}
