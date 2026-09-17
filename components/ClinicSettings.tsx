@@ -23,7 +23,7 @@ const ListItem: React.FC<{
     onRemove,
     children
 }) => (
-        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-teal-300 transition-colors mb-3">
+        <div className="clinic-list-item flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-teal-300 transition-colors mb-3">
             <div className="flex-grow grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 {children}
             </div>
@@ -346,6 +346,67 @@ const ClinicSettings: React.FC = () => {
                     color: #8FC9C2 !important;
                     border-color: #35564F !important;
                 }
+
+                /* Shared section accents: Fixed Overhead, Staff Roster, Assets */
+                html[data-theme="light"] .clinic-settings-page .clinic-section-accent {
+                    color: #0D9488 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-section-accent {
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-add-button {
+                    background-color: transparent !important;
+                    border-color: #99F6E4 !important;
+                    color: #0D9488 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-add-button:hover {
+                    background-color: #F0FDFA !important;
+                    border-color: #5EEAD4 !important;
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-add-button {
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-add-button:hover {
+                    background-color: #233B37 !important;
+                    border-color: #35564F !important;
+                    color: #8FC9C2 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-list-item:hover,
+                html[data-theme="light"] .clinic-settings-page .clinic-staff-card:hover {
+                    border-color: #5EEAD4 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-list-item:hover,
+                html[data-theme="dark"] .clinic-settings-page .clinic-staff-card:hover {
+                    border-color: #599A8F !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-duplicate-button:hover {
+                    background-color: #F0FDFA !important;
+                    color: #0D9488 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-duplicate-button:hover {
+                    background-color: #1D2C2A !important;
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-section-divider {
+                    border-color: #CCFBF1 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-section-divider {
+                    border-color: #2A4440 !important;
+                }
             `}</style>
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -474,7 +535,7 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 2: Fixed Overhead */}
-            <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="text-teal-600 dark:text-[#7AB5AE]">
+            <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-2">
                     {localOverheadItems.map((item) => (
                         <ListItem key={item.id} onRemove={() => removeOverhead(item.id)}>
@@ -502,12 +563,12 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addOverhead}
-                        className="w-full py-4 border-2 border-dashed border-teal-200 dark:border-[#2A4440] rounded-xl text-teal-600 dark:text-[#599A8F] font-bold hover:bg-teal-50 dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Overhead Item
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
+                <div className="clinic-section-divider flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveOverhead}
                         className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
@@ -519,10 +580,10 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 3: Staff Roster */}
-            <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="text-teal-600 dark:text-[#7AB5AE]">
+            <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-4">
                     {localStaffMembers.map((member) => (
-                        <div key={member.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-teal-300 dark:hover:border-[#599A8F] transition-all">
+                        <div key={member.id} className="clinic-staff-card p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-teal-300 transition-all">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-4 items-start">
 
                                 {/* 1. Identity (Cols 1-3) */}
@@ -614,7 +675,7 @@ const ClinicSettings: React.FC = () => {
                                 <div className="md:col-span-1 flex flex-col justify-center items-center h-full pt-6 gap-2">
                                     <button
                                         onClick={() => duplicateStaff(member.id)}
-                                        className="text-slate-300 hover:text-teal-600 dark:hover:text-[#7AB5AE] p-2 rounded-lg hover:bg-teal-50 dark:hover:bg-[#1D2C2A] transition-colors"
+                                        className="clinic-duplicate-button text-slate-300 hover:text-teal-600 p-2 rounded-lg hover:bg-teal-50 transition-colors"
                                         title="Duplicate Staff"
                                     >
                                         <Copy className="w-5 h-5" />
@@ -633,12 +694,12 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addStaff}
-                        className="w-full py-4 border-2 border-dashed border-teal-200 dark:border-[#2A4440] rounded-xl text-teal-600 dark:text-[#599A8F] font-bold hover:bg-teal-50 dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] transition-colors flex items-center justify-center gap-2 mt-2"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-2"
                     >
                         <Plus className="w-5 h-5" /> Add Staff Member
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
+                <div className="clinic-section-divider flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveStaff}
                         className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
@@ -650,7 +711,7 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 4: Assets */}
-            <CollapsibleSection title="4. Asset & Equipment Register" total={totalAssets} subtitle="For depreciation calculation" colorClass="text-teal-600 dark:text-[#7AB5AE]">
+            <CollapsibleSection title="4. Asset & Equipment Register" total={totalAssets} subtitle="For depreciation calculation" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-2">
                     <div className="hidden md:grid grid-cols-12 gap-3 px-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
                         <div className="col-span-5">Asset Name</div>
@@ -700,12 +761,12 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addAsset}
-                        className="w-full py-4 border-2 border-dashed border-teal-200 dark:border-[#2A4440] rounded-xl text-teal-600 dark:text-[#599A8F] font-bold hover:bg-teal-50 dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Asset
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
+                <div className="clinic-section-divider flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveAssets}
                         className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
