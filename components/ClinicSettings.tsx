@@ -23,7 +23,7 @@ const ListItem: React.FC<{
     onRemove,
     children
 }) => (
-        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-blue-300 transition-colors mb-3">
+        <div className="clinic-list-item flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-teal-300 transition-colors mb-3">
             <div className="flex-grow grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 {children}
             </div>
@@ -43,7 +43,7 @@ const hoursOptions = Array.from({ length: 48 }, (_, i) => (i + 1) * 0.5);
 const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", selectClassName = "h-12" }: any) => (
     <div className={className}>
         {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
-        <div className={`relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-1`}>
+        <div className="clinic-field-shell relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-1">
             <select
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
@@ -248,7 +248,166 @@ const ClinicSettings: React.FC = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
+        <div className="clinic-settings-page max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
+            <style>{`
+                html[data-theme="light"] .clinic-settings-page .capacity-card {
+                    background-color: #F0FDFA !important;
+                    border-color: #CCFBF1 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-icon {
+                    background-color: #0D9488 !important;
+                    color: #ffffff !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-title {
+                    color: #134E4A !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-description {
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-help {
+                    background-color: #CCFBF1 !important;
+                    border-color: #99F6E4 !important;
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-help:hover {
+                    background-color: #99F6E4 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-value {
+                    color: #115E59 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-unit {
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-save-button {
+                    background-color: #0D9488 !important;
+                    color: #ffffff !important;
+                    border-color: #0D9488 !important;
+                    box-shadow: none !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-save-button:hover {
+                    background-color: #0F766E !important;
+                    color: #ffffff !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card {
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-icon {
+                    background-color: #7AB5AE !important;
+                    color: #ffffff !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-title {
+                    color: #D8F0ED !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-description {
+                    color: #8FC9C2 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-help {
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-help:hover {
+                    background-color: #233B37 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-value {
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .capacity-card-unit {
+                    color: #8FC9C2 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-save-button {
+                    background-color: #1D2C2A !important;
+                    color: #7AB5AE !important;
+                    border: 1px solid #2A4440 !important;
+                    box-shadow: none !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-save-button:hover {
+                    background-color: #233B37 !important;
+                    color: #8FC9C2 !important;
+                    border-color: #35564F !important;
+                }
+
+                /* Shared section accents: Fixed Overhead, Staff Roster, Assets */
+                html[data-theme="light"] .clinic-settings-page .clinic-section-accent {
+                    color: #0D9488 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-section-accent {
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-add-button {
+                    background-color: transparent !important;
+                    border-color: #99F6E4 !important;
+                    color: #0D9488 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-add-button:hover {
+                    background-color: #F0FDFA !important;
+                    border-color: #5EEAD4 !important;
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-add-button {
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-add-button:hover {
+                    background-color: #233B37 !important;
+                    border-color: #35564F !important;
+                    color: #8FC9C2 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-list-item:hover,
+                html[data-theme="light"] .clinic-settings-page .clinic-staff-card:hover {
+                    border-color: #5EEAD4 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-list-item:hover,
+                html[data-theme="dark"] .clinic-settings-page .clinic-staff-card:hover {
+                    border-color: #599A8F !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-duplicate-button:hover {
+                    background-color: #F0FDFA !important;
+                    color: #0D9488 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-duplicate-button:hover {
+                    background-color: #1D2C2A !important;
+                    color: #7AB5AE !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-section-divider {
+                    border-color: #CCFBF1 !important;
+                }
+
+                html[data-theme="dark"] .clinic-settings-page .clinic-section-divider {
+                    border-color: #2A4440 !important;
+                }
+            `}</style>
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
@@ -318,31 +477,31 @@ const ClinicSettings: React.FC = () => {
                 </div>
 
                 {/* Capacity Engine Result Bar */}
-                <div className="bg-blue-50 rounded-xl border border-blue-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
+                <div className="capacity-card bg-teal-50 rounded-xl border border-teal-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="bg-blue-600 p-3 rounded-lg text-white shadow-sm">
+                        <div className="capacity-card-icon bg-teal-600 p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-blue-900 font-bold text-base">Calculated Monthly Capacity</p>
+                            <p className="capacity-card-title text-teal-900 font-bold text-base">Calculated Monthly Capacity</p>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <p className="text-blue-600 text-xs">Used for hourly rate calculations.</p>
+                                <p className="capacity-card-description text-teal-600 text-xs">Used for hourly rate calculations.</p>
 
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
-                                    <button className="flex items-center gap-1 text-[10px] font-bold text-teal-600 bg-teal-100/50 px-2 py-0.5 rounded-md hover:bg-teal-100 transition-colors border border-teal-200 cursor-help">
+                                    <button className="capacity-card-help flex items-center gap-1 text-[10px] font-bold text-teal-600 bg-teal-100/50 px-2 py-0.5 rounded-md hover:bg-teal-100 transition-colors border border-teal-200 cursor-help">
                                         <Info className="w-3 h-3" /> Why 4.33 wks?
                                     </button>
 
                                     {/* Tooltip Content */}
                                     <div className="absolute left-0 bottom-full mb-2 w-72 p-4 bg-slate-800 text-slate-100 text-xs rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                                         <div className="flex items-start gap-3 mb-2">
-                                            <div className="bg-slate-700 p-1.5 rounded-lg text-blue-300">
+                                            <div className="bg-slate-700 p-1.5 rounded-lg text-teal-300">
                                                 <Info className="w-4 h-4" />
                                             </div>
                                             <div>
                                                 <p className="font-bold text-white text-sm">Standard Accounting Year</p>
-                                                <p className="font-mono text-blue-300 mt-0.5">52 weeks ÷ 12 months = 4.3333</p>
+                                                <p className="font-mono text-teal-300 mt-0.5">52 weeks ÷ 12 months = 4.3333</p>
                                             </div>
                                         </div>
                                         <p className="leading-relaxed opacity-90 border-t border-slate-700 pt-2 mt-2">
@@ -355,8 +514,11 @@ const ClinicSettings: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="text-3xl font-bold text-blue-800">
-                            ≈ {monthlyCapacityHours.toFixed(1)} <span className="text-sm font-medium text-blue-600">hrs/mo</span>
+                        <p className="capacity-card-value text-3xl font-bold text-teal-800">
+                            ≈ {monthlyCapacityHours.toFixed(1)}{' '}
+                            <span className="capacity-card-unit text-sm font-medium text-teal-600">
+                                hrs/mo
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -364,7 +526,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
                     <button
                         onClick={handleSaveParams}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Parameters</span>
@@ -373,7 +535,7 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 2: Fixed Overhead */}
-            <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="text-blue-600">
+            <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-2">
                     {localOverheadItems.map((item) => (
                         <ListItem key={item.id} onRemove={() => removeOverhead(item.id)}>
@@ -401,15 +563,15 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addOverhead}
-                        className="w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Overhead Item
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-blue-50">
+                <div className="clinic-section-divider flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveOverhead}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Overhead</span>
@@ -418,10 +580,10 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 3: Staff Roster */}
-            <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="text-indigo-600">
+            <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-4">
                     {localStaffMembers.map((member) => (
-                        <div key={member.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-all">
+                        <div key={member.id} className="clinic-staff-card p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-teal-300 transition-all">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-4 items-start">
 
                                 {/* 1. Identity (Cols 1-3) */}
@@ -513,7 +675,7 @@ const ClinicSettings: React.FC = () => {
                                 <div className="md:col-span-1 flex flex-col justify-center items-center h-full pt-6 gap-2">
                                     <button
                                         onClick={() => duplicateStaff(member.id)}
-                                        className="text-slate-300 hover:text-teal-600 p-2 rounded-lg hover:bg-teal-50 transition-colors"
+                                        className="clinic-duplicate-button text-slate-300 hover:text-teal-600 p-2 rounded-lg hover:bg-teal-50 transition-colors"
                                         title="Duplicate Staff"
                                     >
                                         <Copy className="w-5 h-5" />
@@ -532,15 +694,15 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addStaff}
-                        className="w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-2"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-2"
                     >
                         <Plus className="w-5 h-5" /> Add Staff Member
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-indigo-50">
+                <div className="clinic-section-divider flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveStaff}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Staff Roster</span>
@@ -549,7 +711,7 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 4: Assets */}
-            <CollapsibleSection title="4. Asset & Equipment Register" total={totalAssets} subtitle="For depreciation calculation" colorClass="text-gray-600">
+            <CollapsibleSection title="4. Asset & Equipment Register" total={totalAssets} subtitle="For depreciation calculation" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-2">
                     <div className="hidden md:grid grid-cols-12 gap-3 px-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
                         <div className="col-span-5">Asset Name</div>
@@ -599,15 +761,15 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addAsset}
-                        className="w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Asset
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
+                <div className="clinic-section-divider flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveAssets}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Assets</span>
