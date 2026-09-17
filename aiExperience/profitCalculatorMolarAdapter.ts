@@ -1,6 +1,6 @@
 // PHASE 4D (Molar AI extraction): the shared Molar AI presentation +
 // generic chat lifecycle now live in
-// @mrburdeveloperteam/molar-experience/ai's <SharedMolarAI>. This file is
+// @mrburdeveloperteam/pet-function/ai's <SharedMolarAI>. This file is
 // the LOCAL AI orchestration adapter — every piece of Profit Calculator
 // business/data logic that lived inline in the old MolarAIFloat.jsx's
 // handleSendMessage is UNCHANGED in content here, only relocated and
