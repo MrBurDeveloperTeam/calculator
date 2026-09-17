@@ -159,6 +159,19 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
 
   return (
     <div className={`${pageClassName} max-w-6xl mx-auto animate-in fade-in duration-500`}>
+      <style>{`
+        :root[data-theme="dark"] .calculator-card-panel > .bg-gray-50 > button {
+          background-color: #212B2A !important;
+          border: 1px solid #324340 !important;
+          color: #8BB3AE !important;
+        }
+
+        :root[data-theme="dark"] .calculator-card-panel > .bg-gray-50 > button:hover {
+          background-color: #283936 !important;
+          border-color: #4A706E !important;
+          color: #A5D0CB !important;
+        }
+      `}</style>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Input Panel */}
         <div className="calculator-card-panel lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-0 flex flex-col overflow-hidden">
