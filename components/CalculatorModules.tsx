@@ -1048,6 +1048,12 @@ export const StaffCalculator = () => {
           border-color: #2A4440 !important;
           color: #8FC9C2 !important;
         }
+        :root[data-theme="dark"] .staff-cost-page .staff-analytics-text {
+          color: #E6FFFB !important;
+        }
+        :root[data-theme="dark"] .staff-cost-page .staff-analytics-text strong {
+          color: #5EEAD4 !important;
+        }
         :root[data-theme="dark"] .staff-cost-page .staff-analytics-icon,
         :root[data-theme="dark"] .staff-cost-page .staff-chart-icon,
         :root[data-theme="dark"] .staff-cost-page .staff-table-title-icon { color: #8FC9C2 !important; }
@@ -1259,6 +1265,12 @@ export const DepreciationCalculator = () => {
           background-color: #1D2C2A !important;
           border-color: #2A4440 !important;
           color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .depreciation-analytics-text {
+          color: #E6FFFB !important;
+        }
+        :root[data-theme="dark"] .depreciation-page .depreciation-analytics-text strong {
+          color: #5EEAD4 !important;
         }
         :root[data-theme="dark"] .depreciation-page .depreciation-analytics-icon,
         :root[data-theme="dark"] .depreciation-page .depreciation-chart-icon,
