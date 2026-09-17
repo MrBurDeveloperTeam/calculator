@@ -1,5 +1,5 @@
 // PHASE 4C (Virtual Pet migration): thin host wrapper around
-// `@mrburdeveloperteam/molar-experience/pet`'s <SharedVirtualPet>.
+// `@mrburdeveloperteam/pet-function/pet`'s <SharedVirtualPet>.
 //
 // Everything generic (room UI, runtime, persistence sequencing, landscape/
 // fullscreen handling, mini-game embedding shell) now lives in the shared
@@ -13,8 +13,8 @@
 //     already-known authenticated user id (no new auth lookup needed —
 //     App.tsx already resolves this via `useAuth()`).
 import { useEffect, useRef, useState } from 'react';
-import { SharedVirtualPet } from '@mrburdeveloperteam/molar-experience/pet';
-import type { ExtraGame } from '@mrburdeveloperteam/molar-experience/pet';
+import { SharedVirtualPet } from '@mrburdeveloperteam/pet-function/pet';
+import type { ExtraGame } from '@mrburdeveloperteam/pet-function/pet';
 import { supabase } from '../lib/supabase';
 import { calculatorPetRepository } from './calculatorPetRepository';
 import { PET_ASSET_URLS } from '../aiExperience/molarExperienceAssets';

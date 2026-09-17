@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["App.tsx", "index.tsx", "components", "aiExperience", "petExperience", "VirtualPet", "context", "hooks", "lib", "pages", "services", "data", "types.ts", "constants.tsx"],
+  "exclude": ["node_modules", "dist", "supabase/functions", "tmp", ".tmp-snabb-integration"]
+}
