@@ -367,7 +367,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
                     <button
                         onClick={handleSaveParams}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 dark:bg-[#7AB5AE] dark:hover:bg-[#88C2BB] text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Parameters</span>
@@ -412,7 +412,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveOverhead}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 dark:bg-[#7AB5AE] dark:hover:bg-[#88C2BB] text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Overhead</span>
@@ -543,7 +543,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveStaff}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 dark:bg-[#7AB5AE] dark:hover:bg-[#88C2BB] text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Staff Roster</span>
@@ -610,7 +610,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveAssets}
-                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 dark:bg-[#7AB5AE] dark:hover:bg-[#88C2BB] text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Assets</span>
