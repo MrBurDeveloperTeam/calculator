@@ -435,10 +435,10 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 3: Staff Roster */}
-            <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="text-indigo-600">
+            <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="text-teal-600">
                 <div className="space-y-4">
                     {localStaffMembers.map((member) => (
-                        <div key={member.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-all">
+                        <div key={member.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-teal-300 transition-all">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-4 items-start">
 
                                 {/* 1. Identity (Cols 1-3) */}
@@ -530,7 +530,7 @@ const ClinicSettings: React.FC = () => {
                                 <div className="md:col-span-1 flex flex-col justify-center items-center h-full pt-6 gap-2">
                                     <button
                                         onClick={() => duplicateStaff(member.id)}
-                                        className="text-slate-300 hover:text-indigo-500 p-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                                        className="text-slate-300 hover:text-teal-600 p-2 rounded-lg hover:bg-teal-50 transition-colors"
                                         title="Duplicate Staff"
                                     >
                                         <Copy className="w-5 h-5" />
@@ -549,15 +549,15 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addStaff}
-                        className="w-full py-4 border-2 border-dashed border-indigo-200 rounded-xl text-indigo-600 font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 mt-2"
+                        className="w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-2"
                     >
                         <Plus className="w-5 h-5" /> Add Staff Member
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-indigo-50">
+                <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveStaff}
-                        className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Staff Roster</span>
