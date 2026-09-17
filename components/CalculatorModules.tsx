@@ -811,7 +811,7 @@ export const OverheadCalculator = () => {
   const visualData = sortedItems.slice(0, 5).map((item, i) => ({
     name: item.name,
     value: item.monthlyCost,
-    color: ['#4f46e5', '#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'][i] || '#e0e7ff'
+    color: ['#0f766e', '#0d9488', '#14b8a6', '#5eead4', '#99f6e4'][i] || '#ccfbf1'
   }));
 
   const tooltipData = {
@@ -827,17 +827,80 @@ export const OverheadCalculator = () => {
       section="overhead"
       visualData={visualData}
       tooltipData={tooltipData}
-      theme="external"
+      theme="clinical"
       readOnly={true}
       pageClassName="fixed-overhead-page"
     >
-      <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 flex justify-between items-center">
+      <style>{`
+        /* Fixed Overhead Analysis: Light theme */
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-calculation {
+          background-color: #f0fdfa !important;
+          border-color: #ccfbf1 !important;
+          color: #115e59 !important;
+        }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-calculation-result,
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-total-value { color: #0f766e !important; }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-info-card {
+          background-color: #f0fdfa !important;
+          border-color: #99f6e4 !important;
+          color: #0f766e !important;
+        }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-info-icon { color: #0d9488 !important; }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-table { border-color: #ccfbf1 !important; }
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-table-head,
+        :root[data-theme="light"] .fixed-overhead-page .fixed-overhead-table-footer { background-color: #f0fdfa !important; }
+
+        /* Fixed Overhead Analysis: Dark theme */
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-panel,
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-content {
+          background-color: #111817 !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header-icon {
+          background-color: #233B37 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header-title { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .calculator-card-header-subtitle { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-calculation {
+          background-color: #171F1E !important;
+          border-color: #2A4440 !important;
+          color: #7AB5AE !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-calculation-result { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-card {
+          background-color: #1D2C2A !important;
+          border-color: #2A4440 !important;
+          color: #8FC9C2 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-icon { color: #8FC9C2 !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table {
+          border-color: #2A4440 !important;
+          background-color: #171F1E !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table-head,
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table-footer {
+          background-color: #182321 !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table-body {
+          background-color: #171F1E !important;
+        }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-main-text { color: #D8F0ED !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-muted-text { color: #7AB5AE !important; }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-total-value { color: #8FC9C2 !important; }
+      `}</style>
+
+      <div className="fixed-overhead-calculation mb-4 p-3 bg-teal-50 border border-teal-100 rounded-lg text-xs text-teal-800 flex justify-between items-center">
         <span>Calculation Logic:</span>
         <span className="font-mono font-medium">
-          {currencySymbol} {totalExpenses.toLocaleString()} ÷ {operatingHours.toFixed(1)} hrs = <span className="text-indigo-600 font-bold">{currencySymbol} {costPerHour.toFixed(2)}/hr</span>
+          {currencySymbol} {totalExpenses.toLocaleString()} ÷ {operatingHours.toFixed(1)} hrs = <span className="fixed-overhead-calculation-result text-teal-700 font-bold">{currencySymbol} {costPerHour.toFixed(2)}/hr</span>
         </span>
       </div>
-      <div className="fixed-overhead-info-card mb-6 bg-blue-50 text-blue-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-blue-100">
+      <div className="fixed-overhead-info-card mb-6 bg-teal-50 text-teal-800 p-4 rounded-xl text-sm flex items-center gap-2 border border-teal-100">
         <TrendingUp className="fixed-overhead-info-icon w-5 h-5 flex-shrink-0" />
 
         <span className="fixed-overhead-info-text">
@@ -846,27 +909,27 @@ export const OverheadCalculator = () => {
         </span>
       </div>
 
-      <div className="overflow-hidden border border-slate-200 rounded-lg">
+      <div className="fixed-overhead-table overflow-hidden border border-teal-100 rounded-lg">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="fixed-overhead-table-head bg-teal-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Expense Item</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Monthly Cost</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="fixed-overhead-table-body divide-y divide-slate-100 bg-white">
             {items.map(item => (
               <tr key={item.id}>
-                <td className="px-4 py-3 text-sm text-slate-700">{item.name}</td>
-                <td className="px-4 py-3 text-sm font-medium text-slate-900 text-right">{currencySymbol} {item.monthlyCost.toLocaleString()}</td>
+                <td className="fixed-overhead-main-text px-4 py-3 text-sm text-slate-700">{item.name}</td>
+                <td className="fixed-overhead-main-text px-4 py-3 text-sm font-medium text-slate-900 text-right">{currencySymbol} {item.monthlyCost.toLocaleString()}</td>
               </tr>
             ))}
             {items.length === 0 && <tr><td colSpan={2} className="px-4 py-4 text-center text-slate-400">No overhead items defined.</td></tr>}
           </tbody>
-          <tfoot className="bg-slate-50 font-bold">
+          <tfoot className="fixed-overhead-table-footer bg-teal-50 font-bold">
             <tr>
-              <td className="px-4 py-3 text-slate-800">Total Monthly Overhead</td>
-              <td className="px-4 py-3 text-right text-indigo-700">{currencySymbol} {totalExpenses.toLocaleString()}</td>
+              <td className="fixed-overhead-main-text px-4 py-3 text-slate-800">Total Monthly Overhead</td>
+              <td className="fixed-overhead-total-value px-4 py-3 text-right text-teal-700">{currencySymbol} {totalExpenses.toLocaleString()}</td>
             </tr>
           </tfoot>
         </table>
