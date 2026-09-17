@@ -318,46 +318,60 @@ const ClinicSettings: React.FC = () => {
                 </div>
 
                 {/* Capacity Engine Result Bar */}
-                <div className="capacity-card bg-blue-50 rounded-xl border border-blue-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
+                <div className="capacity-card bg-teal-50 rounded-xl border border-teal-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="bg-blue-600 p-3 rounded-lg text-white shadow-sm">
+                        <div className="bg-teal-600 p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
+
                         <div>
-                            <p className="capacity-card-title text-blue-900 font-bold text-base">Calculated Monthly Capacity</p>
+                            <p className="capacity-card-title text-teal-900 font-bold text-base">
+                                Calculated Monthly Capacity
+                            </p>
+
                             <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <p className="capacity-card-description text-blue-600 text-xs">Used for hourly rate calculations.</p>
+                                <p className="capacity-card-description text-teal-600 text-xs">
+                                    Used for hourly rate calculations.
+                                </p>
 
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
-                                    <button className="flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-100/50 px-2 py-0.5 rounded-md hover:bg-blue-100 transition-colors border border-blue-200 cursor-help">
+                                    <button className="flex items-center gap-1 text-[10px] font-bold text-teal-600 bg-teal-100/50 px-2 py-0.5 rounded-md hover:bg-teal-100 transition-colors border border-teal-200 cursor-help">
                                         <Info className="w-3 h-3" /> Why 4.33 wks?
                                     </button>
 
                                     {/* Tooltip Content */}
                                     <div className="absolute left-0 bottom-full mb-2 w-72 p-4 bg-slate-800 text-slate-100 text-xs rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                                         <div className="flex items-start gap-3 mb-2">
-                                            <div className="bg-slate-700 p-1.5 rounded-lg text-blue-300">
+                                            <div className="bg-slate-700 p-1.5 rounded-lg text-teal-300">
                                                 <Info className="w-4 h-4" />
                                             </div>
+
                                             <div>
-                                                <p className="font-bold text-white text-sm">Standard Accounting Year</p>
-                                                <p className="font-mono text-blue-300 mt-0.5">52 weeks ÷ 12 months = 4.3333</p>
+                                                <p className="font-bold text-white text-sm">
+                                                    Standard Accounting Year
+                                                </p>
+                                                <p className="font-mono text-teal-300 mt-0.5">
+                                                    52 weeks ÷ 12 months = 4.3333
+                                                </p>
                                             </div>
                                         </div>
+
                                         <p className="leading-relaxed opacity-90 border-t border-slate-700 pt-2 mt-2">
                                             We use this multiplier to account for months with 30/31 days. Using just "4 weeks" (28 days) would underestimate your yearly capacity by almost a full month of revenue.
                                         </p>
+
                                         <div className="absolute left-6 bottom-[-6px] w-3 h-3 bg-slate-800 rotate-45"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div className="text-right">
-                        <p className="capacity-card-value text-3xl font-bold text-blue-800">
+                        <p className="capacity-card-value text-3xl font-bold text-teal-800">
                             ≈ {monthlyCapacityHours.toFixed(1)}{' '}
-                            <span className="capacity-card-unit text-sm font-medium text-blue-600">
+                            <span className="capacity-card-unit text-sm font-medium text-teal-600">
                                 hrs/mo
                             </span>
                         </p>
