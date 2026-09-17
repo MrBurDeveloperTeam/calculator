@@ -880,8 +880,12 @@ export const OverheadCalculator = () => {
         :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-icon {
           color: #5EEAD4 !important;
         }
+        :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-text {
+          color: #E6FFFB !important;
+          font-weight: 600 !important;
+        }
         :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-info-text strong {
-          color: #8FC9C2 !important;
+          color: #5EEAD4 !important;
           font-weight: 800 !important;
         }
         :root[data-theme="dark"] .fixed-overhead-page .fixed-overhead-table {
