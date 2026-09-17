@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCalculator } from '../context/CalculatorContext';
 import { Calendar, Trash2, ArrowRight, TrendingUp, Calculator, Clock, MousePointer2, AlertTriangle } from 'lucide-react';
 import { SavedPlan } from '../types';
@@ -29,6 +29,51 @@ const HistoryTab: React.FC = () => {
         openModal(plan.type, plan);
     };
 
+    // Keep the Create New Forecast button in sync with the resolved Snabbb theme.
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof document === 'undefined') return false;
+
+        const root = document.documentElement;
+        const resolvedTheme = root.getAttribute('data-theme');
+
+        if (resolvedTheme === 'dark') return true;
+        if (resolvedTheme === 'light') return false;
+
+        return root.classList.contains('dark');
+    });
+
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+
+        const root = document.documentElement;
+
+        const syncResolvedTheme = () => {
+            const resolvedTheme = root.getAttribute('data-theme');
+
+            if (resolvedTheme === 'dark') {
+                setIsDarkMode(true);
+                return;
+            }
+
+            if (resolvedTheme === 'light') {
+                setIsDarkMode(false);
+                return;
+            }
+
+            setIsDarkMode(root.classList.contains('dark'));
+        };
+
+        syncResolvedTheme();
+
+        const observer = new MutationObserver(syncResolvedTheme);
+        observer.observe(root, {
+            attributes: true,
+            attributeFilter: ['data-theme', 'class']
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
     if (savedPlans.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh] text-center animate-in fade-in">
@@ -42,7 +87,11 @@ const HistoryTab: React.FC = () => {
                 <div className="flex gap-4">
                     <button
                         onClick={() => openModal('FORECAST')}
-                        className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg"
+                        className={`history-create-forecast-button px-6 py-3 font-bold rounded-xl transition-colors border ${
+                            isDarkMode
+                                ? 'bg-[#1D2C2A] text-[#7AB5AE] border-[#2A4440] hover:bg-[#233B37] hover:text-[#8FC9C2] hover:border-[#3A5B56] shadow-none'
+                                : 'bg-teal-600 text-white border-teal-600 hover:bg-teal-700 hover:border-teal-700 shadow-lg'
+                        }`}
                     >
                         Create New Forecast
                     </button>
