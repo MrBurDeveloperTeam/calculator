@@ -566,7 +566,7 @@ const ClinicSettings: React.FC = () => {
             </CollapsibleSection>
 
             {/* Section 4: Assets */}
-            <CollapsibleSection title="4. Asset & Equipment Register" total={totalAssets} subtitle="For depreciation calculation" colorClass="text-gray-600">
+            <CollapsibleSection title="4. Asset & Equipment Register" total={totalAssets} subtitle="For depreciation calculation" colorClass="text-teal-600">
                 <div className="space-y-2">
                     <div className="hidden md:grid grid-cols-12 gap-3 px-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
                         <div className="col-span-5">Asset Name</div>
@@ -616,15 +616,15 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addAsset}
-                        className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Asset
                     </button>
                 </div>
-                <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
+                <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveAssets}
-                        className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Assets</span>
