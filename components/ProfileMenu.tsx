@@ -169,14 +169,64 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
             transition={{ duration: 0.15 }}
             className="absolute right-0 mt-3 w-80 bg-[var(--app-surface)] border border-[var(--app-border)] rounded-3xl shadow-2xl overflow-hidden z-50"
           >
+            <style>{`
+              /* Profile Info: Light theme */
+              :root[data-theme="light"] .profile-menu-info {
+                background-color: #F3F6FB !important;
+                border-color: #DCE3EC !important;
+              }
+              :root[data-theme="light"] .profile-menu-info-label {
+                color: #64748B !important;
+              }
+              :root[data-theme="light"] .profile-menu-avatar {
+                background-color: #3F5FA8 !important;
+                color: #FFFFFF !important;
+              }
+              :root[data-theme="light"] .profile-menu-name {
+                color: #0F172A !important;
+              }
+              :root[data-theme="light"] .profile-menu-badge {
+                background-color: #E7ECF5 !important;
+                border-color: #E7ECF5 !important;
+                color: #2F5597 !important;
+              }
+              :root[data-theme="light"] .profile-menu-contact {
+                color: #334155 !important;
+              }
+
+              /* Profile Info: Dark theme */
+              :root[data-theme="dark"] .profile-menu-info {
+                background-color: #222833 !important;
+                border-color: #343C4A !important;
+              }
+              :root[data-theme="dark"] .profile-menu-info-label {
+                color: #94A3B8 !important;
+              }
+              :root[data-theme="dark"] .profile-menu-avatar {
+                background-color: #7EA6F5 !important;
+                color: #FFFFFF !important;
+              }
+              :root[data-theme="dark"] .profile-menu-name {
+                color: #FFFFFF !important;
+              }
+              :root[data-theme="dark"] .profile-menu-badge {
+                background-color: #2D3544 !important;
+                border-color: #384254 !important;
+                color: #7EA6F5 !important;
+              }
+              :root[data-theme="dark"] .profile-menu-contact {
+                color: #E7EDF7 !important;
+              }
+            `}</style>
+
             {/* Profile Info */}
-            <div className="p-6 border-b border-[var(--app-border)] bg-[var(--app-surface-soft)]">
-              <p className="text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-[0.2em] mb-4">
+            <div className="profile-menu-info p-6 border-b border-[var(--app-border)] bg-[var(--app-surface-soft)]">
+              <p className="profile-menu-info-label text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-[0.2em] mb-4">
                 Profile Info
               </p>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-full bg-[var(--snabbb-primary)] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
+                <div className="profile-menu-avatar w-11 h-11 rounded-full bg-[var(--snabbb-primary)] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
                   {avatarSrc ? (
                     <img src={avatarSrc} alt={displayName} className="w-full h-full object-cover" />
                   ) : (
@@ -184,9 +234,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-base font-bold text-[var(--app-text)] truncate leading-tight">{displayName}</p>
+                  <p className="profile-menu-name text-base font-bold text-[var(--app-text)] truncate leading-tight">{displayName}</p>
                   {badgeLabel && (
-                    <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--app-surface-muted)] text-[var(--snabbb-primary)] text-[9px] font-black uppercase tracking-wider border border-[var(--app-border)]">
+                    <div className="profile-menu-badge mt-1.5 inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--app-surface-muted)] text-[var(--snabbb-primary)] text-[9px] font-black uppercase tracking-wider border border-[var(--app-border)]">
                       {badgeLabel}
                     </div>
                   )}
@@ -194,13 +244,13 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-[var(--app-text-soft)]">
+                <div className="profile-menu-contact flex items-center gap-2 text-[var(--app-text-soft)]">
                   <Mail className="w-3 h-3 shrink-0" />
                   <p className="text-xs font-semibold truncate">{user?.email}</p>
                 </div>
 
                 {profile?.phone && (
-                  <div className="flex items-center gap-2 text-[var(--app-text-soft)]">
+                  <div className="profile-menu-contact flex items-center gap-2 text-[var(--app-text-soft)]">
                     <Phone className="w-3 h-3 shrink-0" />
                     <p className="text-xs font-semibold truncate">{profile.phone}</p>
                   </div>
