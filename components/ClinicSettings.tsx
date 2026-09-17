@@ -250,9 +250,57 @@ const ClinicSettings: React.FC = () => {
     return (
         <div className="clinic-settings-page max-w-5xl mx-auto animate-in fade-in duration-500 pb-20">
             <style>{`
+                html[data-theme="light"] .clinic-settings-page .capacity-card {
+                    background-color: #F0FDFA !important;
+                    border-color: #CCFBF1 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-icon {
+                    background-color: #0D9488 !important;
+                    color: #ffffff !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-title {
+                    color: #134E4A !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-description {
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-help {
+                    background-color: #CCFBF1 !important;
+                    border-color: #99F6E4 !important;
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-help:hover {
+                    background-color: #99F6E4 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-value {
+                    color: #115E59 !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .capacity-card-unit {
+                    color: #0F766E !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-save-button {
+                    background-color: #0D9488 !important;
+                    color: #ffffff !important;
+                    border-color: #0D9488 !important;
+                    box-shadow: none !important;
+                }
+
+                html[data-theme="light"] .clinic-settings-page .clinic-save-button:hover {
+                    background-color: #0F766E !important;
+                    color: #ffffff !important;
+                }
+
                 html[data-theme="dark"] .clinic-settings-page .capacity-card {
-                    background-color: #DCEDEA !important;
-                    border-color: #7AB5AE !important;
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-icon {
@@ -261,41 +309,42 @@ const ClinicSettings: React.FC = () => {
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-title {
-                    color: #245E58 !important;
+                    color: #D8F0ED !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-description {
-                    color: #4A8B83 !important;
+                    color: #8FC9C2 !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-help {
-                    background-color: #CDE5E1 !important;
-                    border-color: #7AB5AE !important;
-                    color: #2F7D74 !important;
+                    background-color: #1D2C2A !important;
+                    border-color: #2A4440 !important;
+                    color: #7AB5AE !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-help:hover {
-                    background-color: #C1DDD8 !important;
+                    background-color: #233B37 !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-value {
-                    color: #2F7D74 !important;
+                    color: #7AB5AE !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .capacity-card-unit {
-                    color: #4A8B83 !important;
+                    color: #8FC9C2 !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .clinic-save-button {
-                    background-color: #7AB5AE !important;
-                    color: #ffffff !important;
-                    border-color: #7AB5AE !important;
+                    background-color: #1D2C2A !important;
+                    color: #7AB5AE !important;
+                    border: 1px solid #2A4440 !important;
                     box-shadow: none !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .clinic-save-button:hover {
-                    background-color: #88C2BB !important;
-                    color: #ffffff !important;
+                    background-color: #233B37 !important;
+                    color: #8FC9C2 !important;
+                    border-color: #35564F !important;
                 }
             `}</style>
             {/* Header */}
@@ -367,19 +416,19 @@ const ClinicSettings: React.FC = () => {
                 </div>
 
                 {/* Capacity Engine Result Bar */}
-                <div className="capacity-card bg-teal-50 dark:bg-[#1D2C2A] rounded-xl border border-teal-100 dark:border-[#2A4440] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
+                <div className="capacity-card bg-teal-50 rounded-xl border border-teal-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="capacity-card-icon bg-teal-600 dark:bg-[#7AB5AE] p-3 rounded-lg text-white shadow-sm">
+                        <div className="capacity-card-icon bg-teal-600 p-3 rounded-lg text-white shadow-sm">
                             <Clock className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="capacity-card-title text-teal-900 dark:text-[#D8F0ED] font-bold text-base">Calculated Monthly Capacity</p>
+                            <p className="capacity-card-title text-teal-900 font-bold text-base">Calculated Monthly Capacity</p>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <p className="capacity-card-description text-teal-600 dark:text-[#7AB5AE] text-xs">Used for hourly rate calculations.</p>
+                                <p className="capacity-card-description text-teal-600 text-xs">Used for hourly rate calculations.</p>
 
                                 {/* Educational Tooltip */}
                                 <div className="group relative">
-                                    <button className="capacity-card-help flex items-center gap-1 text-[10px] font-bold text-teal-600 dark:text-[#7AB5AE] bg-teal-100/50 dark:bg-[#1D2C2A] px-2 py-0.5 rounded-md hover:bg-teal-100 dark:hover:bg-[#233B37] transition-colors border border-teal-200 dark:border-[#2A4440] cursor-help">
+                                    <button className="capacity-card-help flex items-center gap-1 text-[10px] font-bold text-teal-600 bg-teal-100/50 px-2 py-0.5 rounded-md hover:bg-teal-100 transition-colors border border-teal-200 cursor-help">
                                         <Info className="w-3 h-3" /> Why 4.33 wks?
                                     </button>
 
@@ -404,9 +453,9 @@ const ClinicSettings: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="capacity-card-value text-3xl font-bold text-teal-800 dark:text-[#7AB5AE]">
+                        <p className="capacity-card-value text-3xl font-bold text-teal-800">
                             ≈ {monthlyCapacityHours.toFixed(1)}{' '}
-                            <span className="capacity-card-unit text-sm font-medium text-teal-600 dark:text-[#8FC9C2]">
+                            <span className="capacity-card-unit text-sm font-medium text-teal-600">
                                 hrs/mo
                             </span>
                         </p>
@@ -416,7 +465,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-6 pt-4 border-t border-slate-100">
                     <button
                         onClick={handleSaveParams}
-                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Parameters</span>
@@ -461,7 +510,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveOverhead}
-                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Overhead</span>
@@ -592,7 +641,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveStaff}
-                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Staff Roster</span>
@@ -659,7 +708,7 @@ const ClinicSettings: React.FC = () => {
                 <div className="flex justify-end mt-4 pt-4 border-t border-teal-50">
                     <button
                         onClick={handleSaveAssets}
-                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white dark:bg-[#1D2C2A] dark:hover:bg-[#233B37] dark:text-[#599A8F] dark:ring-1 dark:ring-inset dark:ring-[#2A4440] px-6 py-2 rounded-lg shadow-md transition-all font-bold"
+                        className="clinic-save-button flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-all font-bold"
                     >
                         <Save className="w-4 h-4" />
                         <span>Save Assets</span>
