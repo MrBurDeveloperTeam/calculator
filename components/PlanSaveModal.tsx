@@ -82,7 +82,7 @@ const PlanSaveModal: React.FC<PlanSaveModalProps> = ({ isOpen, onClose, onConfir
                     if(name.trim()) onConfirm(name);
                 }}
                 disabled={!name.trim()}
-                className="px-6 py-2 text-sm bg-teal-600 text-white font-bold rounded-sm hover:bg-teal-700 disabled:opacity-50 dark:disabled:opacity-100 dark:disabled:bg-[#233B37] dark:disabled:text-[#8FC9C2] disabled:cursor-not-allowed shadow-md shadow-teal-900/10 flex items-center gap-2 transition-all active:scale-[0.98]"
+                className="px-6 py-2 text-sm bg-teal-600 text-white font-bold rounded-sm hover:bg-teal-700 disabled:opacity-50 dark:disabled:opacity-100 dark:disabled:bg-[#8BB3AE] dark:disabled:text-white dark:disabled:border-[#8BB3AE] disabled:cursor-not-allowed shadow-md shadow-teal-900/10 flex items-center gap-2 transition-all active:scale-[0.98]"
             >
                 <Save className="w-4 h-4" />
                 {mode === 'create' ? 'Save Plan' : 'Update Plan'}
