@@ -374,9 +374,9 @@ export const ProcedureBuilder = () => {
   };
 
   const visualData = [
-    { name: 'Fixed Overhead', value: currentFixedAllocated, color: '#94a3b8' },
-    { name: 'Variable Recipe', value: currentTotalVariable, color: '#14b8a6' },
-    { name: 'Net Profit', value: currentNetProfit > 0 ? currentNetProfit : 0, color: '#22c55e' }
+    { name: 'Fixed Overhead', value: currentFixedAllocated, color: '#cbd5e1' },
+    { name: 'Variable Recipe', value: currentTotalVariable, color: '#5eead4' },
+    { name: 'Net Profit', value: currentNetProfit > 0 ? currentNetProfit : 0, color: '#86efac' }
   ];
 
   const tooltipData = {
@@ -459,7 +459,7 @@ export const ProcedureBuilder = () => {
           color: #8FC9C2 !important;
         }
         :root[data-theme="dark"] .procedure-builder-page .calculator-card-header-title { color: #D8F0ED !important; }
-        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card:not(.is-editing),
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card,
         :root[data-theme="dark"] .procedure-builder-page .profitability-consumables-card,
         :root[data-theme="dark"] .procedure-builder-page .profitability-analysis-card,
         :root[data-theme="dark"] .procedure-builder-page .profitability-library {
@@ -533,6 +533,17 @@ export const ProcedureBuilder = () => {
           background-color: #1D2C2A !important;
           border-color: #2A4440 !important;
           color: #7AB5AE !important;
+        }
+
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing {
+          background-color: #18201E !important;
+          border-color: #B7791F !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing > .profitability-section-title {
+          color: #F3C969 !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing .profitability-input-label {
+          color: #F3C969 !important;
         }
       `}</style>
 
@@ -979,9 +990,9 @@ export const StaffCalculator = () => {
   const totalBonus = members.reduce((sum, m) => sum + m.bonus, 0);
 
   const visualData = [
-    { name: 'Base Salaries', value: totalSalaries, color: '#0f766e' },
-    { name: 'Benefits (EPF)', value: totalBenefits, color: '#0d9488' },
-    { name: 'Bonuses', value: totalBonus, color: '#14b8a6' }
+    { name: 'Base Salaries', value: totalSalaries, color: '#5F8F89' },
+    { name: 'Benefits (EPF)', value: totalBenefits, color: '#5EEAD4' },
+    { name: 'Bonuses', value: totalBonus, color: '#A7F3D0' }
   ];
 
   // Process data for the Bar Chart & Table (Efficiency)
@@ -1222,7 +1233,7 @@ export const DepreciationCalculator = () => {
   const visualData = sortedAssets.slice(0, 5).map((a, i) => ({
     name: a.name,
     value: a.purchasePrice,
-    color: ['#0f766e', '#0d9488', '#14b8a6', '#5eead4'][i] || '#99f6e4'
+    color: ['#5F8F89', '#5EEAD4', '#A7F3D0', '#CBD5E1'][i] || '#99F6E4'
   }));
 
   return (
@@ -1436,8 +1447,8 @@ export const ConsumablesCalculator = () => {
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
   const sortedItems = [...items].sort((a, b) => b.cost - a.cost);
   const getConsumableChartColor = (index: number, itemCount: number) => {
-    const darkest = [19, 78, 74];
-    const lightest = [153, 246, 228];
+    const darkest = [15, 118, 110];
+    const lightest = [204, 251, 241];
     const ratio = itemCount > 1 ? index / (itemCount - 1) : 0.5;
     const channels = darkest.map((channel, channelIndex) =>
       Math.round(channel + (lightest[channelIndex] - channel) * ratio)
@@ -1570,7 +1581,7 @@ export const SterilizationCalculator = () => {
   const { pouchCost, chemicalCost, ppeCost, electricityCost, instrumentsPerCycle } = state.sterilization;
   const totalCycleCost = pouchCost + chemicalCost + ppeCost + electricityCost;
   const costPerPack = instrumentsPerCycle > 0 ? totalCycleCost / instrumentsPerCycle : 0;
-  const visualData = [{ name: 'Pouch', value: pouchCost, color: '#0f766e' }, { name: 'Chemicals', value: chemicalCost, color: '#14b8a6' }, { name: 'PPE', value: ppeCost, color: '#2dd4bf' }];
+  const visualData = [{ name: 'Pouch', value: pouchCost, color: '#5F8F89' }, { name: 'Chemicals', value: chemicalCost, color: '#5EEAD4' }, { name: 'PPE', value: ppeCost, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical" pageClassName="sterilization-page">
       <style>{`
@@ -1646,7 +1657,7 @@ export const LabCalculator = () => {
   const { labFee, shippingCost, markupPercent } = state.lab;
   const baseCost = labFee + shippingCost;
   const finalPrice = baseCost * (1 + (markupPercent / 100));
-  const visualData = [{ name: 'Base Fee', value: labFee, color: '#0d9488' }, { name: 'Shipping', value: shippingCost, color: '#14b8a6' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#22c55e' }];
+  const visualData = [{ name: 'Base Fee', value: labFee, color: '#5F8F89' }, { name: 'Shipping', value: shippingCost, color: '#5EEAD4' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#86EFAC' }];
   return (
     <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical" pageClassName="lab-outsourcing-page">
 
@@ -1721,7 +1732,7 @@ export const MarketingCalculator = () => {
   const { adSpend, agencyFees, productionCosts, newPatients } = state.marketing;
   const totalSpend = adSpend + agencyFees + productionCosts;
   const cac = newPatients > 0 ? totalSpend / newPatients : 0;
-  const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#0f766e' }, { name: 'Agency Fee', value: agencyFees, color: '#14b8a6' }];
+  const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#5F8F89' }, { name: 'Agency Fee', value: agencyFees, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="clinical" pageClassName="marketing-page">
 
@@ -1797,7 +1808,7 @@ export const RegulatoryCalculator = () => {
   const { annualApc, annualXray, annualInsurance, monthlyWaste } = state.regulatory;
   const monthlyAmortized = (annualApc + annualXray + annualInsurance) / 12;
   const totalMonthly = monthlyAmortized + monthlyWaste;
-  const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#0f766e' }, { name: 'Insurance', value: annualInsurance / 12, color: '#14b8a6' }];
+  const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#5F8F89' }, { name: 'Insurance', value: annualInsurance / 12, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="clinical" pageClassName="regulatory-page">
 
@@ -1874,7 +1885,7 @@ export const FinancialCalculator = () => {
   const transFeeAmount = estMonthlyRevenue * (transactionFeesPercent / 100);
   const taxEstimate = estMonthlyRevenue * (taxRate / 100);
   const totalFinancial = monthlyInterest + monthlyBankCharges + transFeeAmount + taxEstimate;
-  const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#0f766e' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#14b8a6' }];
+  const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#5F8F89' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="clinical" pageClassName="financial-tax-page">
 
@@ -1958,8 +1969,8 @@ export const OwnerCalculator = () => {
   const annualTotal = requiredProfit * 12;
 
   const visualData = [
-    { name: 'Net Income', value: desiredNetIncome, color: '#0f766e' },
-    { name: 'Risk Buffer', value: riskBufferAmount, color: '#14b8a6' } // Orange for risk
+    { name: 'Net Income', value: desiredNetIncome, color: '#5F8F89' },
+    { name: 'Risk Buffer', value: riskBufferAmount, color: '#A7F3D0' } // orange for risk buffer
   ];
 
   return (
