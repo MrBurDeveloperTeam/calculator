@@ -433,7 +433,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
             <div className="bg-white border-b border-gray-200 p-5 flex items-start gap-3 shrink-0">
                {/* Title area */}
                <div className="flex min-w-0 flex-1 items-start gap-3 pr-3">
-                  <div className="shrink-0 bg-teal-600 p-2 rounded-md text-white shadow-sm">
+                  <div className="shrink-0 bg-[#8BB3AE] p-2 rounded-md text-white shadow-sm">
                      <Wand2 className="w-5 h-5" />
                   </div>
 
@@ -583,7 +583,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                      <button
                         onClick={() => generateSmartPlan(false)}
                         disabled={targetProfit <= 0}
-                        className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                        className="w-full py-4 bg-[#8BB3AE] hover:bg-[#A5D0CB] text-white font-bold rounded-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                      >
                         <Wand2 className="w-5 h-5" />
                         <span>Auto-Generate Plan</span>
