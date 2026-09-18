@@ -33,7 +33,7 @@ const PlanSaveModal: React.FC<PlanSaveModalProps> = ({ isOpen, onClose, onConfir
         {/* Header */}
         <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-white">
             <h3 className="font-bold text-gray-900 flex items-center gap-2 text-lg">
-                <div className="p-1.5 bg-blue-100 rounded-md text-blue-700">
+                <div className="p-1.5 bg-teal-100 rounded-md text-teal-700">
                     <FileText className="w-5 h-5" />
                 </div>
                 {mode === 'create' ? 'Save Financial Plan' : 'Update Plan'}
@@ -57,7 +57,7 @@ const PlanSaveModal: React.FC<PlanSaveModalProps> = ({ isOpen, onClose, onConfir
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Q1 Aggressive Growth Target"
-                    className="block w-full h-12 px-4 bg-white text-gray-900 border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-bold shadow-sm placeholder-gray-400 transition-all outline-none"
+                    className="block w-full h-12 px-4 bg-white text-gray-900 border border-gray-300 rounded-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm font-bold shadow-sm placeholder-gray-400 transition-all outline-none"
                     autoFocus
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -82,7 +82,7 @@ const PlanSaveModal: React.FC<PlanSaveModalProps> = ({ isOpen, onClose, onConfir
                     if(name.trim()) onConfirm(name);
                 }}
                 disabled={!name.trim()}
-                className="px-6 py-2 text-sm bg-blue-600 text-white font-bold rounded-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-blue-900/10 flex items-center gap-2 transition-all active:scale-[0.98]"
+                className="px-6 py-2 text-sm bg-teal-600 text-white font-bold rounded-sm hover:bg-teal-700 disabled:opacity-50 dark:disabled:opacity-100 dark:disabled:bg-[#8BB3AE] dark:disabled:text-white dark:disabled:border-[#8BB3AE] disabled:cursor-not-allowed shadow-md shadow-teal-900/10 flex items-center gap-2 transition-all active:scale-[0.98]"
             >
                 <Save className="w-4 h-4" />
                 {mode === 'create' ? 'Save Plan' : 'Update Plan'}
