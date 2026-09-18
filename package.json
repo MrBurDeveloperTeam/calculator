@@ -8,10 +8,12 @@
     "dev": "vite",
     "prebuild": "node scripts/prepare-pet.mjs",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "node node_modules/typescript/bin/tsc -p tsconfig.pet-check.json --noEmit",
+    "verify:pet": "node scripts/verify-pet.mjs"
   },
   "dependencies": {
-    "@mrburdeveloperteam/pet-function": "github:mrburdeveloperteam/pet-function#v0.9.10",
+    "@mrburdeveloperteam/pet-function": "github:mrburdeveloperteam/pet-function#v0.9.14",
     "@supabase/supabase-js": "^2.98.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.90.21",
