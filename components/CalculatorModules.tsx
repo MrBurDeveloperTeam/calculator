@@ -1233,7 +1233,7 @@ export const DepreciationCalculator = () => {
   const visualData = sortedAssets.slice(0, 5).map((a, i) => ({
     name: a.name,
     value: a.purchasePrice,
-    color: ['#0f766e', '#0d9488', '#14b8a6', '#5eead4'][i] || '#99f6e4'
+    color: ['#5F8F89', '#5EEAD4', '#A7F3D0', '#CBD5E1'][i] || '#99F6E4'
   }));
 
   return (
