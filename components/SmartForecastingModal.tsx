@@ -482,20 +482,20 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                background-color: #1D2C2A !important;
                color: #7AB5AE !important;
             }
-            :root[data-theme="dark"] .roi-strategy-option-selected {
-               background-color: #233B37 !important;
-               border-color: #8BB3AE !important;
-               box-shadow: 0 0 0 1px #8BB3AE !important;
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected {
+               background-color: #1D2C2A !important;
+               border-color: #5F8F89 !important;
+               box-shadow: 0 0 0 1px #5F8F89 !important;
             }
-            :root[data-theme="dark"] .roi-strategy-option-selected .roi-strategy-title {
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected .roi-strategy-title {
                color: #E6FFFB !important;
             }
-            :root[data-theme="dark"] .roi-strategy-option-selected .roi-strategy-description {
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected .roi-strategy-description {
                color: #A5D0CB !important;
             }
-            :root[data-theme="dark"] .roi-strategy-option-selected .roi-strategy-icon {
-               background-color: #2A4440 !important;
-               color: #A5D0CB !important;
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected .roi-strategy-icon {
+               background-color: #233B37 !important;
+               color: #8BB3AE !important;
             }
          `}</style>
          <div
