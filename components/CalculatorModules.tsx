@@ -1970,7 +1970,7 @@ export const OwnerCalculator = () => {
 
   const visualData = [
     { name: 'Net Income', value: desiredNetIncome, color: '#5F8F89' },
-    { name: 'Risk Buffer', value: riskBufferAmount, color: '#14b8a6' } // orange for risk buffer
+    { name: 'Risk Buffer', value: riskBufferAmount, color: '#A7F3D0' } // orange for risk buffer
   ];
 
   return (
