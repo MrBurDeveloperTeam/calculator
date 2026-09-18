@@ -497,6 +497,27 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                background-color: #233B37 !important;
                color: #8BB3AE !important;
             }
+
+            /* ROI Results - Dark mode text visibility only */
+            :root[data-theme="dark"] .roi-result-label {
+               color: #D8F0ED !important;
+            }
+            :root[data-theme="dark"] .roi-result-subtext,
+            :root[data-theme="dark"] .roi-result-denominator {
+               color: #94A3B8 !important;
+            }
+            :root[data-theme="dark"] .roi-net-profit-value {
+               color: #E2E8F0 !important;
+            }
+            :root[data-theme="dark"] .roi-time-value {
+               color: #E11D48 !important;
+            }
+            :root[data-theme="dark"] .roi-capacity-title {
+               color: #9F1239 !important;
+            }
+            :root[data-theme="dark"] .roi-capacity-text {
+               color: #BE123C !important;
+            }
          `}</style>
          <div
             className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity"
@@ -680,22 +701,22 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="flex flex-col">
                            <div className="flex justify-between items-end mb-2 h-10">
                               <div className="flex flex-col justify-end">
-                                 <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+                                 <span className="roi-result-label text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
                                     <BarChart3 className="w-3 h-3" /> Net Profit
                                  </span>
-                                 <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                                 <p className="roi-result-subtext text-[10px] text-gray-400 mt-1 flex items-center gap-1">
                                     <Info className="w-3 h-3 inline" /> Gross margin less OpEx
                                  </p>
                               </div>
                               <div className="text-right">
-                                 <span className={`text-xl font-black cursor-help group relative inline-block ${results.isProfitMet ? 'text-emerald-600' : 'text-gray-700'}`}>
+                                 <span className={`roi-net-profit-value text-xl font-black cursor-help group relative inline-block ${results.isProfitMet ? 'text-emerald-600' : 'text-gray-700'}`}>
                                     {currencySymbol} {results.netProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                     <div className="absolute top-full right-0 mt-2 hidden group-hover:block w-56 p-2 bg-slate-800 text-white text-[10px] leading-tight rounded-md shadow-xl z-50 pointer-events-none animate-in fade-in zoom-in-95 duration-200 text-center font-sans font-normal">
                                        <div className="absolute bottom-full right-4 border-4 border-transparent border-b-slate-800"></div>
                                        This is the maximum amount of profit based on the opex timeframe.
                                     </div>
                                  </span>
-                                 <span className="text-xs text-gray-400 font-medium block"> / {currencySymbol} {targetProfit.toLocaleString()}</span>
+                                 <span className="roi-result-denominator text-xs text-gray-400 font-medium block"> / {currencySymbol} {targetProfit.toLocaleString()}</span>
                               </div>
                            </div>
 
@@ -724,18 +745,18 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="flex flex-col">
                            <div className="flex justify-between items-end mb-2 h-10">
                               <div className="flex flex-col justify-end">
-                                 <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+                                 <span className="roi-result-label text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
                                     <Clock className="w-3 h-3" /> Time Used
                                  </span>
-                                 <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                                 <p className="roi-result-subtext text-[10px] text-gray-400 mt-1 flex items-center gap-1">
                                     <Info className="w-3 h-3 inline" /> Maximum time allowed
                                  </p>
                               </div>
                               <div className="text-right">
-                                 <span className={`text-xl font-black ${results.isTimeExceeded ? 'text-rose-600' : 'text-teal-600'}`}>
+                                 <span className={`roi-time-value text-xl font-black ${results.isTimeExceeded ? 'text-rose-600' : 'text-teal-600'}`}>
                                     {results.timeUsedHours.toFixed(1)}
                                  </span>
-                                 <span className="text-xs text-gray-400 font-medium block"> / {constraints.capacityHours.toFixed(0)} hrs</span>
+                                 <span className="roi-result-denominator text-xs text-gray-400 font-medium block"> / {constraints.capacityHours.toFixed(0)} hrs</span>
                               </div>
                            </div>
 
@@ -765,8 +786,8 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
                            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
                            <div>
-                              <p className="text-sm text-rose-800 font-bold">⚠️ Capacity Exceeded!</p>
-                              <p className="text-xs text-rose-700">You are booking {results.timeUsedHours.toFixed(0)} hours, but only have {constraints.capacityHours.toFixed(0)} hours available in this timeframe.</p>
+                              <p className="roi-capacity-title text-sm text-rose-800 font-bold">⚠️ Capacity Exceeded!</p>
+                              <p className="roi-capacity-text text-xs text-rose-700">You are booking {results.timeUsedHours.toFixed(0)} hours, but only have {constraints.capacityHours.toFixed(0)} hours available in this timeframe.</p>
                            </div>
                         </div>
                      )}
