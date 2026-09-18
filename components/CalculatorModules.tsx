@@ -1885,7 +1885,7 @@ export const FinancialCalculator = () => {
   const transFeeAmount = estMonthlyRevenue * (transactionFeesPercent / 100);
   const taxEstimate = estMonthlyRevenue * (taxRate / 100);
   const totalFinancial = monthlyInterest + monthlyBankCharges + transFeeAmount + taxEstimate;
-  const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#0f766e' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#14b8a6' }];
+  const visualData = [{ name: 'Interest', value: monthlyInterest, color: '#5F8F89' }, { name: 'Trans. Fees', value: transFeeAmount, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Financial & Tax" resultTitle="Total Financial Cost" resultValue={`${currencySymbol} ${totalFinancial.toFixed(2)}`} section="financial" visualData={visualData} theme="clinical" pageClassName="financial-tax-page">
 
@@ -1969,8 +1969,8 @@ export const OwnerCalculator = () => {
   const annualTotal = requiredProfit * 12;
 
   const visualData = [
-    { name: 'Net Income', value: desiredNetIncome, color: '#0f766e' },
-    { name: 'Risk Buffer', value: riskBufferAmount, color: '#14b8a6' } // Orange for risk
+    { name: 'Net Income', value: desiredNetIncome, color: '#5F8F89' },
+    { name: 'Risk Buffer', value: riskBufferAmount, color: '#14b8a6' } // orange for risk buffer
   ];
 
   return (
