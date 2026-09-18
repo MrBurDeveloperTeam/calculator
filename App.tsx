@@ -346,7 +346,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
             groundedContextStoreRef (a useRef, initialized only once per
             mount) would survive the switch and leak the previous user's
             state into the new user's session. */}
-        <CatMascot key={user?.id} onCatClick={() => setIsVirtualPetOpen(true)} />
+        <CatMascot key={user?.id} userId={user?.id ?? null} authStatus="authenticated" onCatClick={() => setIsVirtualPetOpen(true)} />
         <MolarAIFloat
           key={user?.id}
           userContext={aiContext}
