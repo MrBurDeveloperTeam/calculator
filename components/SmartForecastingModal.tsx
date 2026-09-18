@@ -423,6 +423,102 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
    return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+         <style>{`
+            /* Strategy Engine - Light theme */
+            :root[data-theme="light"] .roi-strategy-label {
+               color: #0F766E !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option {
+               background-color: #FFFFFF !important;
+               border-color: #CBD5E1 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option:hover {
+               border-color: #5EEAD4 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option .roi-strategy-title {
+               color: #334155 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option .roi-strategy-description {
+               color: #64748B !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option .roi-strategy-icon {
+               background-color: #F0FDFA !important;
+               color: #5F8F89 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected {
+               background-color: #F0FDFA !important;
+               border-color: #14B8A6 !important;
+               box-shadow: 0 0 0 1px #14B8A6 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected .roi-strategy-title {
+               color: #134E4A !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected .roi-strategy-description {
+               color: #0F766E !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected .roi-strategy-icon {
+               background-color: #CCFBF1 !important;
+               color: #0F766E !important;
+            }
+
+            /* Strategy Engine - Dark theme */
+            :root[data-theme="dark"] .roi-strategy-label {
+               color: #A5D0CB !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option {
+               background-color: #171F1E !important;
+               border-color: #2A4440 !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option:hover {
+               border-color: #3A5B56 !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option .roi-strategy-title {
+               color: #D8F0ED !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option .roi-strategy-description {
+               color: #7AB5AE !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option .roi-strategy-icon {
+               background-color: #1D2C2A !important;
+               color: #7AB5AE !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected {
+               background-color: #1D2C2A !important;
+               border-color: #5F8F89 !important;
+               box-shadow: 0 0 0 1px #5F8F89 !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected .roi-strategy-title {
+               color: #E6FFFB !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected .roi-strategy-description {
+               color: #A5D0CB !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-engine .roi-strategy-option.roi-strategy-option-selected .roi-strategy-icon {
+               background-color: #233B37 !important;
+               color: #8BB3AE !important;
+            }
+
+            /* ROI Results - Dark mode text visibility only */
+            :root[data-theme="dark"] .roi-result-label {
+               color: #D8F0ED !important;
+            }
+            :root[data-theme="dark"] .roi-result-subtext,
+            :root[data-theme="dark"] .roi-result-denominator {
+               color: #94A3B8 !important;
+            }
+            :root[data-theme="dark"] .roi-net-profit-value {
+               color: #E2E8F0 !important;
+            }
+            :root[data-theme="dark"] .roi-time-value {
+               color: #E11D48 !important;
+            }
+            :root[data-theme="dark"] .roi-capacity-title {
+               color: #9F1239 !important;
+            }
+            :root[data-theme="dark"] .roi-capacity-text {
+               color: #BE123C !important;
+            }
+         `}</style>
          <div
             className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity"
             onClick={onClose}
@@ -433,7 +529,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
             <div className="bg-white border-b border-gray-200 p-5 flex items-start gap-3 shrink-0">
                {/* Title area */}
                <div className="flex min-w-0 flex-1 items-start gap-3 pr-3">
-                  <div className="shrink-0 bg-blue-600 p-2 rounded-md text-white shadow-sm">
+                  <div className="shrink-0 bg-[#8BB3AE] p-2 rounded-md text-white shadow-sm">
                      <Wand2 className="w-5 h-5" />
                   </div>
 
@@ -453,7 +549,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                <div className="ml-auto flex shrink-0 items-start gap-2">
                   <button
                      onClick={() => setShowSaveModal(true)}
-                     className="flex shrink-0 items-center gap-2 rounded-sm border border-blue-200 bg-blue-50 px-3 sm:px-4 py-2 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-100"
+                     className="flex shrink-0 items-center gap-2 rounded-sm border border-teal-200 bg-teal-50 px-3 sm:px-4 py-2 text-sm font-bold text-teal-600 transition-colors hover:bg-teal-100"
                   >
                      <Save className="w-4 h-4 shrink-0" />
                      <span>{initialPlan ? 'Update Plan' : 'Save Plan'}</span>
@@ -481,7 +577,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                            setPlan({});
                            setIsGenerated(false);
                         }}
-                        className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-3 font-semibold"
+                        className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-teal-500 focus:border-teal-500 block p-3 font-semibold"
                      >
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -489,7 +585,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <option value="quarterly">Quarterly</option>
                         <option value="yearly">Yearly</option>
                      </select>
-                     <div className="mt-2 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 p-2 rounded-sm border border-blue-100">
+                     <div className="mt-2 flex items-center gap-2 text-xs text-teal-600 bg-teal-50 p-2 rounded-sm border border-teal-100">
                         <Clock className="w-3 h-3" />
                         <span>Capacity: <strong>{constraints.capacityHours.toFixed(0)} hrs</strong> | OpEx: <strong>{currencySymbol} {constraints.fixedOpEx.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong></span>
                      </div>
@@ -506,7 +602,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                            type="number"
                            value={targetProfit}
                            onChange={(e) => setTargetProfit(parseFloat(e.target.value) || 0)}
-                           className="w-full pl-9 pr-4 py-3 bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           className="w-full pl-9 pr-4 py-3 bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                            placeholder="5000"
                         />
                      </div>
@@ -517,20 +613,20 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
                   {/* 3. Algorithm */}
                   <div>
-                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">3. Strategy Engine</label>
+                     <label className="roi-strategy-label block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">3. Strategy Engine</label>
                      <div className="roi-strategy-engine grid grid-cols-1 gap-3">
                         <button
                            onClick={() => setAlgorithm('balanced')}
                            className={`roi-strategy-option flex w-full items-center rounded-sm border p-3 text-left transition-all ${
                               algorithm === 'balanced'
-                                 ? 'roi-strategy-option-selected bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500'
+                                 ? 'roi-strategy-option-selected bg-teal-50 border-teal-500 ring-1 ring-teal-500'
                                  : 'bg-white border-gray-300 hover:border-gray-400'
                            }`}
                            >
                            <div
                               className={`roi-strategy-icon mr-3 shrink-0 rounded-full p-2 ${
                                  algorithm === 'balanced'
-                                 ? 'bg-indigo-200 text-indigo-700'
+                                 ? 'bg-teal-200 text-teal-700'
                                  : 'bg-gray-100 text-gray-400'
                               }`}
                            >
@@ -552,14 +648,14 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                            onClick={() => setAlgorithm('efficiency')}
                            className={`roi-strategy-option flex w-full items-center rounded-sm border p-3 text-left transition-all ${
                               algorithm === 'efficiency'
-                                 ? 'roi-strategy-option-selected bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500'
+                                 ? 'roi-strategy-option-selected bg-teal-50 border-teal-500 ring-1 ring-teal-500'
                                  : 'bg-white border-gray-300 hover:border-gray-400'
                            }`}
                            >
                            <div
                               className={`roi-strategy-icon mr-3 shrink-0 rounded-full p-2 ${
                                  algorithm === 'efficiency'
-                                 ? 'bg-indigo-200 text-indigo-700'
+                                 ? 'bg-teal-200 text-teal-700'
                                  : 'bg-gray-100 text-gray-400'
                               }`}
                            >
@@ -583,7 +679,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                      <button
                         onClick={() => generateSmartPlan(false)}
                         disabled={targetProfit <= 0}
-                        className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                        className="w-full py-4 bg-[#8BB3AE] hover:bg-[#A5D0CB] text-white font-bold rounded-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                      >
                         <Wand2 className="w-5 h-5" />
                         <span>Auto-Generate Plan</span>
@@ -605,22 +701,22 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="flex flex-col">
                            <div className="flex justify-between items-end mb-2 h-10">
                               <div className="flex flex-col justify-end">
-                                 <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+                                 <span className="roi-result-label text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
                                     <BarChart3 className="w-3 h-3" /> Net Profit
                                  </span>
-                                 <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                                 <p className="roi-result-subtext text-[10px] text-gray-400 mt-1 flex items-center gap-1">
                                     <Info className="w-3 h-3 inline" /> Gross margin less OpEx
                                  </p>
                               </div>
                               <div className="text-right">
-                                 <span className={`text-xl font-black cursor-help group relative inline-block ${results.isProfitMet ? 'text-emerald-600' : 'text-gray-700'}`}>
+                                 <span className={`roi-net-profit-value text-xl font-black cursor-help group relative inline-block ${results.isProfitMet ? 'text-emerald-600' : 'text-gray-700'}`}>
                                     {currencySymbol} {results.netProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                     <div className="absolute top-full right-0 mt-2 hidden group-hover:block w-56 p-2 bg-slate-800 text-white text-[10px] leading-tight rounded-md shadow-xl z-50 pointer-events-none animate-in fade-in zoom-in-95 duration-200 text-center font-sans font-normal">
                                        <div className="absolute bottom-full right-4 border-4 border-transparent border-b-slate-800"></div>
                                        This is the maximum amount of profit based on the opex timeframe.
                                     </div>
                                  </span>
-                                 <span className="text-xs text-gray-400 font-medium block"> / {currencySymbol} {targetProfit.toLocaleString()}</span>
+                                 <span className="roi-result-denominator text-xs text-gray-400 font-medium block"> / {currencySymbol} {targetProfit.toLocaleString()}</span>
                               </div>
                            </div>
 
@@ -649,25 +745,25 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="flex flex-col">
                            <div className="flex justify-between items-end mb-2 h-10">
                               <div className="flex flex-col justify-end">
-                                 <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+                                 <span className="roi-result-label text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
                                     <Clock className="w-3 h-3" /> Time Used
                                  </span>
-                                 <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                                 <p className="roi-result-subtext text-[10px] text-gray-400 mt-1 flex items-center gap-1">
                                     <Info className="w-3 h-3 inline" /> Maximum time allowed
                                  </p>
                               </div>
                               <div className="text-right">
-                                 <span className={`text-xl font-black ${results.isTimeExceeded ? 'text-rose-600' : 'text-blue-600'}`}>
+                                 <span className={`roi-time-value text-xl font-black ${results.isTimeExceeded ? 'text-rose-600' : 'text-teal-600'}`}>
                                     {results.timeUsedHours.toFixed(1)}
                                  </span>
-                                 <span className="text-xs text-gray-400 font-medium block"> / {constraints.capacityHours.toFixed(0)} hrs</span>
+                                 <span className="roi-result-denominator text-xs text-gray-400 font-medium block"> / {constraints.capacityHours.toFixed(0)} hrs</span>
                               </div>
                            </div>
 
                            <div className="relative group cursor-help">
                               <div className="h-4 bg-gray-200 rounded-sm overflow-hidden">
                                  <div
-                                    className={`h-full transition-all duration-700 ease-out ${results.isTimeExceeded ? 'bg-rose-500' : 'bg-blue-500'}`}
+                                    className={`h-full transition-all duration-700 ease-out ${results.isTimeExceeded ? 'bg-rose-500' : 'bg-teal-500'}`}
                                     style={{ width: `${results.timeProgress}%` }}
                                  ></div>
                               </div>
@@ -690,8 +786,8 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
                            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
                            <div>
-                              <p className="text-sm text-rose-800 font-bold">⚠️ Capacity Exceeded!</p>
-                              <p className="text-xs text-rose-700">You are booking {results.timeUsedHours.toFixed(0)} hours, but only have {constraints.capacityHours.toFixed(0)} hours available in this timeframe.</p>
+                              <p className="roi-capacity-title text-sm text-rose-800 font-bold">⚠️ Capacity Exceeded!</p>
+                              <p className="roi-capacity-text text-xs text-rose-700">You are booking {results.timeUsedHours.toFixed(0)} hours, but only have {constraints.capacityHours.toFixed(0)} hours available in this timeframe.</p>
                            </div>
                         </div>
                      )}
@@ -730,7 +826,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                                        <input
                                           type="number"
                                           min="0"
-                                          className={`w-full h-10 text-center font-bold border rounded-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${isActive ? 'border-blue-300 text-blue-700 bg-blue-50' : 'border-gray-300 text-gray-900 bg-white'}`}
+                                          className={`w-full h-10 text-center font-bold border rounded-sm focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all ${isActive ? 'border-teal-300 text-teal-700 bg-teal-50' : 'border-gray-300 text-gray-900 bg-white'}`}
                                           value={qty || ''}
                                           onChange={(e) => handleQtyChange(proc.id, parseInt(e.target.value) || 0)}
                                           placeholder="0"
