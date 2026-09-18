@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 # Generated shared images, restored by predev/prebuild.
-/public/molar-experience/
+/public/pet-function/
 dist-ssr
 *.local
 components/reference/
