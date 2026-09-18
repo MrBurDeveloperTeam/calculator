@@ -1808,7 +1808,7 @@ export const RegulatoryCalculator = () => {
   const { annualApc, annualXray, annualInsurance, monthlyWaste } = state.regulatory;
   const monthlyAmortized = (annualApc + annualXray + annualInsurance) / 12;
   const totalMonthly = monthlyAmortized + monthlyWaste;
-  const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#0f766e' }, { name: 'Insurance', value: annualInsurance / 12, color: '#14b8a6' }];
+  const visualData = [{ name: 'Licenses', value: (annualApc + annualXray) / 12, color: '#5F8F89' }, { name: 'Insurance', value: annualInsurance / 12, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Regulatory & Insurance" resultTitle="Regulatory Cost / Month" resultValue={`${currencySymbol} ${totalMonthly.toFixed(2)}`} section="regulatory" visualData={visualData} theme="clinical" pageClassName="regulatory-page">
 
