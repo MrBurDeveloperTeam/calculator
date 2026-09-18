@@ -423,6 +423,81 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
    return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+         <style>{`
+            /* Strategy Engine - Light theme */
+            :root[data-theme="light"] .roi-strategy-label {
+               color: #0F766E !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option {
+               background-color: #FFFFFF !important;
+               border-color: #CBD5E1 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option:hover {
+               border-color: #5EEAD4 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option .roi-strategy-title {
+               color: #334155 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option .roi-strategy-description {
+               color: #64748B !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option .roi-strategy-icon {
+               background-color: #F0FDFA !important;
+               color: #5F8F89 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected {
+               background-color: #F0FDFA !important;
+               border-color: #14B8A6 !important;
+               box-shadow: 0 0 0 1px #14B8A6 !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected .roi-strategy-title {
+               color: #134E4A !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected .roi-strategy-description {
+               color: #0F766E !important;
+            }
+            :root[data-theme="light"] .roi-strategy-option-selected .roi-strategy-icon {
+               background-color: #CCFBF1 !important;
+               color: #0F766E !important;
+            }
+
+            /* Strategy Engine - Dark theme */
+            :root[data-theme="dark"] .roi-strategy-label {
+               color: #A5D0CB !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option {
+               background-color: #171F1E !important;
+               border-color: #2A4440 !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option:hover {
+               border-color: #3A5B56 !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option .roi-strategy-title {
+               color: #D8F0ED !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option .roi-strategy-description {
+               color: #7AB5AE !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option .roi-strategy-icon {
+               background-color: #1D2C2A !important;
+               color: #7AB5AE !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option-selected {
+               background-color: #233B37 !important;
+               border-color: #8BB3AE !important;
+               box-shadow: 0 0 0 1px #8BB3AE !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option-selected .roi-strategy-title {
+               color: #E6FFFB !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option-selected .roi-strategy-description {
+               color: #A5D0CB !important;
+            }
+            :root[data-theme="dark"] .roi-strategy-option-selected .roi-strategy-icon {
+               background-color: #2A4440 !important;
+               color: #A5D0CB !important;
+            }
+         `}</style>
          <div
             className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity"
             onClick={onClose}
@@ -517,7 +592,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
                   {/* 3. Algorithm */}
                   <div>
-                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">3. Strategy Engine</label>
+                     <label className="roi-strategy-label block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">3. Strategy Engine</label>
                      <div className="roi-strategy-engine grid grid-cols-1 gap-3">
                         <button
                            onClick={() => setAlgorithm('balanced')}
