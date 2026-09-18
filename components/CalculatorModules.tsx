@@ -1732,7 +1732,7 @@ export const MarketingCalculator = () => {
   const { adSpend, agencyFees, productionCosts, newPatients } = state.marketing;
   const totalSpend = adSpend + agencyFees + productionCosts;
   const cac = newPatients > 0 ? totalSpend / newPatients : 0;
-  const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#0f766e' }, { name: 'Agency Fee', value: agencyFees, color: '#14b8a6' }];
+  const visualData = [{ name: 'Ad Spend', value: adSpend, color: '#5F8F89' }, { name: 'Agency Fee', value: agencyFees, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Marketing & Acquisition" resultTitle="CAC Per Patient" resultValue={`${currencySymbol} ${cac.toFixed(2)}`} section="marketing" visualData={visualData} theme="clinical" pageClassName="marketing-page">
 
