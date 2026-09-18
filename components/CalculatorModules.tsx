@@ -459,7 +459,7 @@ export const ProcedureBuilder = () => {
           color: #8FC9C2 !important;
         }
         :root[data-theme="dark"] .procedure-builder-page .calculator-card-header-title { color: #D8F0ED !important; }
-        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card:not(.is-editing),
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card,
         :root[data-theme="dark"] .procedure-builder-page .profitability-consumables-card,
         :root[data-theme="dark"] .procedure-builder-page .profitability-analysis-card,
         :root[data-theme="dark"] .procedure-builder-page .profitability-library {
@@ -536,10 +536,10 @@ export const ProcedureBuilder = () => {
         }
 
         :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing > .profitability-section-title {
-          color: #78350F !important;
+          color: #F3C969 !important;
         }
         :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing .profitability-input-label {
-          color: #78350F !important;
+          color: #F3C969 !important;
         }
       `}</style>
 
