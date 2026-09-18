@@ -1657,7 +1657,7 @@ export const LabCalculator = () => {
   const { labFee, shippingCost, markupPercent } = state.lab;
   const baseCost = labFee + shippingCost;
   const finalPrice = baseCost * (1 + (markupPercent / 100));
-  const visualData = [{ name: 'Base Fee', value: labFee, color: '#0d9488' }, { name: 'Shipping', value: shippingCost, color: '#14b8a6' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#22c55e' }];
+  const visualData = [{ name: 'Base Fee', value: labFee, color: '#5F8F89' }, { name: 'Shipping', value: shippingCost, color: '#5EEAD4' }, { name: 'Profit Margin', value: finalPrice - baseCost, color: '#86EFAC' }];
   return (
     <CalculatorCard title="Lab & Outsourcing" resultTitle="Min. Patient Price" resultValue={`${currencySymbol} ${finalPrice.toFixed(2)}`} section="lab" visualData={visualData} theme="clinical" pageClassName="lab-outsourcing-page">
 
