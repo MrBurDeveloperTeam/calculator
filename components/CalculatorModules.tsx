@@ -1447,8 +1447,8 @@ export const ConsumablesCalculator = () => {
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
   const sortedItems = [...items].sort((a, b) => b.cost - a.cost);
   const getConsumableChartColor = (index: number, itemCount: number) => {
-    const darkest = [19, 78, 74];
-    const lightest = [153, 246, 228];
+    const darkest = [15, 118, 110];
+    const lightest = [204, 251, 241];
     const ratio = itemCount > 1 ? index / (itemCount - 1) : 0.5;
     const channels = darkest.map((channel, channelIndex) =>
       Math.round(channel + (lightest[channelIndex] - channel) * ratio)
