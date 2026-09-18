@@ -534,6 +534,13 @@ export const ProcedureBuilder = () => {
           border-color: #2A4440 !important;
           color: #7AB5AE !important;
         }
+
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing > .profitability-section-title {
+          color: #78350F !important;
+        }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-form-card.is-editing .profitability-input-label {
+          color: #78350F !important;
+        }
       `}</style>
 
       <div className={`profitability-form-card ${editingId ? 'is-editing' : ''} p-4 rounded-lg border mb-6 transition-colors ${editingId ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
