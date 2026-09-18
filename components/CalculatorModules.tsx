@@ -990,9 +990,9 @@ export const StaffCalculator = () => {
   const totalBonus = members.reduce((sum, m) => sum + m.bonus, 0);
 
   const visualData = [
-    { name: 'Base Salaries', value: totalSalaries, color: '#0f766e' },
-    { name: 'Benefits (EPF)', value: totalBenefits, color: '#0d9488' },
-    { name: 'Bonuses', value: totalBonus, color: '#14b8a6' }
+    { name: 'Base Salaries', value: totalSalaries, color: '#5F8F89' },
+    { name: 'Benefits (EPF)', value: totalBenefits, color: '#5EEAD4' },
+    { name: 'Bonuses', value: totalBonus, color: '#A7F3D0' }
   ];
 
   // Process data for the Bar Chart & Table (Efficiency)
