@@ -1581,7 +1581,7 @@ export const SterilizationCalculator = () => {
   const { pouchCost, chemicalCost, ppeCost, electricityCost, instrumentsPerCycle } = state.sterilization;
   const totalCycleCost = pouchCost + chemicalCost + ppeCost + electricityCost;
   const costPerPack = instrumentsPerCycle > 0 ? totalCycleCost / instrumentsPerCycle : 0;
-  const visualData = [{ name: 'Pouch', value: pouchCost, color: '#0f766e' }, { name: 'Chemicals', value: chemicalCost, color: '#14b8a6' }, { name: 'PPE', value: ppeCost, color: '#2dd4bf' }];
+  const visualData = [{ name: 'Pouch', value: pouchCost, color: '#5F8F89' }, { name: 'Chemicals', value: chemicalCost, color: '#5EEAD4' }, { name: 'PPE', value: ppeCost, color: '#A7F3D0' }];
   return (
     <CalculatorCard title="Sterilization Costs" resultTitle="Cost Per Sterile Pack" resultValue={`${currencySymbol} ${costPerPack.toFixed(2)}`} section="sterilization" visualData={visualData} theme="clinical" pageClassName="sterilization-page">
       <style>{`
