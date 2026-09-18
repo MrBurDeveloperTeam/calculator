@@ -374,9 +374,9 @@ export const ProcedureBuilder = () => {
   };
 
   const visualData = [
-    { name: 'Fixed Overhead', value: currentFixedAllocated, color: '#94a3b8' },
-    { name: 'Variable Recipe', value: currentTotalVariable, color: '#14b8a6' },
-    { name: 'Net Profit', value: currentNetProfit > 0 ? currentNetProfit : 0, color: '#22c55e' }
+    { name: 'Fixed Overhead', value: currentFixedAllocated, color: '#cbd5e1' },
+    { name: 'Variable Recipe', value: currentTotalVariable, color: '#5eead4' },
+    { name: 'Net Profit', value: currentNetProfit > 0 ? currentNetProfit : 0, color: '#86efac' }
   ];
 
   const tooltipData = {
