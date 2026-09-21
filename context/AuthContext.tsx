@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     //    the same tab switch, which would otherwise fire two overlapping
     //    exchange calls at once.
     const revalidateOnFocus = () => {
-        console.debug('AuthContext: revalidateOnFocus fired');
+        console.log('AuthContext: revalidateOnFocus fired');
         if (!initialResolutionComplete || revalidateInFlight) return;
         if (document.visibilityState === 'visible') {
             revalidateInFlight = true;
