@@ -85,12 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const revalidateOnFocus = () => {
         console.log('AuthContext: revalidateOnFocus fired');
         // if (!initialResolutionComplete || revalidateInFlight) return;
-        if (document.visibilityState === 'visible') {
+        // if (document.visibilityState === 'visible') {
             revalidateInFlight = true;
             exchangeSsoToken()
                 .catch(console.warn)
                 .finally(() => { revalidateInFlight = false; });
-        }
+        // }
     };
     document.addEventListener('visibilitychange', revalidateOnFocus);
     window.addEventListener('focus', revalidateOnFocus);
