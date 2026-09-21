@@ -1,4 +1,5 @@
 // src/hooks/useProfileImage.ts
+import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 
 export function useProfileImage(isLoggedIn: boolean | null) {
@@ -13,7 +14,7 @@ export function useProfileImage(isLoggedIn: boolean | null) {
       headers: { Accept: "application/json" },
     })
       .then((res) => res.json())
-      .catch(() => null)
+      .catch(async() => await supabase.auth.signOut())
       .then((data) => {
         if (!data?.ok) return;
         const imageUrl = data.partner.has_image
