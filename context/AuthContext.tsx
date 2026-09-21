@@ -31,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isLoading, setIsLoading] = useState(true);
     const authGenerationRef = useRef(0);
     const isMountedRef = useRef(true);
+    const currentUserIdRef = useRef<string | null>(null);
 
     useEffect(() => {
         isMountedRef.current = true;
@@ -38,6 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const resolveSession = async (session: Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']) => {
             const generation = ++authGenerationRef.current;
+            const nextUserId = session?.user?.id ?? null;
+            currentUserIdRef.current = nextUserId;
             setIsLoading(true);
             setProfile(null);
             setUser(session?.user ?? null);
@@ -65,11 +68,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         initializeAuth();
 
         // 3. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             // Supabase may emit an initial null event while the explicit SSO
             // exchange above is still running. The initializer owns the UI
             // until it has conclusively resolved that exchange and session.
             if (!initialResolutionComplete) return;
+
+            const nextUserId = session?.user?.id ?? null;
+
+            // Supabase resumes browser token refresh when a hidden tab becomes
+            // visible again. TOKEN_REFRESHED (and repeated SIGNED_IN events)
+            // for the same identity must not clear the profile or set the
+            // full-screen loading state: doing so unmounts AppContent and
+            // discards the user's current view, pet/game state and unsaved
+            // form input. Keep the refreshed User object without remounting.
+            if (
+                nextUserId !== null &&
+                nextUserId === currentUserIdRef.current &&
+                (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN')
+            ) {
+                setUser(session?.user ?? null);
+                return;
+            }
+
             void resolveSession(session);
         });
 
@@ -94,10 +115,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 console.error('Error fetching profile:', error);
             } else {
                 setProfile(data);
-                setIsLoading(false);
             }
         } catch (err) {
             console.error('Unexpected error fetching profile:', err);
+        } finally {
+            if (isMountedRef.current && generation === authGenerationRef.current) {
+                setIsLoading(false);
+            }
         }
     };
 
