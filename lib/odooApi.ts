@@ -136,6 +136,7 @@ export async function exchangeSsoToken() {
         if (sessionData.session && (err.status === 401 || err.status === 403 || err.status === 404) && localStorage.getItem('is_sso_session') === 'true') {
             await supabase.auth.signOut();
             localStorage.removeItem('is_sso_session');
+            localStorage.removeItem('sb-opdotszsldcgwjqtvgul-auth-token');
         }
         return false;
     }
