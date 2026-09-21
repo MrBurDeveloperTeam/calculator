@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     //    exchange calls at once.
     const revalidateOnFocus = () => {
         console.log('AuthContext: revalidateOnFocus fired');
-        if (!initialResolutionComplete || revalidateInFlight) return;
+        // if (!initialResolutionComplete || revalidateInFlight) return;
         if (document.visibilityState === 'visible') {
             revalidateInFlight = true;
             exchangeSsoToken()
