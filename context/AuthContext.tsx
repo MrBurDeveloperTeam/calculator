@@ -122,29 +122,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
     }, []);
 
-    const fetchProfile = async (userId: string, generation: number) => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('user_id', userId)
-                .single();
+const fetchProfile = async (userId: string, generation: number) => {
+    try {
+        // Don't trust the local Supabase session by itself -- that's
+        // exactly what stays "valid" for a while after the user logs out
+        // of Snabbb elsewhere, which is the bug we're chasing. Re-run the
+        // SSO exchange here too: if the shared cookie is already gone,
+        // exchangeSsoToken() gets a 401 and signs this tab out for real
+        // (see lib/odooApi.ts), and we bail out below before ever
+        // fetching or displaying stale profile data.
+        await exchangeSsoToken().catch(() => { });
 
-            if (!isMountedRef.current || generation !== authGenerationRef.current) return;
-
-            if (error) {
-                console.error('Error fetching profile:', error);
-            } else {
-                setProfile(data);
-            }
-        } catch (err) {
-            console.error('Unexpected error fetching profile:', err);
-        } finally {
-            if (isMountedRef.current && generation === authGenerationRef.current) {
-                setIsLoading(false);
-            }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (
+            !session ||
+            session.user.id !== userId ||
+            !isMountedRef.current ||
+            generation !== authGenerationRef.current
+        ) {
+            return;
         }
-    };
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        if (!isMountedRef.current || generation !== authGenerationRef.current) return;
+
+        if (error) {
+            console.error('Error fetching profile:', error);
+        } else {
+            setProfile(data);
+        }
+    } catch (err) {
+        console.error('Unexpected error fetching profile:', err);
+    } finally {
+        if (isMountedRef.current && generation === authGenerationRef.current) {
+            setIsLoading(false);
+        }
+    }
+};
 
     const signOut = async () => {
         // 1. Clear local Supabase session first to guarantee local logout
