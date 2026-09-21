@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     //    the same tab switch, which would otherwise fire two overlapping
     //    exchange calls at once.
     const revalidateOnFocus = () => {
-        if (!initialResolutionComplete || revalidateInFlight) return;
+        // if (!initialResolutionComplete || revalidateInFlight) return;
         if (document.visibilityState === 'visible') {
             revalidateInFlight = true;
             exchangeSsoToken()
