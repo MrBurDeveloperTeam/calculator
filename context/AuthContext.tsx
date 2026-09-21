@@ -66,6 +66,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
 
         initializeAuth();
+        // A tab open before someone logs out of Snabbb elsewhere never
+        // finds out on its own -- exchangeSsoToken() only ever runs once,
+        // above, on mount. It already has the right logic for detecting a
+        // revoked session (a 401 from the exchange while a local session and
+        // is_sso_session both still say "logged in" triggers a local
+        // sign-out; see lib/odooApi.ts) -- it just needs to run again later.
+        // Re-running it whenever this tab regains focus is what actually
+        // closes the loop: if the shared SSO cookie is gone (logged out on
+        // app.snabbb.com, or another mini-app tab), exchangeSsoToken() now
+        // gets a 401 instead of a token, and signs this tab out too -- which
+        // the onAuthStateChange listener below (via resolveSession) already
+        // reacts to the same way it reacts to any other sign-out.
+        const revalidateOnFocus = () => {
+            if (document.visibilityState === 'visible') {
+                exchangeSsoToken().catch(console.warn);
+            }
+        };
+        document.addEventListener('visibilitychange', revalidateOnFocus);
+        window.addEventListener('focus', revalidateOnFocus);
 
         // 3. Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -98,6 +117,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isMountedRef.current = false;
             authGenerationRef.current += 1;
             subscription.unsubscribe();
+            document.removeEventListener('visibilitychange', revalidateOnFocus);
+            window.removeEventListener('focus', revalidateOnFocus);
         };
     }, []);
 
