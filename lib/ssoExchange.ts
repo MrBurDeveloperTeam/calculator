@@ -41,6 +41,8 @@ export function useSsoExchange() {
         if (sessionData.session && (error.status === 401 || error.status === 403 || error.status === 404) && localStorage.getItem('is_sso_session') === 'true') {
            await supabase.auth.signOut();
            localStorage.removeItem('is_sso_session');
+           localStorage.removeItem('sb-opdotszsldcgwjqtvgul-auth-token');
+           window.location.href = 'https://app.snabbb.com';
         }
         
         // navigate('/login', { replace: true });
