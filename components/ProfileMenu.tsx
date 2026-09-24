@@ -330,7 +330,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[var(--app-text)] leading-tight">
-                      {profile?.account_type === 'admin' ? 'Admin Dashboard' : 'User Dashboard'}
+                      {profile?.account_type === 'admin' ? 'Support Tickets' : 'Support Tickets'}
                     </p>
                     <p className="text-[11px] font-semibold text-[var(--app-text-muted)] truncate">
                       {profile?.account_type === 'admin'
