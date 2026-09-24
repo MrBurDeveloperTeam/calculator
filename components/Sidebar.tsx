@@ -97,9 +97,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, se
         <div className={`h-16 flex items-center px-6 border-b flex-shrink-0 gap-3 ${isDark ? 'border-[#303744]' : 'border-slate-200'}`}>
           <a href="https://app.snabbb.com/">
             <img
-              src="/Snabbb (White).png"
+              // src="/Snabbb (White).png"
+              src={isDark ? '/Snabbb (White).png' : '/Snabbb (Teal).png'}
               alt="Snabbb Logo"
-              className={`h-8 w-auto hover:opacity-80 transition-all ${isDark ? '' : 'brightness-0'}`}
+              // className={`h-8 w-auto hover:opacity-80 transition-all ${isDark ? '' : 'brightness-0'}`}
+              className="h-8 w-auto hover:opacity-80 transition-opacity"
             />
           </a>
         </div>
