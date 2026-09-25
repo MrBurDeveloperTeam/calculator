@@ -52,6 +52,8 @@ import {
   type ThemePreference,
 } from './lib/themeSync';
 import usePageDurationTracker, { type PageViewLogMeta } from './hooks/usePageDurationTracker';
+import useSessionDurationTracker from './hooks/useSessionDurationTracker';
+import { logActivityToOdoo } from './services/logActivityToOdoo';
 
 const VIEW_LABELS: Record<ViewState, string> = {
   settings: 'Clinic Settings',
@@ -244,6 +246,32 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
       document.removeEventListener('wheel', preventNumberInputScroll, wheelOptions);
     };
   }, []);
+
+  // Logs a "session_end" (with the session's total duration) when the user
+  // signs out, closes/leaves the page, or hides the tab — same event the
+  // inventory app sends. The identity is remembered by the hook, so it is
+  // still attributed correctly after sign-out has cleared `user`.
+  // See hooks/useSessionDurationTracker.ts.
+  const sessionIdentity = useMemo(
+    () =>
+      user?.email
+        ? { email: user.email, name: profile?.name ?? null, id: user.id ?? null }
+        : null,
+    [user?.email, user?.id, profile?.name]
+  );
+  useSessionDurationTracker(sessionIdentity, (details, durationSeconds, useBeacon, who) => {
+    logActivityToOdoo({
+      logId: crypto.randomUUID(),
+      actorEmail: who.email,
+      actorName: who.name,
+      supabaseUserId: who.id,
+      action: 'session_end',
+      details,
+      occurredAt: new Date().toISOString(),
+      sessionDurationSeconds: durationSeconds,
+      useBeacon,
+    });
+  });
 
   const logOut = async () => {
     await signOut().then((res) => {
