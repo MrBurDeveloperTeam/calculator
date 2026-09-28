@@ -476,6 +476,13 @@ export const ProcedureBuilder = () => {
           border-color: #2A4440 !important;
           color: #D8F0ED !important;
         }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input-shell:focus-within,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-shell:focus-within,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-qty-input:focus {
+          border-color: #14B8A6 !important;
+          box-shadow: none !important;
+          outline: none !important;
+        }
         :root[data-theme="dark"] .procedure-builder-page .profitability-input,
         :root[data-theme="dark"] .procedure-builder-page .profitability-search-input {
           background-color: #1D2C2A !important;
@@ -592,7 +599,7 @@ export const ProcedureBuilder = () => {
 
           {/* Search & Add Dropdown */}
           <div className="relative mb-4" ref={dropdownRef}>
-            <div className="profitability-search-shell relative flex items-center border border-gray-300 bg-white focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 rounded-sm">
+            <div className="profitability-search-shell relative flex items-center border border-gray-300 bg-white focus-within:border-teal-600 rounded-sm transition-colors">
               <Search className="absolute left-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
