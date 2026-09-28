@@ -73,7 +73,7 @@ const SharpInput = ({
   return (
     <div className="group relative mb-4">
       {label && <label className="profitability-input-label block text-sm font-bold text-gray-700 mb-1">{label}</label>}
-      <div className="profitability-input-shell relative flex items-center border border-gray-300 bg-white hover:border-teal-400 focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 transition-colors rounded-sm overflow-hidden">
+      <div className="profitability-input-shell relative flex items-center border border-gray-300 bg-white hover:border-teal-400 focus-within:border-teal-600 transition-colors rounded-sm overflow-hidden">
         {type === 'currency' && (
           <div className="profitability-currency-prefix pointer-events-none flex items-center pl-3 pr-2 bg-gray-50 border-r border-gray-200 h-10">
             <span className="text-gray-500 text-sm font-bold whitespace-nowrap">{currencySymbol}</span>
@@ -94,7 +94,7 @@ const SharpInput = ({
           }}
           className={`
             profitability-input block flex-1 w-full min-w-0 border-0 bg-white py-2.5 px-3 text-gray-900 placeholder-gray-400 
-            focus:ring-0 sm:text-sm font-medium
+            focus:outline-none focus:ring-0 sm:text-sm font-medium
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
         `}
           placeholder={placeholder}
@@ -476,6 +476,13 @@ export const ProcedureBuilder = () => {
           border-color: #2A4440 !important;
           color: #D8F0ED !important;
         }
+        :root[data-theme="dark"] .procedure-builder-page .profitability-input-shell:focus-within,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-search-shell:focus-within,
+        :root[data-theme="dark"] .procedure-builder-page .profitability-qty-input:focus {
+          border-color: #14B8A6 !important;
+          box-shadow: none !important;
+          outline: none !important;
+        }
         :root[data-theme="dark"] .procedure-builder-page .profitability-input,
         :root[data-theme="dark"] .procedure-builder-page .profitability-search-input {
           background-color: #1D2C2A !important;
@@ -592,7 +599,7 @@ export const ProcedureBuilder = () => {
 
           {/* Search & Add Dropdown */}
           <div className="relative mb-4" ref={dropdownRef}>
-            <div className="profitability-search-shell relative flex items-center border border-gray-300 bg-white focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500 rounded-sm">
+            <div className="profitability-search-shell relative flex items-center border border-gray-300 bg-white focus-within:border-teal-600 rounded-sm transition-colors">
               <Search className="absolute left-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
@@ -1490,8 +1497,9 @@ export const ConsumablesCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .consumables-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .consumables-page .space-y-2 > div {
           border-color: #ccfbf1 !important;
@@ -1593,8 +1601,9 @@ export const SterilizationCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .sterilization-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .sterilization-page .calculator-card-content .bg-gray-50,
         :root[data-theme="light"] .sterilization-page .calculator-card-panel > .bg-gray-50 {
@@ -1670,8 +1679,9 @@ export const LabCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .lab-outsourcing-page .calculator-card-content .bg-gray-50,
         :root[data-theme="light"] .lab-outsourcing-page .calculator-card-panel > .bg-gray-50 {
@@ -1745,8 +1755,9 @@ export const MarketingCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .marketing-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .marketing-page .calculator-card-content .bg-gray-50,
         :root[data-theme="light"] .marketing-page .calculator-card-panel > .bg-gray-50 {
@@ -1821,8 +1832,9 @@ export const RegulatoryCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .regulatory-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .regulatory-page .calculator-card-content .bg-gray-50,
         :root[data-theme="light"] .regulatory-page .calculator-card-panel > .bg-gray-50 {
@@ -1898,8 +1910,9 @@ export const FinancialCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .financial-tax-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .financial-tax-page .calculator-card-content .bg-gray-50,
         :root[data-theme="light"] .financial-tax-page .calculator-card-panel > .bg-gray-50 {
@@ -1994,8 +2007,9 @@ export const OwnerCalculator = () => {
           border-color: #ccfbf1 !important;
         }
         :root[data-theme="light"] .owner-comp-page .calculator-card-content input:focus {
-          border-color: #0d9488 !important;
-          box-shadow: 0 0 0 1px #0d9488 !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
         :root[data-theme="light"] .owner-comp-page .calculator-card-content .bg-gray-50,
         :root[data-theme="light"] .owner-comp-page .calculator-card-panel > .bg-gray-50 {

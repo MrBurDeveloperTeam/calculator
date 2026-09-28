@@ -577,7 +577,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                            setPlan({});
                            setIsGenerated(false);
                         }}
-                        className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-teal-500 focus:border-teal-500 block p-3 font-semibold"
+                        className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-sm focus:outline-none focus:ring-0 focus:border-teal-600 block p-3 font-semibold"
                      >
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -602,7 +602,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                            type="number"
                            value={targetProfit}
                            onChange={(e) => setTargetProfit(parseFloat(e.target.value) || 0)}
-                           className="w-full pl-9 pr-4 py-3 bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                           className="w-full pl-9 pr-4 py-3 bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-sm focus:outline-none focus:ring-0 focus:border-teal-600"
                            placeholder="5000"
                         />
                      </div>

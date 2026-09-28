@@ -36,7 +36,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
   return (
     <div className={className}>
       {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
-      <div className={`clinic-field-shell relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden ${!disabled ? 'focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-1' : 'opacity-60 bg-slate-50'}`}>
+      <div className={`clinic-field-shell relative flex items-stretch rounded-xl border border-slate-200 shadow-sm transition-colors overflow-hidden ${!disabled ? 'focus-within:border-teal-600' : 'opacity-60 bg-slate-50'}`}>
 
         {/* Adornment Left (Currency) */}
         {type === 'currency' && (
@@ -64,7 +64,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
           className={`
             block flex-1 w-full min-w-0 border-0
             bg-white text-slate-900 font-semibold placeholder:text-slate-400
-            focus:ring-0 sm:text-sm sm:leading-6 px-4 ${inputClassName}
+            focus:outline-none focus:ring-0 sm:text-sm sm:leading-6 px-4 ${inputClassName}
             disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
           `}

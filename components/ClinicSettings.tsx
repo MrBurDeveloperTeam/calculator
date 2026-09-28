@@ -43,11 +43,11 @@ const hoursOptions = Array.from({ length: 48 }, (_, i) => (i + 1) * 0.5);
 const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", selectClassName = "h-12" }: any) => (
     <div className={className}>
         {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
-        <div className="clinic-field-shell relative flex items-stretch rounded-xl shadow-sm ring-1 ring-slate-200 transition-all overflow-hidden focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-1">
+        <div className="clinic-field-shell relative flex items-stretch rounded-xl border border-slate-200 shadow-sm transition-colors overflow-hidden focus-within:border-teal-600">
             <select
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
-                className={`block flex-1 w-full min-w-0 border-0 bg-white text-slate-900 font-semibold focus:ring-0 sm:text-sm sm:leading-6 px-4 ${selectClassName}`}
+                className={`block flex-1 w-full min-w-0 border-0 bg-white text-slate-900 font-semibold focus:outline-none focus:ring-0 sm:text-sm sm:leading-6 px-4 ${selectClassName}`}
             >
                 {options.map((opt: number) => (
                     <option key={opt} value={opt}>{opt}</option>
@@ -440,7 +440,7 @@ const ClinicSettings: React.FC = () => {
                             placeholder="My Dental Clinic"
                             className="mb-0"
                         />
-                        <div className="w-full md:w-1/2">
+                        <div className="w-full pt-2 md:w-1/2">
                             <StyledInput
                                 label="Currency Symbol"
                                 type="text"
