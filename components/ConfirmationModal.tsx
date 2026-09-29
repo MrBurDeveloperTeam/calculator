@@ -63,7 +63,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             disabled={isProcessing}
             className={`px-6 py-2 rounded-lg text-white font-bold transition-colors shadow-lg flex items-center gap-2 text-sm disabled:cursor-not-allowed disabled:opacity-60 ${variant === 'danger' ? 'bg-red-600 hover:bg-red-700 shadow-red-600/20' : 'bg-teal-600 hover:bg-teal-700 shadow-teal-600/20'}`}
           >
-            <CheckCircle2 className="w-4 h-4" />
+            {variant !== 'danger' && <CheckCircle2 className="w-4 h-4" />}
             {isProcessing ? 'Deleting...' : confirmText}
           </button>
         </div>
