@@ -21,7 +21,7 @@ const SaveModal: React.FC<SaveModalProps> = ({ isOpen, onClose, onConfirm, state
   // Calculate total monthly hours based on clinic settings
   const totalMonthlyHours = state.clinicSettings.workingDaysPerWeek * state.clinicSettings.hoursPerDay * 4.3333;
   
-  const totalStaffCost = state.staff.members.reduce((acc, m) => acc + m.salary + m.benefits + m.bonus, 0);
+  const totalStaffCost = state.staff.members.reduce((acc, m) => acc + (Number(m.salary) || 0) + (Number(m.benefits) || 0) + (Number(m.bonus) || 0), 0);
 
   const staffHourly = totalMonthlyHours > 0 
     ? totalStaffCost / totalMonthlyHours

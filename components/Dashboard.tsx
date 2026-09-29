@@ -44,7 +44,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
     const overheadCost = state.overhead.items.reduce((acc, i) => acc + i.monthlyCost, 0);
 
     // 2. Staff (Sum of List)
-    const staffCost = state.staff.members.reduce((acc, member) => acc + member.salary + member.benefits + member.bonus, 0);
+    const staffCost = state.staff.members.reduce(
+        (acc, member) => acc + (Number(member.salary) || 0) + (Number(member.benefits) || 0) + (Number(member.bonus) || 0),
+        0
+    );
 
     // 3. Depreciation (Sum of List)
     const depCost = state.depreciation.assets.reduce((acc, asset) => {

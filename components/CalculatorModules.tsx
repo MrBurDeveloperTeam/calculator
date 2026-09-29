@@ -985,16 +985,19 @@ export const StaffCalculator = () => {
   const { members } = state.staff;
   const { currencySymbol, workingDaysPerWeek, hoursPerDay } = state.clinicSettings;
 
-  const totalMonthlyCost = members.reduce((sum, m) => sum + m.salary + m.benefits + m.bonus, 0);
+  const totalMonthlyCost = members.reduce(
+    (sum, m) => sum + (Number(m.salary) || 0) + (Number(m.benefits) || 0) + (Number(m.bonus) || 0),
+    0
+  );
   const clinicTotalHours = getTotalMonthlyHours(); // The Clinic's Total Operating Hours
 
   // The "Clinic Burden" Rate (What the clinic pays per operating hour for ALL staff)
   const clinicHourlyCost = clinicTotalHours > 0 ? totalMonthlyCost / clinicTotalHours : 0;
 
   // Aggregate visual data
-  const totalSalaries = members.reduce((sum, m) => sum + m.salary, 0);
-  const totalBenefits = members.reduce((sum, m) => sum + m.benefits, 0);
-  const totalBonus = members.reduce((sum, m) => sum + m.bonus, 0);
+  const totalSalaries = members.reduce((sum, m) => sum + (Number(m.salary) || 0), 0);
+  const totalBenefits = members.reduce((sum, m) => sum + (Number(m.benefits) || 0), 0);
+  const totalBonus = members.reduce((sum, m) => sum + (Number(m.bonus) || 0), 0);
 
   const visualData = [
     { name: 'Base Salaries', value: totalSalaries, color: '#5F8F89' },
@@ -1009,7 +1012,7 @@ export const StaffCalculator = () => {
     const pHours = m.workingHours ?? hoursPerDay;
     const personalMonthlyHours = pDays * pHours * 4.3333;
 
-    const totalPay = m.salary + m.benefits + m.bonus;
+    const totalPay = (Number(m.salary) || 0) + (Number(m.benefits) || 0) + (Number(m.bonus) || 0);
 
     // True Hourly Rate = Pay / THEIR worked hours
     const trueHourlyRate = personalMonthlyHours > 0 ? totalPay / personalMonthlyHours : 0;

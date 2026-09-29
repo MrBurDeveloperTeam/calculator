@@ -92,7 +92,10 @@ const ClinicSettings: React.FC = () => {
     // Calculated local summary
     const monthlyCapacityHours = localSettings.workingDaysPerWeek * localSettings.hoursPerDay * 4.3333;
     const totalOverhead = localOverheadItems.reduce((acc, i) => acc + i.monthlyCost, 0);
-    const totalStaff = localStaffMembers.reduce((acc, m) => acc + m.salary + m.benefits + m.bonus, 0);
+    const totalStaff = localStaffMembers.reduce(
+        (acc, m) => acc + (Number(m.salary) || 0) + (Number(m.benefits) || 0) + (Number(m.bonus) || 0),
+        0
+    );
     const totalAssets = localAssets.reduce((acc, a) => acc + a.purchasePrice, 0);
 
     // --- Helpers ---
@@ -217,7 +220,9 @@ const ClinicSettings: React.FC = () => {
         }
     };
     const updateStaff = (id: string, field: string, value: any) => {
-        setLocalStaffMembers(prev => prev.map(m => m.id === id ? { ...m, [field]: value } : m));
+        const numericFields = ['salary', 'benefits', 'bonus', 'workingDays', 'workingHours'];
+        const normalizedValue = numericFields.includes(field) ? (Number(value) || 0) : value;
+        setLocalStaffMembers(prev => prev.map(m => m.id === id ? { ...m, [field]: normalizedValue } : m));
     };
     const removeStaff = async (id: string) => {
         if (!state.staff.members.some(member => member.id === id)) {
