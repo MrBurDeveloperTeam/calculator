@@ -36,7 +36,7 @@ const ROICalculatorModal: React.FC<ROICalculatorModalProps> = ({ isOpen, onClose
    // Calculate Fixed OpEx (Strictly Fixed Parts)
    const fixedOpEx = useMemo(() => {
       const overhead = state.overhead.items.reduce((acc, i) => acc + i.monthlyCost, 0);
-      const staff = state.staff.members.reduce((acc, m) => acc + m.salary + m.benefits + m.bonus, 0);
+      const staff = state.staff.members.reduce((acc, m) => acc + (Number(m.salary) || 0) + (Number(m.benefits) || 0) + (Number(m.bonus) || 0), 0);
       const depreciation = state.depreciation.assets.reduce((acc, a) => {
          const months = a.lifespanYears * 12;
          return acc + (months > 0 ? (a.purchasePrice - a.resaleValue) / months : 0);
