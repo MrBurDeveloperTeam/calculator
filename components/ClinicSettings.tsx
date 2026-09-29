@@ -77,6 +77,11 @@ const ClinicSettings: React.FC = () => {
     const [localStaffMembers, setLocalStaffMembers] = useState<StaffMember[]>(state.staff.members);
     const [localAssets, setLocalAssets] = useState<Asset[]>(state.depreciation.assets);
     const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+    const [deleteTarget, setDeleteTarget] = useState<{
+        section: 'overhead' | 'staff' | 'depreciation';
+        id: string;
+        label: string;
+    } | null>(null);
 
     // Confirmation Modal State
     const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; section: 'params' | 'overhead' | 'staff' | 'assets' | null }>({
@@ -246,6 +251,22 @@ const ClinicSettings: React.FC = () => {
         const deleted = await deleteRegisterItem('depreciation', id);
         if (deleted) setLocalAssets(prev => prev.filter(a => a.id !== id));
         setDeletingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+    };
+
+    const requestDelete = (
+        section: 'overhead' | 'staff' | 'depreciation',
+        id: string,
+        label: string
+    ) => setDeleteTarget({ section, id, label });
+
+    const executeDelete = async () => {
+        if (!deleteTarget) return;
+
+        const { section, id } = deleteTarget;
+        if (section === 'overhead') await removeOverhead(id);
+        if (section === 'staff') await removeStaff(id);
+        if (section === 'depreciation') await removeAsset(id);
+        setDeleteTarget(null);
     };
     const handleSaveAssets = () => {
         if (validateAssets()) {
@@ -563,7 +584,7 @@ const ClinicSettings: React.FC = () => {
             <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-2">
                     {localOverheadItems.map((item) => (
-                        <ListItem key={item.id} onRemove={() => removeOverhead(item.id)} isDeleting={deletingIds.has(item.id)}>
+                        <ListItem key={item.id} onRemove={() => requestDelete('overhead', item.id, 'overhead item')} isDeleting={deletingIds.has(item.id)}>
                             <div className="md:col-span-8">
                                 <StyledInput
                                     type="text"
@@ -706,7 +727,7 @@ const ClinicSettings: React.FC = () => {
                                         <Copy className="w-5 h-5" />
                                     </button>
                                     <button
-                                        onClick={() => removeStaff(member.id)}
+                                        onClick={() => requestDelete('staff', member.id, 'staff member')}
                                         disabled={deletingIds.has(member.id)}
                                         className="text-slate-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors"
                                         title="Remove Staff"
@@ -746,7 +767,7 @@ const ClinicSettings: React.FC = () => {
                         <div className="col-span-2">Resale Value</div>
                     </div>
                     {localAssets.map((asset) => (
-                        <ListItem key={asset.id} onRemove={() => removeAsset(asset.id)} isDeleting={deletingIds.has(asset.id)}>
+                        <ListItem key={asset.id} onRemove={() => requestDelete('depreciation', asset.id, 'asset')} isDeleting={deletingIds.has(asset.id)}>
                             <div className="md:col-span-5">
                                 <StyledInput type="text" placeholder="Equipment Name" value={asset.name} onChange={(v) => updateAsset(asset.id, 'name', v)} className="mb-0" />
                             </div>
@@ -810,6 +831,17 @@ const ClinicSettings: React.FC = () => {
                 onConfirm={executeSave}
                 title="Save Changes?"
                 message="This will update your clinic's financial baseline and trigger a global recalculation. Are you sure?"
+            />
+
+            <ConfirmationModal
+                isOpen={deleteTarget !== null}
+                onClose={() => setDeleteTarget(null)}
+                onConfirm={executeDelete}
+                title={`Delete ${deleteTarget?.label ?? 'item'}?`}
+                message={`Are you sure you want to delete this ${deleteTarget?.label ?? 'item'}? This action cannot be undone.`}
+                confirmText="Delete"
+                variant="danger"
+                isProcessing={deleteTarget ? deletingIds.has(deleteTarget.id) : false}
             />
 
         </div>

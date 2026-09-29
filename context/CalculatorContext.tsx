@@ -346,7 +346,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           [listKey]: (prev[section] as any)[listKey].filter((item: { id: string }) => item.id !== id)
         }
       }));
-      setToast({ message: `${label[0].toUpperCase()}${label.slice(1)} deleted from Cloud.`, isVisible: true });
+      setToast({ message: `${label[0].toUpperCase()}${label.slice(1)} deleted successfully.`, isVisible: true });
       logCalculatorActivity('config_item_deleted', `Deleted ${label}: ${id}`);
       return true;
     } catch (e) {
