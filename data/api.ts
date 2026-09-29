@@ -51,15 +51,29 @@ export const upsertListItem = async <T extends { id: string }>(table: string, us
     return handleResponse(res);
 };
 
-export const deleteListItem = async (table: string, id: string) => {
-    const res = await supabase.from(table).delete().eq('id', id);
-    return handleResponse(res);
+export const deleteListItem = async (table: string, userId: string, id: string) => {
+    // Scope the mutation to the signed-in owner as well as the row ID.  The
+    // returned row lets callers distinguish a successful delete from a
+    // no-op (for example, an RLS policy rejecting the mutation).
+    const res = await supabase
+        .from(table)
+        .delete()
+        .eq('user_id', userId)
+        .eq('id', id)
+        .select('id');
+
+    const deletedRows = handleResponse(res) as Array<{ id: string }> | null;
+    if (!deletedRows?.length) {
+        throw new Error(`No matching ${table} row was deleted.`);
+    }
+    return deletedRows;
 };
 
 // --- Batch Sync Operations (For overwriting lists) ---
 export const syncEntireList = async <T extends { id: string }>(table: string, userId: string, items: T[]) => {
     // 1. Delete all existing for this user
-    await supabase.from(table).delete().eq('user_id', userId);
+    const deleteRes = await supabase.from(table).delete().eq('user_id', userId);
+    handleResponse(deleteRes);
 
     // 2. Insert new payload if there is one
     if (items.length > 0) {
@@ -96,7 +110,7 @@ export const upsertProcedure = async (userId: string, proc: SavedProcedure) => {
     return await upsertListItem('calc_saved_procedures', userId, payload);
 };
 
-export const deleteProcedure = async (id: string) => deleteListItem('calc_saved_procedures', id);
+export const deleteProcedure = async (userId: string, id: string) => deleteListItem('calc_saved_procedures', userId, id);
 
 export const getPlans = async (userId: string): Promise<SavedPlan[]> => {
     const items = await getListItems<any>('calc_saved_plans', userId);
@@ -128,4 +142,4 @@ export const upsertPlan = async (userId: string, plan: SavedPlan) => {
     return await upsertListItem('calc_saved_plans', userId, payload);
 };
 
-export const deletePlan = async (id: string) => deleteListItem('calc_saved_plans', id);
+export const deletePlan = async (userId: string, id: string) => deleteListItem('calc_saved_plans', userId, id);

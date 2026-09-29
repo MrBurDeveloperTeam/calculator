@@ -241,6 +241,7 @@ export interface CalculatorContextType {
   calculatorDataUserId: CalculatorDataOwnerId;
   updateSection: <K extends keyof GlobalState>(section: K, data: Partial<GlobalState[K]>) => void;
   saveSection: (section: keyof GlobalState, customMessage?: string, explicitData?: any) => void;
+  deleteRegisterItem: (section: 'overhead' | 'staff' | 'depreciation', id: string) => Promise<boolean>;
   resetAll: () => void;
   toast: { message: string; isVisible: boolean };
   hideToast: () => void;

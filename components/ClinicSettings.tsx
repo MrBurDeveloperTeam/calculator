@@ -18,9 +18,11 @@ import { ClinicSettingsData, OverheadItem, StaffMember, Asset } from '../types';
 // --- Helper Component for List Items (Overhead & Assets) ---
 const ListItem: React.FC<{
     onRemove: () => void;
+    isDeleting?: boolean;
     children: React.ReactNode;
 }> = ({
     onRemove,
+    isDeleting = false,
     children
 }) => (
         <div className="clinic-list-item flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-teal-300 transition-colors mb-3">
@@ -29,6 +31,7 @@ const ListItem: React.FC<{
             </div>
             <button
                 onClick={onRemove}
+                disabled={isDeleting}
                 className="text-slate-300 hover:text-red-500 p-3 rounded-lg hover:bg-red-50 transition-colors mt-0.5"
                 title="Remove Item"
             >
@@ -58,7 +61,7 @@ const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", s
 );
 
 const ClinicSettings: React.FC = () => {
-    const { state, updateSection, saveSection, showToast } = useCalculator();
+    const { state, updateSection, saveSection, deleteRegisterItem, showToast } = useCalculator();
 
     // Sync local state when global state changes (e.g. after Load/Clear)
     useEffect(() => {
@@ -73,6 +76,7 @@ const ClinicSettings: React.FC = () => {
     const [localOverheadItems, setLocalOverheadItems] = useState<OverheadItem[]>(state.overhead.items);
     const [localStaffMembers, setLocalStaffMembers] = useState<StaffMember[]>(state.staff.members);
     const [localAssets, setLocalAssets] = useState<Asset[]>(state.depreciation.assets);
+    const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
     // Confirmation Modal State
     const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; section: 'params' | 'overhead' | 'staff' | 'assets' | null }>({
@@ -168,8 +172,15 @@ const ClinicSettings: React.FC = () => {
     const updateOverhead = (id: string, field: 'name' | 'monthlyCost', value: any) => {
         setLocalOverheadItems(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
     };
-    const removeOverhead = (id: string) => {
-        setLocalOverheadItems(prev => prev.filter(i => i.id !== id));
+    const removeOverhead = async (id: string) => {
+        if (!state.overhead.items.some(item => item.id === id)) {
+            setLocalOverheadItems(prev => prev.filter(i => i.id !== id));
+            return;
+        }
+        setDeletingIds(prev => new Set(prev).add(id));
+        const deleted = await deleteRegisterItem('overhead', id);
+        if (deleted) setLocalOverheadItems(prev => prev.filter(i => i.id !== id));
+        setDeletingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
     };
     const handleSaveOverhead = () => {
         if (validateOverhead()) {
@@ -203,8 +214,15 @@ const ClinicSettings: React.FC = () => {
     const updateStaff = (id: string, field: string, value: any) => {
         setLocalStaffMembers(prev => prev.map(m => m.id === id ? { ...m, [field]: value } : m));
     };
-    const removeStaff = (id: string) => {
-        setLocalStaffMembers(prev => prev.filter(m => m.id !== id));
+    const removeStaff = async (id: string) => {
+        if (!state.staff.members.some(member => member.id === id)) {
+            setLocalStaffMembers(prev => prev.filter(m => m.id !== id));
+            return;
+        }
+        setDeletingIds(prev => new Set(prev).add(id));
+        const deleted = await deleteRegisterItem('staff', id);
+        if (deleted) setLocalStaffMembers(prev => prev.filter(m => m.id !== id));
+        setDeletingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
     };
     const handleSaveStaff = () => {
         if (validateStaff()) {
@@ -219,8 +237,15 @@ const ClinicSettings: React.FC = () => {
     const updateAsset = (id: string, field: string, value: any) => {
         setLocalAssets(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
     };
-    const removeAsset = (id: string) => {
-        setLocalAssets(prev => prev.filter(a => a.id !== id));
+    const removeAsset = async (id: string) => {
+        if (!state.depreciation.assets.some(asset => asset.id === id)) {
+            setLocalAssets(prev => prev.filter(a => a.id !== id));
+            return;
+        }
+        setDeletingIds(prev => new Set(prev).add(id));
+        const deleted = await deleteRegisterItem('depreciation', id);
+        if (deleted) setLocalAssets(prev => prev.filter(a => a.id !== id));
+        setDeletingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
     };
     const handleSaveAssets = () => {
         if (validateAssets()) {
@@ -538,7 +563,7 @@ const ClinicSettings: React.FC = () => {
             <CollapsibleSection title="2. Fixed Overhead Register" total={totalOverhead} subtitle="Recurring monthly facility costs" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-2">
                     {localOverheadItems.map((item) => (
-                        <ListItem key={item.id} onRemove={() => removeOverhead(item.id)}>
+                        <ListItem key={item.id} onRemove={() => removeOverhead(item.id)} isDeleting={deletingIds.has(item.id)}>
                             <div className="md:col-span-8">
                                 <StyledInput
                                     type="text"
@@ -682,6 +707,7 @@ const ClinicSettings: React.FC = () => {
                                     </button>
                                     <button
                                         onClick={() => removeStaff(member.id)}
+                                        disabled={deletingIds.has(member.id)}
                                         className="text-slate-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors"
                                         title="Remove Staff"
                                     >
@@ -720,7 +746,7 @@ const ClinicSettings: React.FC = () => {
                         <div className="col-span-2">Resale Value</div>
                     </div>
                     {localAssets.map((asset) => (
-                        <ListItem key={asset.id} onRemove={() => removeAsset(asset.id)}>
+                        <ListItem key={asset.id} onRemove={() => removeAsset(asset.id)} isDeleting={deletingIds.has(asset.id)}>
                             <div className="md:col-span-5">
                                 <StyledInput type="text" placeholder="Equipment Name" value={asset.name} onChange={(v) => updateAsset(asset.id, 'name', v)} className="mb-0" />
                             </div>
