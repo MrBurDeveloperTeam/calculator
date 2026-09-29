@@ -321,6 +321,41 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  const deleteRegisterItem = async (
+    section: 'overhead' | 'staff' | 'depreciation',
+    id: string
+  ): Promise<boolean> => {
+    if (!user) {
+      setToast({ message: 'Please sign in before deleting saved data.', isVisible: true });
+      return false;
+    }
+
+    const config = {
+      overhead: { table: 'calc_overhead_items', listKey: 'items', label: 'overhead item' },
+      staff: { table: 'calc_staff_members', listKey: 'members', label: 'staff member' },
+      depreciation: { table: 'calc_depreciation_assets', listKey: 'assets', label: 'asset' }
+    } as const;
+    const { table, listKey, label } = config[section];
+
+    try {
+      await api.deleteListItem(table, user.id, id);
+      setState(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [listKey]: (prev[section] as any)[listKey].filter((item: { id: string }) => item.id !== id)
+        }
+      }));
+      setToast({ message: `${label[0].toUpperCase()}${label.slice(1)} deleted successfully.`, isVisible: true });
+      logCalculatorActivity('config_item_deleted', `Deleted ${label}: ${id}`);
+      return true;
+    } catch (e) {
+      console.error(`Failed to delete ${label} from Supabase`, e);
+      setToast({ message: `Error deleting ${label}.`, isVisible: true });
+      return false;
+    }
+  };
+
   const resetAll = () => {
     // Currently disabled for cloud integrity, could implement delete cascader
     setToast({ message: 'Cloud reset not implemented yet.', isVisible: true });
@@ -379,7 +414,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deletePlan = async (id: string) => {
     try {
       const plan = savedPlans.find(p => p.id === id);
-      await api.deletePlan(id);
+      await api.deletePlan(user!.id, id);
       setSavedPlans(prev => prev.filter(p => p.id !== id));
       setToast({ message: 'Plan removed from Cloud.', isVisible: true });
       logCalculatorActivity('plan_deleted', `Deleted plan: ${plan?.name || id}`);
@@ -418,7 +453,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deleteProcedure = async (id: string) => {
     try {
       const procedure = savedProcedures.find(p => p.id === id);
-      await api.deleteProcedure(id);
+      await api.deleteProcedure(user!.id, id);
       setSavedProcedures(prev => prev.filter(p => p.id !== id));
       setToast({ message: 'Procedure removed from Cloud.', isVisible: true });
       logCalculatorActivity('procedure_deleted', `Deleted procedure: ${procedure?.name || id}`);
@@ -444,6 +479,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       updateSection,
       resetAll,
       saveSection,
+      deleteRegisterItem,
       toast,
       hideToast,
       showToast,

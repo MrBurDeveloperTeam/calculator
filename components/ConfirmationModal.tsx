@@ -7,9 +7,21 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   title: string;
   message: string;
+  confirmText?: string;
+  variant?: 'save' | 'danger';
+  isProcessing?: boolean;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm, title, message }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText = 'Confirm Save',
+  variant = 'save',
+  isProcessing = false
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -30,9 +42,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
         </div>
 
         <div className="p-6">
-          <div className="confirmation-warning bg-amber-50 border border-amber-100 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="confirmation-warning-icon w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p className="confirmation-warning-text text-amber-800 text-sm leading-relaxed">
+          <div className={`confirmation-warning rounded-lg p-4 flex items-start gap-3 border ${variant === 'danger' ? 'bg-red-50 border-red-100' : 'bg-amber-50 border-amber-100'}`}>
+            <AlertTriangle className={`confirmation-warning-icon w-5 h-5 flex-shrink-0 mt-0.5 ${variant === 'danger' ? 'text-red-600' : 'text-amber-600'}`} />
+            <p className={`confirmation-warning-text text-sm leading-relaxed ${variant === 'danger' ? 'text-red-800' : 'text-amber-800'}`}>
               {message}
             </p>
           </div>
@@ -41,16 +53,18 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
         <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
           <button 
             onClick={onClose}
+            disabled={isProcessing}
             className="px-4 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-200 transition-colors text-sm"
           >
             Cancel
           </button>
           <button 
             onClick={onConfirm}
-            className="px-6 py-2 rounded-lg bg-teal-600 text-white font-bold hover:bg-teal-700 transition-colors shadow-lg shadow-teal-600/20 flex items-center gap-2 text-sm"
+            disabled={isProcessing}
+            className={`px-6 py-2 rounded-lg text-white font-bold transition-colors shadow-lg flex items-center gap-2 text-sm disabled:cursor-not-allowed disabled:opacity-60 ${variant === 'danger' ? 'bg-red-600 hover:bg-red-700 shadow-red-600/20' : 'bg-teal-600 hover:bg-teal-700 shadow-teal-600/20'}`}
           >
-            <CheckCircle2 className="w-4 h-4" />
-            Confirm Save
+            {variant !== 'danger' && <CheckCircle2 className="w-4 h-4" />}
+            {isProcessing ? 'Deleting...' : confirmText}
           </button>
         </div>
       </div>
