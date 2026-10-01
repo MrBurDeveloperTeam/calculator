@@ -188,60 +188,11 @@ const LandingPage: React.FC = () => {
           <div className="preview-glow preview-glow-one" />
           <div className="preview-glow preview-glow-two" />
 
-          <div className="calculator-preview">
-            <div className="calculator-preview-header">
-              <div>
-                <small>SNABBB CALCULATOR</small>
-                <strong>Clinic profitability</strong>
-              </div>
-              <span className="preview-live-badge">LIVE</span>
-            </div>
-
-            <div className="calculator-preview-body">
-              <div className="preview-heading-row">
-                <div>
-                  <small>Monthly overview</small>
-                  <h3>Profit snapshot</h3>
-                </div>
-                <div className="preview-period">This month</div>
-              </div>
-
-              <div className="preview-metrics">
-                <div>
-                  <small>Revenue</small>
-                  <strong>USD 42,800</strong>
-                  <span className="positive">+18.4%</span>
-                </div>
-                <div>
-                  <small>Net margin</small>
-                  <strong>34.6%</strong>
-                  <span className="positive">+6.2%</span>
-                </div>
-              </div>
-
-              <div className="preview-chart">
-                <span className="chart-line chart-line-one" />
-                <span className="chart-line chart-line-two" />
-                <span className="chart-line chart-line-three" />
-                <span className="chart-point chart-point-one" />
-                <span className="chart-point chart-point-two" />
-                <span className="chart-point chart-point-three" />
-                <span className="chart-point chart-point-four" />
-              </div>
-
-              <div className="preview-cost-list">
-                <div>
-                  <span className="preview-icon teal"><Clock3 size={14} /></span>
-                  <span><strong>Hourly chair rate</strong><small>Clinic overhead allocation</small></span>
-                  <b>USD 145/hr</b>
-                </div>
-                <div>
-                  <span className="preview-icon blue"><BarChart3 size={14} /></span>
-                  <span><strong>Treatment ROI</strong><small>Average procedure margin</small></span>
-                  <b>42.8%</b>
-                </div>
-              </div>
-            </div>
+          <div className="calculator-preview clinic-settings-preview">
+            <img
+              src="/images/clinic-settings-preview.png"
+              alt="Snabbb clinic settings dashboard"
+            />
           </div>
 
           <div className="floating-card floating-card-profit">

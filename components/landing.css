@@ -317,6 +317,16 @@
   box-shadow: 0 35px 80px rgba(31, 99, 101, 0.16);
 }
 
+.clinic-settings-preview {
+  background: #f8fffe;
+}
+
+.clinic-settings-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .calculator-preview-header {
   display: flex;
   align-items: center;
@@ -1065,8 +1075,8 @@
   padding: 50px 60px;
   border-radius: 25px;
   color: white;
-  background: linear-gradient(135deg, #6da8a2 0%, #82b8b1 100%);
-  box-shadow: 0 25px 55px rgba(77, 137, 131, 0.22);
+  background: #43847d;
+  box-shadow: 0 25px 55px rgba(67, 132, 125, 0.24);
 }
 
 .landing-final-cta .landing-section-label {
