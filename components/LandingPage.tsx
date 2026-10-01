@@ -229,7 +229,6 @@ const LandingPage: React.FC = () => {
               <div className="landing-feature-icon"><Icon size={22} /></div>
               <h3>{title}</h3>
               <p>{description}</p>
-              <ArrowRight className="feature-arrow" size={17} />
             </article>
           ))}
         </div>

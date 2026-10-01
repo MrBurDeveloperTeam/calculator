@@ -711,13 +711,6 @@
   line-height: 1.7;
 }
 
-.feature-arrow {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  color: var(--calc-teal);
-}
-
 .landing-simulator-section {
   display: grid;
   grid-template-columns: 1fr 0.85fr;
