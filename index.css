@@ -974,6 +974,57 @@ body {
   opacity: 1 !important;
 }
 
+/* Keep authentication pages light even when the app theme is dark */
+:root[data-theme="dark"] .auth-light-shell {
+  color-scheme: light;
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell main {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .bg-white {
+  background-color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .bg-slate-100 {
+  background-color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .text-slate-900 {
+  color: #0f172a !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .text-slate-500,
+:root[data-theme="dark"] .auth-light-shell .text-slate-400 {
+  color: #64748b !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .border-slate-200 {
+  border-color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell input {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell input::placeholder {
+  color: #94a3b8 !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .text-slate-800 {
+  color: #1e293b !important;
+}
+
+:root[data-theme="dark"] .auth-light-shell .bg-slate-900 {
+  background-color: #0f172a !important;
+}
+
 /* Molar Chat: readable text in dark mode */
 
 /* Chat input */
