@@ -131,11 +131,22 @@
 
 .landing-nav-cta,
 .landing-primary-button {
-  padding: 14px 20px;
+  padding: 10px 16px;
   border: 0;
-  color: white;
+  color: #ffffff !important;
   background: var(--calc-teal);
   box-shadow: 0 12px 25px rgba(11, 159, 145, 0.2);
+}
+
+.landing-nav-cta {
+  gap: 7px;
+  border-radius: 11px;
+  font-size: 14px;
+}
+
+.landing-primary-button,
+.landing-primary-button svg {
+  color: #ffffff !important;
 }
 
 .landing-nav-cta:hover,

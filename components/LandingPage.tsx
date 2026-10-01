@@ -169,7 +169,7 @@ const LandingPage: React.FC = () => {
 
           <div className="landing-hero-actions">
             <a className="landing-primary-button" href={SNABBB_SIGNUP_URL}>
-              Start calculating <ArrowRight size={18} />
+              Sign Up <ArrowRight size={18} />
             </a>
 
             <a className="landing-secondary-button" href="#features">
