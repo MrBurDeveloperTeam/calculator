@@ -421,7 +421,7 @@ const LandingPage: React.FC = () => {
 
       <footer className="landing-footer">
         <a className="landing-brand" href="#top">
-          <img src="/Snabbb (White).png" alt="Snabbb" />
+          <img src="/Snabbb (Teal).png" alt="Snabbb" />
           <span>Calculator</span>
         </a>
 

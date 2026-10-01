@@ -1105,17 +1105,18 @@
   align-items: center;
   gap: 30px;
   padding: 35px 6vw;
-  color: #9bb0b3;
-  background: #102b35;
+  color: #647985;
+  background: #ffffff;
+  border-top: 1px solid var(--calc-line);
   font-size: 12px;
 }
 
 .landing-footer .landing-brand {
-  color: white;
+  color: var(--calc-navy);
 }
 
 .landing-footer .landing-brand span {
-  color: #83e6d8;
+  color: var(--calc-navy);
 }
 
 .landing-footer p {
@@ -1128,7 +1129,7 @@
 }
 
 .landing-footer > div a:hover {
-  color: white;
+  color: var(--calc-teal-dark);
 }
 
 @media (max-width: 900px) {
