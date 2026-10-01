@@ -260,7 +260,6 @@ const LandingPage: React.FC = () => {
         <div><strong>10+</strong><span>financial calculators</span></div>
         <div><strong>100%</strong><span>clinic-focused modelling</span></div>
         <div><strong>24/7</strong><span>access to your workspace</span></div>
-        <div><strong>0</strong><span>guesswork required</span></div>
       </section>
 
       <section id="features" className="landing-section">
@@ -416,7 +415,7 @@ const LandingPage: React.FC = () => {
         </div>
 
         <a className="landing-light-button" href={SNABBB_SIGNUP_URL}>
-          Create free account <ArrowRight size={18} />
+          Sign Up <ArrowRight size={18} />
         </a>
       </section>
 
