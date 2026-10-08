@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { SNABBB_SIGNUP_URL } from '../constants/authLinks';
+import { SNABBB_APP_URL, SNABBB_SIGNUP_URL } from '../constants/authLinks';
 import './landing.css';
 
 const features = [
@@ -103,7 +103,7 @@ const LandingPage: React.FC = () => {
   return (
     <main className="landing-page" id="top">
       <nav className="landing-nav">
-        <a className="landing-brand" href="#top" aria-label="Snabbb Calculator home">
+        <a className="landing-brand" href={SNABBB_APP_URL} aria-label="Go to Snabbb app">
           <img src="/Snabbb (Teal).png" alt="Snabbb" />
           <span>Calculator</span>
         </a>
@@ -370,7 +370,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       <footer className="landing-footer">
-        <a className="landing-brand" href="#top">
+        <a className="landing-brand" href={SNABBB_APP_URL} aria-label="Go to Snabbb app">
           <img src="/Snabbb (Teal).png" alt="Snabbb" />
           <span>Calculator</span>
         </a>
