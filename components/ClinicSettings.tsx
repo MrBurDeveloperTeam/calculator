@@ -108,11 +108,11 @@ const ClinicSettings: React.FC = () => {
     // --- Validation ---
     const validateParams = () => {
         if (localSettings.workingDaysPerWeek <= 0 || localSettings.workingDaysPerWeek > 7) {
-            showToast("Working days must be > 0 and ≤ 7.");
+            showToast("Working days must be > 0 and ≤ 7.", 'warning');
             return false;
         }
         if (localSettings.hoursPerDay <= 0 || localSettings.hoursPerDay > 24) {
-            showToast("Hours per day must be > 0 and ≤ 24.");
+            showToast("Hours per day must be > 0 and ≤ 24.", 'warning');
             return false;
         }
         return true;
@@ -121,11 +121,11 @@ const ClinicSettings: React.FC = () => {
     const validateOverhead = () => {
         for (const item of localOverheadItems) {
             if (!item.name.trim()) {
-                showToast("All overhead items must have a name.");
+                showToast("All overhead items must have a name.", 'warning');
                 return false;
             }
             if (item.monthlyCost < 0) {
-                showToast("Costs cannot be negative.");
+                showToast("Costs cannot be negative.", 'warning');
                 return false;
             }
         }
@@ -135,15 +135,15 @@ const ClinicSettings: React.FC = () => {
     const validateStaff = () => {
         for (const member of localStaffMembers) {
             if (!member.name.trim()) {
-                showToast("All staff members must have a name.");
+                showToast("All staff members must have a name.", 'warning');
                 return false;
             }
             if (member.salary < 0 || member.benefits < 0 || member.bonus < 0) {
-                showToast("Salaries and benefits cannot be negative.");
+                showToast("Salaries and benefits cannot be negative.", 'warning');
                 return false;
             }
             if ((member.workingDays || 0) > 7 || (member.workingHours || 0) > 24) {
-                showToast("Invalid staff schedule detected.");
+                showToast("Invalid staff schedule detected.", 'warning');
                 return false;
             }
         }
@@ -153,11 +153,11 @@ const ClinicSettings: React.FC = () => {
     const validateAssets = () => {
         for (const asset of localAssets) {
             if (!asset.name.trim()) {
-                showToast("All assets must have a name.");
+                showToast("All assets must have a name.", 'warning');
                 return false;
             }
             if (asset.purchasePrice < 0 || asset.resaleValue < 0 || asset.lifespanYears < 0) {
-                showToast("Asset values cannot be negative.");
+                showToast("Asset values cannot be negative.", 'warning');
                 return false;
             }
         }

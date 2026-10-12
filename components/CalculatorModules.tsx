@@ -145,13 +145,24 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
   readOnly = false,
   pageClassName = ''
 }) => {
-  const { saveSection } = useCalculator();
+  const { state, saveSection, showToast } = useCalculator();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const styles = THEME_CONFIG[theme];
 
   const handleSave = () => {
     if (section !== 'procedure') {
+      if (section === 'regulatory') {
+        const { annualApc, annualXray, annualInsurance, monthlyWaste } = state.regulatory;
+        const hasEmptyRegulatoryField = [annualApc, annualXray, annualInsurance, monthlyWaste]
+          .some(value => !Number.isFinite(value) || value <= 0);
+
+        if (hasEmptyRegulatoryField) {
+          showToast('Complete all Regulatory & Insurance fields before saving.', 'warning');
+          return;
+        }
+      }
+
       saveSection(section as keyof GlobalState);
       setIsModalOpen(false);
     }
@@ -289,13 +300,13 @@ export const ProcedureBuilder = () => {
     });
     setSearchTerm('');
     setIsDropdownOpen(false);
-    showToast(alreadyAdded ? `${item.name} quantity increased.` : `${item.name} added to materials.`);
+    showToast(alreadyAdded ? `${item.name} quantity increased.` : `${item.name} added to materials.`, 'success');
   };
 
   const handleRemoveConsumable = (id: string) => {
     const removedItem = recipe.find(item => item.id === id);
     setRecipe(prev => prev.filter(item => item.id !== id));
-    if (removedItem) showToast(`${removedItem.name} removed from materials.`);
+    if (removedItem) showToast(`${removedItem.name} removed from materials.`, 'success');
   };
 
   const handleUpdateQuantity = (id: string, qty: number) => {
@@ -309,11 +320,11 @@ export const ProcedureBuilder = () => {
   const handleSaveProcedure = () => {
     // Validation
     if (!inputName || inputName.trim() === '') {
-      showToast("Procedure Name is required.");
+      showToast("Procedure Name is required.", 'warning');
       return;
     }
     if (inputDuration <= 0) {
-      showToast("Duration must be greater than 0 minutes.");
+      showToast("Duration must be greater than 0 minutes.", 'warning');
       return;
     }
 
@@ -331,7 +342,7 @@ export const ProcedureBuilder = () => {
     } else {
       saveProcedure(newProcedure);
     }
-    showToast(editingId ? "Procedure updated successfully!" : "Procedure saved to library!");
+    showToast(editingId ? "Procedure updated successfully!" : "Procedure saved to library!", 'success');
     resetForm();
   };
 
@@ -363,7 +374,7 @@ export const ProcedureBuilder = () => {
     if (deleteTargetId) {
       deleteProcedure(deleteTargetId);
       if (editingId === deleteTargetId) resetForm();
-      showToast('Procedure deleted successfully.');
+      showToast('Procedure deleted successfully.', 'success');
     }
     setShowDeleteModal(false);
     setDeleteTargetId(null);
@@ -1447,7 +1458,7 @@ export const ConsumablesCalculator = () => {
   const addItem = () => {
     const itemName = newItemName.trim();
     if (!itemName || newItemCost <= 0) {
-      showToast('Enter an item name and a cost greater than 0.');
+      showToast('Enter an item name and a cost greater than 0.', 'warning');
       return;
     }
 
@@ -1456,13 +1467,13 @@ export const ConsumablesCalculator = () => {
     });
     setNewItemName('');
     setNewItemCost(0);
-    showToast(`${itemName} added successfully.`);
+    showToast(`${itemName} added successfully.`, 'success');
   };
 
   const removeItem = (id: string) => {
     const removedItem = items.find(item => item.id === id);
     updateSection('consumables', { items: items.filter(i => i.id !== id) });
-    if (removedItem) showToast(`${removedItem.name} removed successfully.`);
+    if (removedItem) showToast(`${removedItem.name} removed successfully.`, 'success');
   };
 
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);

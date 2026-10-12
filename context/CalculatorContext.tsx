@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure, CalculatorDataStatus, CalculatorDataOwnerId } from '../types';
+import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure, CalculatorDataStatus, CalculatorDataOwnerId, ToastVariant } from '../types';
 import { useAuth } from './AuthContext';
 import * as api from '../data/api';
 import { logActivityToOdoo } from '../services/logActivityToOdoo';
@@ -21,7 +21,7 @@ const INITIAL_STATE: GlobalState = {
 const CalculatorContext = createContext<CalculatorContextType | undefined>(undefined);
 
 export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [toast, setToast] = useState({ message: '', isVisible: false });
+  const [toast, setToast] = useState<{ message: string; isVisible: boolean; type?: ToastVariant }>({ message: '', isVisible: false });
   const [state, setState] = useState<GlobalState>(INITIAL_STATE);
   const [savedPlans, setSavedPlans] = useState<SavedPlan[]>([]);
   const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
@@ -217,9 +217,42 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   };
 
+  const hasInvalidInput = (value: unknown): boolean => {
+    if (typeof value === 'string') return value.trim().length === 0;
+    if (typeof value === 'number') return !Number.isFinite(value) || value < 0;
+    if (Array.isArray(value)) return value.some(hasInvalidInput);
+    if (value && typeof value === 'object') {
+      return Object.entries(value).some(([key, nestedValue]) => key !== 'id' && hasInvalidInput(nestedValue));
+    }
+    return false;
+  };
+
   const saveSection = async (section: keyof GlobalState, customMessage?: string, explicitData?: any) => {
     try {
       const data = explicitData || state[section];
+
+      if (hasInvalidInput(data)) {
+        setToast({ message: 'Complete all fields with valid values before saving.', isVisible: true, type: 'warning' });
+        return;
+      }
+
+      const emptyRegisterMessage = {
+        overhead: 'Add at least one fixed overhead item before saving.',
+        staff: 'Add at least one staff member before saving.',
+        depreciation: 'Add at least one asset before saving.'
+      }[section as 'overhead' | 'staff' | 'depreciation'];
+      const registerItems = section === 'overhead'
+        ? (data as any).items
+        : section === 'staff'
+          ? (data as any).members
+          : section === 'depreciation'
+            ? (data as any).assets
+            : null;
+
+      if (emptyRegisterMessage && Array.isArray(registerItems) && registerItems.length === 0) {
+        setToast({ message: emptyRegisterMessage, isVisible: true, type: 'warning' });
+        return;
+      }
 
       // Mapping logic for Singular Configurations vs Arrays
       switch (section) {
@@ -472,7 +505,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
   const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false, initialData: null }));
   const hideToast = () => setToast(prev => ({ ...prev, isVisible: false }));
-  const showToast = (message: string) => setToast({ message, isVisible: true });
+  const showToast = (message: string, type: ToastVariant = 'success') => setToast({ message, isVisible: true, type });
 
   return (
     <CalculatorContext.Provider value={{

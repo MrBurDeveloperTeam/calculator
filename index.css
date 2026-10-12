@@ -494,6 +494,18 @@ body {
   color: #d97706 !important;
 }
 
+/* Plan History delete modal: keep Cancel readable against the dark footer */
+:root[data-theme="dark"] .history-delete-cancel {
+  background-color: #273244 !important;
+  border: 1px solid #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .history-delete-cancel:hover {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
 /* Dashboard Time Engine note: readable text on light background in dark mode */
 :root[data-theme="dark"]
   .dashboard-page

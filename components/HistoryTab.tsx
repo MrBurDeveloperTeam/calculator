@@ -226,7 +226,7 @@ const HistoryTab: React.FC = () => {
                         <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-end gap-3">
                             <button
                                 onClick={() => setShowDeleteModal(false)}
-                                className="px-4 py-2 text-sm font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
+                                className="history-delete-cancel px-4 py-2 text-sm font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
                             >
                                 Cancel
                             </button>
