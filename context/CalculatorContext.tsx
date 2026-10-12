@@ -217,9 +217,24 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   };
 
+  const hasInvalidInput = (value: unknown): boolean => {
+    if (typeof value === 'string') return value.trim().length === 0;
+    if (typeof value === 'number') return !Number.isFinite(value) || value < 0;
+    if (Array.isArray(value)) return value.some(hasInvalidInput);
+    if (value && typeof value === 'object') {
+      return Object.entries(value).some(([key, nestedValue]) => key !== 'id' && hasInvalidInput(nestedValue));
+    }
+    return false;
+  };
+
   const saveSection = async (section: keyof GlobalState, customMessage?: string, explicitData?: any) => {
     try {
       const data = explicitData || state[section];
+
+      if (hasInvalidInput(data)) {
+        setToast({ message: 'Complete all fields with valid values before saving.', isVisible: true, type: 'warning' });
+        return;
+      }
 
       // Mapping logic for Singular Configurations vs Arrays
       switch (section) {
