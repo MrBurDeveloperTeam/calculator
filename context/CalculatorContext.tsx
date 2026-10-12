@@ -236,6 +236,24 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         return;
       }
 
+      const emptyRegisterMessage = {
+        overhead: 'Add at least one fixed overhead item before saving.',
+        staff: 'Add at least one staff member before saving.',
+        depreciation: 'Add at least one asset before saving.'
+      }[section as 'overhead' | 'staff' | 'depreciation'];
+      const registerItems = section === 'overhead'
+        ? (data as any).items
+        : section === 'staff'
+          ? (data as any).members
+          : section === 'depreciation'
+            ? (data as any).assets
+            : null;
+
+      if (emptyRegisterMessage && Array.isArray(registerItems) && registerItems.length === 0) {
+        setToast({ message: emptyRegisterMessage, isVisible: true, type: 'warning' });
+        return;
+      }
+
       // Mapping logic for Singular Configurations vs Arrays
       switch (section) {
         case 'clinicSettings':
