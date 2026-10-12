@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure, CalculatorDataStatus, CalculatorDataOwnerId } from '../types';
+import { GlobalState, CalculatorContextType, SavedPlan, SavedProcedure, CalculatorDataStatus, CalculatorDataOwnerId, ToastVariant } from '../types';
 import { useAuth } from './AuthContext';
 import * as api from '../data/api';
 import { logActivityToOdoo } from '../services/logActivityToOdoo';
@@ -21,7 +21,7 @@ const INITIAL_STATE: GlobalState = {
 const CalculatorContext = createContext<CalculatorContextType | undefined>(undefined);
 
 export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [toast, setToast] = useState({ message: '', isVisible: false });
+  const [toast, setToast] = useState<{ message: string; isVisible: boolean; type?: ToastVariant }>({ message: '', isVisible: false });
   const [state, setState] = useState<GlobalState>(INITIAL_STATE);
   const [savedPlans, setSavedPlans] = useState<SavedPlan[]>([]);
   const [savedProcedures, setSavedProcedures] = useState<SavedProcedure[]>([]);
@@ -472,7 +472,7 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
   const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false, initialData: null }));
   const hideToast = () => setToast(prev => ({ ...prev, isVisible: false }));
-  const showToast = (message: string) => setToast({ message, isVisible: true });
+  const showToast = (message: string, type: ToastVariant = 'success') => setToast({ message, isVisible: true, type });
 
   return (
     <CalculatorContext.Provider value={{

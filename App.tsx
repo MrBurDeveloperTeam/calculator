@@ -363,6 +363,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
       <Toast
         message={toast.message}
         isVisible={toast.isVisible}
+        type={toast.type}
         onClose={hideToast}
       />
 

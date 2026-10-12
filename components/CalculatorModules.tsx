@@ -1447,7 +1447,7 @@ export const ConsumablesCalculator = () => {
   const addItem = () => {
     const itemName = newItemName.trim();
     if (!itemName || newItemCost <= 0) {
-      showToast('Enter an item name and a cost greater than 0.');
+      showToast('Enter an item name and a cost greater than 0.', 'warning');
       return;
     }
 

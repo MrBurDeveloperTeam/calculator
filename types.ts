@@ -234,6 +234,7 @@ export type CalculatorDataStatus = 'loading' | 'ready' | 'error';
  *  dependent on the effect having already executed. `null` means no
  *  successfully-loaded owner (initial state, logged out, or fetch error). */
 export type CalculatorDataOwnerId = string | null;
+export type ToastVariant = 'success' | 'warning';
 
 export interface CalculatorContextType {
   state: GlobalState;
@@ -243,9 +244,9 @@ export interface CalculatorContextType {
   saveSection: (section: keyof GlobalState, customMessage?: string, explicitData?: any) => void;
   deleteRegisterItem: (section: 'overhead' | 'staff' | 'depreciation', id: string) => Promise<boolean>;
   resetAll: () => void;
-  toast: { message: string; isVisible: boolean };
+  toast: { message: string; isVisible: boolean; type?: ToastVariant };
   hideToast: () => void;
-  showToast: (message: string) => void;
+  showToast: (message: string, type?: ToastVariant) => void;
   getTotalMonthlyHours: () => number;
   getGlobalTotalMonthlyCost: () => number;
 
