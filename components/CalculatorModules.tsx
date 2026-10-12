@@ -145,13 +145,24 @@ const CalculatorCard: React.FC<CalculatorCardProps> = ({
   readOnly = false,
   pageClassName = ''
 }) => {
-  const { saveSection } = useCalculator();
+  const { state, saveSection, showToast } = useCalculator();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const styles = THEME_CONFIG[theme];
 
   const handleSave = () => {
     if (section !== 'procedure') {
+      if (section === 'regulatory') {
+        const { annualApc, annualXray, annualInsurance, monthlyWaste } = state.regulatory;
+        const hasEmptyRegulatoryField = [annualApc, annualXray, annualInsurance, monthlyWaste]
+          .some(value => !Number.isFinite(value) || value <= 0);
+
+        if (hasEmptyRegulatoryField) {
+          showToast('Complete all Regulatory & Insurance fields before saving.', 'warning');
+          return;
+        }
+      }
+
       saveSection(section as keyof GlobalState);
       setIsModalOpen(false);
     }
