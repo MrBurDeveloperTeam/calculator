@@ -278,6 +278,7 @@ export const ProcedureBuilder = () => {
 
   // --- Recipe Management ---
   const handleAddConsumable = (item: { id: string, name: string, cost: number }) => {
+    const alreadyAdded = recipe.some(p => p.id === item.id);
     setRecipe(prev => {
       // Check if item already exists
       const existing = prev.find(p => p.id === item.id);
@@ -288,10 +289,13 @@ export const ProcedureBuilder = () => {
     });
     setSearchTerm('');
     setIsDropdownOpen(false);
+    showToast(alreadyAdded ? `${item.name} quantity increased.` : `${item.name} added to materials.`);
   };
 
   const handleRemoveConsumable = (id: string) => {
+    const removedItem = recipe.find(item => item.id === id);
     setRecipe(prev => prev.filter(item => item.id !== id));
+    if (removedItem) showToast(`${removedItem.name} removed from materials.`);
   };
 
   const handleUpdateQuantity = (id: string, qty: number) => {
@@ -1433,7 +1437,7 @@ export const DepreciationCalculator = () => {
 
 // --- 4. Consumables (Dynamic) ---
 export const ConsumablesCalculator = () => {
-  const { state, updateSection } = useCalculator();
+  const { state, updateSection, showToast } = useCalculator();
   const { currencySymbol } = state.clinicSettings;
   const { items } = state.consumables;
 
@@ -1441,17 +1445,24 @@ export const ConsumablesCalculator = () => {
   const [newItemCost, setNewItemCost] = useState(0);
 
   const addItem = () => {
-    if (newItemName && newItemCost > 0) {
-      updateSection('consumables', {
-        items: [...items, { id: crypto.randomUUID(), name: newItemName, cost: newItemCost }]
-      });
-      setNewItemName('');
-      setNewItemCost(0);
+    const itemName = newItemName.trim();
+    if (!itemName || newItemCost <= 0) {
+      showToast('Enter an item name and a cost greater than 0.');
+      return;
     }
+
+    updateSection('consumables', {
+      items: [...items, { id: crypto.randomUUID(), name: itemName, cost: newItemCost }]
+    });
+    setNewItemName('');
+    setNewItemCost(0);
+    showToast(`${itemName} added successfully.`);
   };
 
   const removeItem = (id: string) => {
+    const removedItem = items.find(item => item.id === id);
     updateSection('consumables', { items: items.filter(i => i.id !== id) });
+    if (removedItem) showToast(`${removedItem.name} removed successfully.`);
   };
 
   const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
@@ -1567,7 +1578,7 @@ export const ConsumablesCalculator = () => {
           <div className="w-32">
             <StyledInput label="" value={newItemCost} onChange={setNewItemCost} type="currency" placeholder="0.00" className="mb-0" />
           </div>
-          <button onClick={addItem} className="bg-teal-600 text-white w-12 rounded-xl hover:bg-teal-700 flex items-center justify-center shadow-md"><Plus className="w-6 h-6" /></button>
+          <button onClick={addItem} aria-label="Add consumable" title="Add consumable" className="bg-teal-600 text-white w-12 rounded-xl hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 flex items-center justify-center shadow-md"><Plus className="w-6 h-6" /></button>
         </div>
       </div>
       <div className="space-y-2">
@@ -1576,7 +1587,7 @@ export const ConsumablesCalculator = () => {
             <span className="text-gray-900 font-medium">{item.name}</span>
             <div className="flex items-center space-x-4">
               <span className="font-bold text-teal-700">{currencySymbol} {item.cost.toFixed(2)}</span>
-              <button onClick={() => removeItem(item.id)} className="text-slate-400 hover:text-red-500"><Trash2 className="w-5 h-5" /></button>
+              <button onClick={() => removeItem(item.id)} aria-label={`Remove ${item.name}`} title={`Remove ${item.name}`} className="text-slate-400 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 rounded p-1"><Trash2 className="w-5 h-5" /></button>
             </div>
           </div>
         ))}

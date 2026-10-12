@@ -21,12 +21,12 @@ const Toast: React.FC<ToastProps> = ({ message, isVisible, onClose }) => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-fade-in-up">
-      <div className="bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
+      <div role="status" aria-live="polite" className="bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
         <div className="bg-teal-500 rounded-full p-1">
           <Check className="w-3 h-3 text-white" />
         </div>
         <span className="font-medium text-sm">{message}</span>
-        <button onClick={onClose} className="ml-2 text-slate-400 hover:text-white">
+        <button onClick={onClose} aria-label="Dismiss message" className="ml-2 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded">
           <X className="w-4 h-4" />
         </button>
       </div>
