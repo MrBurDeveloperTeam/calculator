@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   --calc-teal: #0b9f91;
@@ -19,7 +19,7 @@
   overflow: hidden;
   color: var(--calc-navy);
   background: var(--calc-background);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .landing-page *,
@@ -61,9 +61,9 @@
   align-items: center;
   gap: 10px;
   color: var(--calc-navy);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .landing-brand img {
@@ -75,7 +75,9 @@
   padding-left: 10px;
   border-left: 1px solid var(--calc-line);
   color: var(--calc-teal-dark);
+  font-family: 'Open Sans', sans-serif;
   font-size: 15px;
+  font-weight: 700;
 }
 
 .landing-nav-links {
@@ -86,7 +88,7 @@
   margin-right: 38px;
   color: #71838a;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .landing-nav-links a {
@@ -113,7 +115,7 @@
   justify-content: center;
   gap: 9px;
   border-radius: 13px;
-  font-weight: 800;
+  font-weight: 600;
   transition: 0.2s ease;
 }
 
@@ -190,7 +192,7 @@
 .landing-section-label {
   color: var(--calc-teal-dark);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -217,9 +219,9 @@
   max-width: 620px;
   margin: 27px 0 24px;
   color: var(--calc-navy);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: clamp(42px, 5.4vw, 77px);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.075em;
   line-height: 0.99;
 }
@@ -264,7 +266,7 @@
   margin-top: 29px;
   color: #789096;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .landing-trust-row span {
@@ -341,7 +343,7 @@
   display: block;
   color: #8da2a4;
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.11em;
 }
 
@@ -357,7 +359,7 @@
   border-radius: 20px;
   color: #83e6d8;
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .calculator-preview-body {
@@ -375,7 +377,7 @@
 
 .preview-heading-row h3 {
   margin: 5px 0 0;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 22px;
   letter-spacing: -0.04em;
 }
@@ -387,7 +389,7 @@
   color: var(--calc-muted);
   background: white;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .preview-metrics {
@@ -406,13 +408,13 @@
   display: block;
   color: #8da2a4;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .preview-metrics strong {
   display: block;
   margin-top: 5px;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 19px;
 }
 
@@ -420,7 +422,7 @@
   display: block;
   margin-top: 5px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .positive {
@@ -611,14 +613,14 @@
 
 .landing-stat-strip strong {
   color: var(--calc-teal-dark);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 25px;
 }
 
 .landing-stat-strip span {
   color: #789096;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .landing-section {
@@ -639,9 +641,9 @@
 .landing-final-cta h2 {
   margin: 13px 0 17px;
   color: var(--calc-navy);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: clamp(31px, 4vw, 51px);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.065em;
   line-height: 1.07;
 }
@@ -699,7 +701,7 @@
 
 .landing-feature-card h3 {
   margin: 0 0 10px;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 17px;
 }
 
@@ -741,7 +743,7 @@
 }
 
 .simulator-control strong {
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 15px;
 }
 
@@ -754,7 +756,7 @@
   display: block;
   margin: 15px 0 10px;
   color: var(--calc-teal-dark);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 31px;
 }
 
@@ -778,7 +780,7 @@
   margin-bottom: 21px;
   color: #83e6d8;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .simulator-card-header span {
@@ -822,21 +824,21 @@
 .simulator-result small {
   color: #a7dcd6;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .simulator-result strong {
   margin: 7px 0;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 34px;
 }
 
 .simulator-result span {
   color: #83e6d8;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .simulator-result.loss {
@@ -889,13 +891,13 @@
   display: block;
   color: #8a9d9f;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .workflow-card-top strong {
   display: block;
   margin-top: 5px;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 18px;
 }
 
@@ -909,7 +911,7 @@
   margin-bottom: 7px;
   color: #839597;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .workflow-progress-label b {
@@ -982,7 +984,7 @@
 
 .workflow-steps > div > b {
   color: var(--calc-teal);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 13px;
 }
 
@@ -997,7 +999,7 @@
   display: block;
   margin-bottom: 3px;
   color: var(--calc-navy);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 14px;
 }
 
@@ -1031,7 +1033,7 @@
   border: 0;
   color: var(--calc-navy);
   background: transparent;
-  font-weight: 800;
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
 }
@@ -1260,7 +1262,7 @@
     border-radius: 10px;
     color: var(--calc-navy);
     background: white;
-    font-weight: 800;
+    font-weight: 600;
     cursor: pointer;
   }
 
