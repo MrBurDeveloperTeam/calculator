@@ -94,20 +94,41 @@ export async function signUpDual({
     return result;
 }
 
+/** Reads the `sub` (user id) claim from a JWT without verifying it. Used only to compare identities. */
+function readJwtSubject(jwt: string): string | null {
+    try {
+        const payload = jwt.split('.')[1];
+        const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+        return JSON.parse(json)?.sub ?? null;
+    } catch {
+        return null;
+    }
+}
+
 /**
- * Contacts the SSO endpoint to retrieve access/refresh tokens and injects them into the Supabase session
+ * Contacts the SSO endpoint to retrieve access/refresh tokens and injects them into the Supabase session.
+ *
+ * `revalidate: true` is for tabs that are already signed in: it skips the local-session
+ * shortcut below and asks Snabbb whether the shared SSO session is still alive. A 401/403/404
+ * signs this app out (see the catch block); a different Snabbb account swaps the session.
  */
-export async function exchangeSsoToken() {
+export async function exchangeSsoToken(options: { revalidate?: boolean } = {}) {
     try {
         const launchUrl = new URL(window.location.href);
         const token = launchUrl.searchParams.get('sso_token') || launchUrl.searchParams.get('token');
+        const revalidate = options.revalidate === true && !token;
 
         // Only a token should override an existing identity. Without one,
         // reuse the locally persisted Supabase session and avoid a slow
-        // central SSO request on every page load.
+        // central SSO request on every page load -- unless the caller is
+        // explicitly revalidating, which is the only way to notice that the
+        // user has since signed out of Snabbb.
         if (!token) {
             const { data: { session } } = await supabase.auth.getSession();
-            if (session) return true;
+            if (session && !revalidate) return true;
+            // Revalidation only matters while we hold a session; never sign a
+            // signed-out (or mid-logout) tab back in from here.
+            if (!session && revalidate) return false;
         }
 
         const sso = await odooApi.get('/sso/exchange', token ? {
@@ -115,6 +136,16 @@ export async function exchangeSsoToken() {
             timeout: 3000,
         } : { timeout: 3000 });
         if (sso?.data?.access_token && sso?.data?.refresh_token) {
+            if (revalidate) {
+                // Snabbb still has a live session. If it is the same account we are
+                // already signed in as, leave the local session untouched.
+                const { data: { session } } = await supabase.auth.getSession();
+                const ssoUserId = readJwtSubject(sso.data.access_token);
+                if (session && ssoUserId && session.user.id === ssoUserId) {
+                    localStorage.setItem('is_sso_session', 'true');
+                    return true;
+                }
+            }
             const { error } = await supabase.auth.setSession({
                 access_token: sso.data.access_token,
                 refresh_token: sso.data.refresh_token,

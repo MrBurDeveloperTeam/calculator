@@ -37,6 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isMountedRef.current = true;
     let initialResolutionComplete = false;
     let revalidateInFlight = false;
+    let lastRevalidateAt = 0;
 
     const resolveSession = async (session: Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']) => {
         const generation = ++authGenerationRef.current;
@@ -64,6 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session } } = await supabase.auth.getSession();
         await resolveSession(session);
         initialResolutionComplete = true;
+
+        // A session restored from localStorage may belong to someone who has
+        // since signed out of Snabbb. Check in the background (no UI delay).
+        revalidateSession();
     };
 
     initializeAuth();
@@ -82,18 +87,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 2. revalidateInFlight: visibilitychange and focus can both fire for
     //    the same tab switch, which would otherwise fire two overlapping
     //    exchange calls at once.
-    const revalidateOnFocus = () => {
-        console.log('AuthContext: revalidateOnFocus fired');
-        // if (!initialResolutionComplete || revalidateInFlight) return;
-        // if (document.visibilityState === 'visible') {
-            revalidateInFlight = true;
-            exchangeSsoToken()
-                .catch(console.warn)
-                .finally(() => { revalidateInFlight = false; });
-        // }
+    // exchangeSsoToken() normally trusts the local Supabase session without
+    // calling Snabbb, so revalidation must pass { revalidate: true } or this
+    // would be a no-op and a Snabbb sign-out would never be noticed.
+    // Throttled so focus + visibilitychange (+ the poll) can't stack requests.
+    const revalidateSession = () => {
+        if (!initialResolutionComplete || revalidateInFlight) return;
+        if (document.visibilityState !== 'visible') return;
+        if (!currentUserIdRef.current) return; // signed out already, nothing to check
+        const now = Date.now();
+        if (now - lastRevalidateAt < 3000) return;
+        lastRevalidateAt = now;
+        revalidateInFlight = true;
+        exchangeSsoToken({ revalidate: true })
+            .catch(console.warn)
+            .finally(() => { revalidateInFlight = false; });
     };
-    document.addEventListener('visibilitychange', revalidateOnFocus);
-    window.addEventListener('focus', revalidateOnFocus);
+    document.addEventListener('visibilitychange', revalidateSession);
+    window.addEventListener('focus', revalidateSession);
+
+    // Focus events don't fire if the user signs out in another window that
+    // sits side by side with this one, so also check periodically while visible.
+    const revalidateTimer = window.setInterval(revalidateSession, 60_000);
 
     // 3. Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -117,8 +132,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isMountedRef.current = false;
         authGenerationRef.current += 1;
         subscription.unsubscribe();
-        document.removeEventListener('visibilitychange', revalidateOnFocus);
-        window.removeEventListener('focus', revalidateOnFocus);
+        document.removeEventListener('visibilitychange', revalidateSession);
+        window.removeEventListener('focus', revalidateSession);
+        window.clearInterval(revalidateTimer);
     };
 }, []);
 
