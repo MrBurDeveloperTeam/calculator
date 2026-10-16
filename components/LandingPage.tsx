@@ -150,7 +150,7 @@ const LandingPage: React.FC = () => {
         </button>
       </nav>
 
-      <section className="landing-hero">
+      <section className="landing-hero appointment-style-hero">
         <div className="landing-hero-copy">
           <div className="landing-eyebrow">
             <span className="landing-live-dot" />
@@ -158,8 +158,15 @@ const LandingPage: React.FC = () => {
           </div>
 
           <h1>
-            Make every treatment
-            <em> more profitable.</em>
+            Make every
+            <br />
+            treatment
+            <br />
+            <em>
+              more
+              <br />
+              profitable.
+            </em>
           </h1>
 
           <p>
