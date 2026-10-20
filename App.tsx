@@ -10,6 +10,7 @@ import ProfileMenu from './components/ProfileMenu';
 import { CalculatorProvider, useCalculator } from './context/CalculatorContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPage from './components/LandingPage';
+import LaunchScreen from './components/LaunchScreen';
 import LoginPage from './components/Auth/LoginPage';
 import RegisterPage from './components/Auth/RegisterPage';
 import ClinicSettings from './components/ClinicSettings';
@@ -74,13 +75,24 @@ const VIEW_LABELS: Record<ViewState, string> = {
 
 const AuthManager: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
+  const { calculatorDataStatus } = useCalculator();
+
+  // Keep the launch screen (identical to the gallery's /opening.html and index.html's
+  // splash) up until the user's calculator data has loaded too, so the dashboard never
+  // appears with default values that then jump. Capped at 12s so a hung request can't
+  // block the app.
+  const [dataWaitExpired, setDataWaitExpired] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDataWaitExpired(true), 12000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin border-opacity-50"></div>
-      </div>
-    );
+    return <LaunchScreen status="Signing you in…" />;
+  }
+
+  if (user && calculatorDataStatus === 'loading' && !dataWaitExpired) {
+    return <LaunchScreen status="Loading your clinic data…" />;
   }
 
   if (!user) {
