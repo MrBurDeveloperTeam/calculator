@@ -159,7 +159,7 @@ const LandingPage: React.FC = () => {
 
           <h1>
             Make every
-            treatment{" "}more <em>profitable.</em>
+            treatment{" "}<em>more profitable.</em>
           </h1>
 
           <p>
