@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useProfileImage } from "../hooks/useProfileImage";
+import { useOdooSessionName } from "../hooks/useOdooSessionName";
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, LogOut, Mail, Phone, User as UserIcon } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -29,6 +30,8 @@ const getInitials = (name: string) => {
 
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, triggerClassName }) => {
   const { profileImageUrl } = useProfileImage(Boolean(user));
+  // Name from Odoo get_session_info (same source as the App Gallery).
+  const odooSessionName = useOdooSessionName(Boolean(user), user?.email);
   const avatarSrc = profileImageUrl || profile?.avatar_url;
   const [isOpen, setIsOpen] = useState(false);
   const [creditBalance, setCreditBalance] =
@@ -42,7 +45,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
   const menuRef = useRef<HTMLDivElement>(null);
     const { mutateAsync: createAppLink, isPending } = useGetUserId();
 
-  const displayName = profile?.name || (user?.user_metadata as any)?.full_name || user?.email?.split('@')[0] || 'Account';
+  const displayName = odooSessionName || profile?.name || (user?.user_metadata as any)?.full_name || user?.email?.split('@')[0] || 'Account';
   const badgeLabel = profile?.position || profile?.company_name || profile?.account_type;
 
   useEffect(() => {
@@ -270,7 +273,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                      const res = await createAppLink({
                        app: 'reward',
                        email: user?.email,
-                       name: user?.user_metadata?.name,
+                       name: odooSessionName || user?.user_metadata?.name,
                      });
 
                      // The reward app signs the user in through this one-time SSO link.
@@ -319,7 +322,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                           const res = await createAppLink({
                             app: 'e-learning',
                             email: user?.email,
-                            name: user?.user_metadata.name,
+                            name: odooSessionName || user?.user_metadata.name,
                           });
                           
                           const supabaseUserId = res.result?.supabase_user_id;
@@ -371,7 +374,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
                   const res = await createAppLink({
                     app: 'snabbb',
                     email: user?.email,
-                    name: user?.user_metadata.name,
+                    name: odooSessionName || user?.user_metadata.name,
                   });
 
                   if (res.result?.supabase_user_id) {
