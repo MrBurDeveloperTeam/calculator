@@ -591,6 +591,7 @@ const ClinicSettings: React.FC = () => {
                     {localOverheadItems.map((item) => (
                         <ListItem key={item.id} onRemove={() => requestDelete('overhead', item.id, 'overhead item')} isDeleting={deletingIds.has(item.id)}>
                             <div className="md:col-span-8">
+                                <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Item Name</span>
                                 <StyledInput
                                     type="text"
                                     placeholder="Item Name (e.g. Rent)"
@@ -600,6 +601,7 @@ const ClinicSettings: React.FC = () => {
                                 />
                             </div>
                             <div className="md:col-span-4">
+                                <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Monthly Cost</span>
                                 <StyledInput
                                     type="currency"
                                     placeholder="Cost"
@@ -640,58 +642,73 @@ const ClinicSettings: React.FC = () => {
                                 {/* 1. Identity (Cols 1-3) */}
                                 <div className="md:col-span-3 flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Identity</label>
-                                    <StyledInput
-                                        type="text"
-                                        placeholder="Staff Name"
-                                        value={member.name}
-                                        onChange={(v) => updateStaff(member.id, 'name', v)}
-                                        className="mb-0"
-                                        inputClassName="h-10"
-                                    />
-                                    <StyledInput
-                                        type="text"
-                                        placeholder="Role / Position"
-                                        value={member.role}
-                                        onChange={(v) => updateStaff(member.id, 'role', v)}
-                                        className="mb-0"
-                                        inputClassName="h-10 text-sm"
-                                    />
+                                    <div>
+                                        <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Name</span>
+                                        <StyledInput
+                                            type="text"
+                                            placeholder="Staff Name"
+                                            value={member.name}
+                                            onChange={(v) => updateStaff(member.id, 'name', v)}
+                                            className="mb-0"
+                                            inputClassName="h-10"
+                                        />
+                                    </div>
+                                    <div>
+                                        <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Role / Position</span>
+                                        <StyledInput
+                                            type="text"
+                                            placeholder="Role / Position"
+                                            value={member.role}
+                                            onChange={(v) => updateStaff(member.id, 'role', v)}
+                                            className="mb-0"
+                                            inputClassName="h-10 text-sm"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* 2. Compensation (Cols 4-8) */}
                                 <div className="md:col-span-5 flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Compensation</label>
-                                    <StyledInput
-                                        type="currency"
-                                        placeholder="Base Salary"
-                                        min={0}
-                                        onKeyDown={preventNegative}
-                                        value={member.salary}
-                                        onChange={(v) => updateStaff(member.id, 'salary', v)}
-                                        className="mb-0"
-                                        inputClassName="h-10"
-                                    />
+                                    <div>
+                                        <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Base Salary (monthly)</span>
+                                        <StyledInput
+                                            type="currency"
+                                            placeholder="Base Salary"
+                                            min={0}
+                                            onKeyDown={preventNegative}
+                                            value={member.salary}
+                                            onChange={(v) => updateStaff(member.id, 'salary', v)}
+                                            className="mb-0"
+                                            inputClassName="h-10"
+                                        />
+                                    </div>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <StyledInput
-                                            type="currency"
-                                            placeholder="Benefits"
-                                            min={0}
-                                            onKeyDown={preventNegative}
-                                            value={member.benefits}
-                                            onChange={(v) => updateStaff(member.id, 'benefits', v)}
-                                            className="mb-0"
-                                            inputClassName="h-10"
-                                        />
-                                        <StyledInput
-                                            type="currency"
-                                            placeholder="Bonus"
-                                            min={0}
-                                            onKeyDown={preventNegative}
-                                            value={member.bonus}
-                                            onChange={(v) => updateStaff(member.id, 'bonus', v)}
-                                            className="mb-0"
-                                            inputClassName="h-10"
-                                        />
+                                        <div>
+                                            <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Benefits (monthly)</span>
+                                            <StyledInput
+                                                type="currency"
+                                                placeholder="Benefits"
+                                                min={0}
+                                                onKeyDown={preventNegative}
+                                                value={member.benefits}
+                                                onChange={(v) => updateStaff(member.id, 'benefits', v)}
+                                                className="mb-0"
+                                                inputClassName="h-10"
+                                            />
+                                        </div>
+                                        <div>
+                                            <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Bonus (monthly)</span>
+                                            <StyledInput
+                                                type="currency"
+                                                placeholder="Bonus"
+                                                min={0}
+                                                onKeyDown={preventNegative}
+                                                value={member.bonus}
+                                                onChange={(v) => updateStaff(member.id, 'bonus', v)}
+                                                className="mb-0"
+                                                inputClassName="h-10"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -700,6 +717,7 @@ const ClinicSettings: React.FC = () => {
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Schedule</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
+                                            <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Days / Week</span>
                                             <SelectDropdown
                                                 value={member.workingDays ?? localSettings.workingDaysPerWeek}
                                                 onChange={(v: number) => updateStaff(member.id, 'workingDays', v)}
@@ -707,9 +725,9 @@ const ClinicSettings: React.FC = () => {
                                                 className="mb-0"
                                                 selectClassName="h-10"
                                             />
-                                            <span className="text-[10px] text-slate-400 font-semibold text-center block mt-1">Days/Wk</span>
                                         </div>
                                         <div>
+                                            <span className="clinic-field-label text-[11px] font-semibold text-slate-500 block mb-1">Hours / Day</span>
                                             <SelectDropdown
                                                 value={member.workingHours ?? localSettings.hoursPerDay}
                                                 onChange={(v: number) => updateStaff(member.id, 'workingHours', v)}
@@ -717,7 +735,6 @@ const ClinicSettings: React.FC = () => {
                                                 className="mb-0"
                                                 selectClassName="h-10"
                                             />
-                                            <span className="text-[10px] text-slate-400 font-semibold text-center block mt-1">Hrs/Day</span>
                                         </div>
                                     </div>
                                 </div>
