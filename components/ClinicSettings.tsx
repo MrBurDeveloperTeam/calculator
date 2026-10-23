@@ -25,7 +25,7 @@ const ListItem: React.FC<{
     isDeleting = false,
     children
 }) => (
-        <div className="clinic-list-item flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-teal-300 transition-colors mb-3">
+        <div className="clinic-list-item flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl group hover:border-teal-300 transition-colors mb-3">
             <div className="flex-grow grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 {children}
             </div>
@@ -46,7 +46,7 @@ const hoursOptions = Array.from({ length: 48 }, (_, i) => (i + 1) * 0.5);
 const SelectDropdown = ({ label, value, onChange, options, className = "mb-5", selectClassName = "h-12" }: any) => (
     <div className={className}>
         {label && <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>}
-        <div className="clinic-field-shell relative flex items-stretch rounded-xl border border-slate-200 shadow-sm transition-colors overflow-hidden focus-within:border-teal-600">
+        <div className="clinic-field-shell relative flex items-stretch rounded-xl border border-slate-200 transition-colors overflow-hidden focus-within:border-teal-600">
             <select
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
@@ -530,7 +530,7 @@ const ClinicSettings: React.FC = () => {
                 {/* Capacity Engine Result Bar */}
                 <div className="capacity-card bg-teal-50 rounded-xl border border-teal-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2 overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="capacity-card-icon bg-teal-600 p-3 rounded-lg text-white shadow-sm">
+                        <div className="capacity-card-icon bg-teal-600 p-3 rounded-lg text-white">
                             <Clock className="w-6 h-6" />
                         </div>
                         <div>
@@ -636,7 +636,7 @@ const ClinicSettings: React.FC = () => {
             <CollapsibleSection title="3. Staff Roster" total={totalStaff} subtitle="Monthly payroll and benefits" colorClass="clinic-section-accent text-teal-600">
                 <div className="space-y-4">
                     {localStaffMembers.map((member) => (
-                        <div key={member.id} className="clinic-staff-card p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-teal-300 transition-all">
+                        <div key={member.id} className="clinic-staff-card p-4 bg-white border border-slate-200 rounded-xl hover:border-teal-300 transition-all">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-4 items-start">
 
                                 {/* 1. Identity (Cols 1-3) */}
