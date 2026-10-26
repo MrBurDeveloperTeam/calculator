@@ -198,6 +198,11 @@ input[type=range]::-webkit-slider-runnable-track {
   --danger-color: #f87171;
 }
 
+.snabbb-logo-light { display: block; }
+.snabbb-logo-dark { display: none; }
+:root[data-theme="dark"] .snabbb-logo-light { display: none; }
+:root[data-theme="dark"] .snabbb-logo-dark { display: block; }
+
 html,
 body,
 #root {
