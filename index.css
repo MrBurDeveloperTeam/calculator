@@ -447,36 +447,78 @@ body {
   box-shadow: none !important;
 }
 
-/* Clinic Settings capacity card: keep readable dark text on light background */
+/* Clinic Settings capacity card: dark surface with clear teal accents */
 :root[data-theme="dark"]
   .clinic-settings-page
   .capacity-card {
-  background-color: #eff6ff !important;
-  border-color: #bfdbfe !important;
+  background: linear-gradient(135deg, #1d2c2a, #172421) !important;
+  border-color: #355a55 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-icon {
+  background-color: #2c6761 !important;
+  color: #e1faf5 !important;
 }
 
 :root[data-theme="dark"]
   .clinic-settings-page
   .capacity-card-title {
-  color: #1e3a8a !important;
+  color: #f3fbfa !important;
 }
 
 :root[data-theme="dark"]
   .clinic-settings-page
   .capacity-card-description {
-  color: #2563eb !important;
+  color: #a9cac5 !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-help {
+  background-color: #203e3a !important;
+  border-color: #3b655f !important;
+  color: #bde1da !important;
+}
+
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-help:hover,
+:root[data-theme="dark"]
+  .clinic-settings-page
+  .capacity-card-help:focus-visible {
+  background-color: #2c514b !important;
+  outline-color: #bde1da;
 }
 
 :root[data-theme="dark"]
   .clinic-settings-page
   .capacity-card-value {
-  color: #1e40af !important;
+  color: #e1faf5 !important;
 }
 
 :root[data-theme="dark"]
   .clinic-settings-page
   .capacity-card-unit {
-  color: #2563eb !important;
+  color: #a9cac5 !important;
+}
+
+@media (max-width: 767px) {
+  :root[data-theme="dark"]
+    .clinic-settings-page
+    .capacity-card {
+    align-items: stretch;
+  }
+
+  :root[data-theme="dark"]
+    .clinic-settings-page
+    .capacity-card > div:last-child {
+    border-top: 1px solid #355a55;
+    padding-top: 0.875rem;
+    text-align: left;
+  }
 }
 
 /* Confirmation modal warning: keep readable on its light warning background */
