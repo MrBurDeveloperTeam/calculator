@@ -332,12 +332,12 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
       <div className="flex-1 flex flex-col lg:pl-64 transition-all duration-300">
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
-          <div className="flex items-center gap-2">
-            <a href="https://app.snabbb.com/">
-              <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="h-6 w-auto hover:opacity-80 transition-opacity" />
+          <div className="flex min-w-0 items-center gap-2">
+            <a href="https://app.snabbb.com/" className="min-w-0">
+              <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="block h-10 w-auto max-w-full object-contain hover:opacity-80 transition-opacity" />
             </a>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <ProfileMenu
               user={user}
               profile={profile}
