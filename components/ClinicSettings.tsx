@@ -616,7 +616,7 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addOverhead}
-                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 md:mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Overhead Item
                     </button>
@@ -763,7 +763,7 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addStaff}
-                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-2"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 md:mt-2"
                     >
                         <Plus className="w-5 h-5" /> Add Staff Member
                     </button>
@@ -830,7 +830,7 @@ const ClinicSettings: React.FC = () => {
                     ))}
                     <button
                         onClick={addAsset}
-                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mt-4"
+                        className="clinic-add-button w-full py-4 border-2 border-dashed border-teal-200 rounded-xl text-teal-600 font-bold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 md:mt-4"
                     >
                         <Plus className="w-5 h-5" /> Add Asset
                     </button>
