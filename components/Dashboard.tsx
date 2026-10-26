@@ -330,7 +330,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
             </div>
 
             {/* Debugging Tool */}
-            <DataIntegrityCheck />
+            {import.meta.env.DEV && <DataIntegrityCheck />}
         </div>
     );
 };
