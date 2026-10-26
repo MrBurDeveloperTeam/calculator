@@ -541,6 +541,25 @@ body {
   color: #d97706 !important;
 }
 
+/* Plan History action: visible and readable in both themes */
+:root[data-theme="dark"] .history-view-plan {
+  background-color: #30476b !important;
+  border-color: #7295c7 !important;
+  color: #f6faff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme="dark"] .history-view-plan:hover,
+:root[data-theme="dark"] .history-view-plan:focus-visible {
+  background-color: #3b5680 !important;
+  border-color: #9bb9e4 !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .history-view-plan:focus-visible {
+  outline-color: #9bb9e4;
+}
+
 /* Plan History delete modal: keep Cancel readable against the dark footer */
 :root[data-theme="dark"] .history-delete-cancel {
   background-color: #273244 !important;
