@@ -541,6 +541,70 @@ body {
   color: #d97706 !important;
 }
 
+/* Saved plan cards: keep the header and results legible in dark mode */
+:root[data-theme="dark"] .history-plan-card {
+  background-color: #171b22 !important;
+  border-color: #3b485a !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22) !important;
+}
+
+:root[data-theme="dark"] .history-plan-card:hover {
+  border-color: #7295c7 !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32) !important;
+}
+
+:root[data-theme="dark"] .history-plan-header-forecast {
+  background-color: #202b3e !important;
+  border-color: #3b4c68 !important;
+}
+
+:root[data-theme="dark"] .history-plan-header-roi {
+  background-color: #1d302e !important;
+  border-color: #365b55 !important;
+}
+
+:root[data-theme="dark"] .history-plan-header-forecast .history-plan-type {
+  background-color: #30466e !important;
+  color: #d5e4ff !important;
+}
+
+:root[data-theme="dark"] .history-plan-header-roi .history-plan-type {
+  background-color: #28564d !important;
+  color: #c5f2e9 !important;
+}
+
+:root[data-theme="dark"] .history-plan-date {
+  color: #b8c6da !important;
+}
+
+:root[data-theme="dark"] .history-plan-title,
+:root[data-theme="dark"] .history-plan-card:hover .history-plan-title {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .history-plan-header-forecast .history-plan-icon {
+  background-color: #30466e !important;
+  color: #adcaff !important;
+}
+
+:root[data-theme="dark"] .history-plan-header-roi .history-plan-icon {
+  background-color: #28564d !important;
+  color: #9ae7d8 !important;
+}
+
+:root[data-theme="dark"] .history-plan-result-positive {
+  color: #6ee7b7 !important;
+}
+
+:root[data-theme="dark"] .history-plan-result-negative {
+  color: #fda4af !important;
+}
+
+:root[data-theme="dark"] .history-plan-footer {
+  background-color: #141a23 !important;
+  border-color: #344252 !important;
+}
+
 /* Plan History action: visible and readable in both themes */
 :root[data-theme="dark"] .history-view-plan {
   background-color: #30476b !important;
