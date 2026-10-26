@@ -553,32 +553,48 @@ body {
   color: #f8fafc !important;
 }
 
-/* Dashboard Time Engine note: readable text on light background in dark mode */
+/* Dashboard calculation indicators in dark mode */
+:root[data-theme="dark"]
+  .dashboard-page
+  .dashboard-calculations-status {
+  background-color: #1d2c2a !important;
+  border-color: #355a55 !important;
+  color: #d8f0ed !important;
+  box-shadow: inset 0 0 0 1px rgba(122, 181, 174, 0.08);
+}
+
+:root[data-theme="dark"]
+  .dashboard-page
+  .dashboard-calculations-status svg {
+  color: #7ad7c8;
+}
+
 :root[data-theme="dark"]
   .dashboard-page
   .dashboard-time-note {
-  background-color: #eef2ff !important;
-  border-color: #a5b4fc !important;
-  color: #312e81 !important;
+  background: linear-gradient(135deg, #203532, #1a2928) !important;
+  border-color: #3b655f !important;
+  color: #d8f0ed !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
 }
 
 :root[data-theme="dark"]
   .dashboard-page
   .dashboard-time-note-primary {
-  color: #312e81 !important;
+  color: #e1faf5 !important;
 }
 
 :root[data-theme="dark"]
   .dashboard-page
   .dashboard-time-note-secondary {
-  color: #4338ca !important;
+  color: #a9cac5 !important;
   opacity: 1 !important;
 }
 
 :root[data-theme="dark"]
   .dashboard-page
   .dashboard-time-note strong {
-  color: #312e81 !important;
+  color: #e1faf5 !important;
 }
 
 /* ResultVisuals educational tooltip: readable on light blue background in dark mode */

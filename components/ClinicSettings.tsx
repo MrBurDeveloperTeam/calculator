@@ -387,14 +387,14 @@ const ClinicSettings: React.FC = () => {
 
                 html[data-theme="dark"] .clinic-settings-page .clinic-save-button {
                     background-color: #1D2C2A !important;
-                    color: #7AB5AE !important;
+                    color: #ffffff !important;
                     border: 1px solid #2A4440 !important;
                     box-shadow: none !important;
                 }
 
                 html[data-theme="dark"] .clinic-settings-page .clinic-save-button:hover {
                     background-color: #233B37 !important;
-                    color: #8FC9C2 !important;
+                    color: #ffffff !important;
                     border-color: #35564F !important;
                 }
 

@@ -333,7 +333,7 @@ const AppContent: React.FC<AppContentProps> = ({ theme, onThemeChange }) => {
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex min-w-0 items-center gap-2">
-            <a href="https://app.snabbb.com/" className="min-w-0">
+            <a href="https://app.snabbb.com/" className="min-w-0 translate-y-1">
               <img src="/Snabbb (Teal).png" alt="Snabbb Logo" className="snabbb-logo-light h-10 w-auto max-w-full object-contain hover:opacity-80 transition-opacity" />
               <img src="/Snabbb (White).png" alt="Snabbb Logo" className="snabbb-logo-dark h-10 w-auto max-w-full object-contain hover:opacity-80 transition-opacity" />
             </a>
