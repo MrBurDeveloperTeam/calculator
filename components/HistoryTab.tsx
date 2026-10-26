@@ -192,9 +192,14 @@ const HistoryTab: React.FC = () => {
                             >
                                 <Trash2 className="w-4 h-4" />
                             </button>
-                            <div className="flex items-center gap-1 text-xs font-bold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0">
+                            <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleOpen(plan); }}
+                                aria-label={`View plan: ${plan.name}`}
+                                className="history-view-plan flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition-colors hover:bg-indigo-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                            >
                                 View Plan <ArrowRight className="w-3 h-3" />
-                            </div>
+                            </button>
                         </div>
                     </div>
                 ))}
