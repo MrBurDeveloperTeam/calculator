@@ -115,35 +115,35 @@ const HistoryTab: React.FC = () => {
                     <div
                         key={plan.id}
                         onClick={() => handleOpen(plan)}
-                        className="group bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all cursor-pointer overflow-hidden flex flex-col"
+                        className="history-plan-card group bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all cursor-pointer overflow-hidden flex flex-col"
                     >
                         {/* Header */}
-                        <div className={`px-5 py-4 border-b border-slate-100 flex justify-between items-start ${plan.type === 'FORECAST' ? 'bg-indigo-50/50' : 'bg-teal-50/50'}`}>
+                        <div className={`history-plan-header px-5 py-4 border-b border-slate-100 flex justify-between items-start ${plan.type === 'FORECAST' ? 'history-plan-header-forecast bg-indigo-50/50' : 'history-plan-header-roi bg-teal-50/50'}`}>
                             <div>
                                 <div className="flex items-center gap-2 mb-1">
                                     {plan.type === 'FORECAST' ? (
-                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
+                                        <span className="history-plan-type px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
                                             Forecast
                                         </span>
                                     ) : (
-                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-700 uppercase tracking-wider">
+                                        <span className="history-plan-type px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-700 uppercase tracking-wider">
                                             ROI Check
                                         </span>
                                     )}
-                                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                                    <span className="history-plan-date text-xs text-slate-400 flex items-center gap-1">
                                         <Clock className="w-3 h-3" /> {new Date(plan.date).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-700 transition-colors line-clamp-1">
+                                <h3 className="history-plan-title font-bold text-slate-800 text-lg group-hover:text-indigo-700 transition-colors line-clamp-1">
                                     {plan.name}
                                 </h3>
                             </div>
                             {plan.type === 'FORECAST' ? (
-                                <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                                <div className="history-plan-icon p-2 bg-indigo-100 rounded-lg text-indigo-600">
                                     <TrendingUp className="w-5 h-5" />
                                 </div>
                             ) : (
-                                <div className="p-2 bg-teal-100 rounded-lg text-teal-600">
+                                <div className="history-plan-icon p-2 bg-teal-100 rounded-lg text-teal-600">
                                     <Calculator className="w-5 h-5" />
                                 </div>
                             )}
@@ -175,7 +175,7 @@ const HistoryTab: React.FC = () => {
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                                         Projected Result
                                     </p>
-                                    <span className={`text-xl font-black ${plan.results.isProfitable ? 'text-emerald-600' : 'text-rose-500'}`}>
+                                    <span className={`history-plan-result text-xl font-black tabular-nums break-all ${plan.results.isProfitable ? 'history-plan-result-positive text-emerald-600' : 'history-plan-result-negative text-rose-500'}`}>
                                         {currencySymbol} {plan.results.netProfit.toFixed(2)}
                                     </span>
                                 </div>
@@ -184,7 +184,7 @@ const HistoryTab: React.FC = () => {
                         </div>
 
                         {/* Footer */}
-                        <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                        <div className="history-plan-footer px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                             <button
                                 onClick={(e) => handleDeleteClick(e, plan.id)}
                                 className="text-slate-400 hover:text-red-500 p-2 hover:bg-red-50 rounded transition-colors"
