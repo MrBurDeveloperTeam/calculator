@@ -167,16 +167,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                 }
 
                 /* Dashboard teal theme balance: Dark mode */
-                html[data-theme="dark"] .dashboard-page .dashboard-time-note {
-                    background-color: #1D2C2A !important;
-                    border-color: #2A4440 !important;
-                    color: #D8F0ED !important;
-                }
-
-                html[data-theme="dark"] .dashboard-page .dashboard-time-note-secondary {
-                    color: #7AB5AE !important;
-                }
-
                 html[data-theme="dark"] .dashboard-page .dashboard-financial-planning {
                     background: linear-gradient(to right, #1D2C2A, #20312E) !important;
                     border-color: #2A4440 !important;
@@ -209,7 +199,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, }) => {
                     <h1 className="text-2xl font-bold text-slate-800">Clinic Pulse Dashboard</h1>
                     <p className="text-slate-500">Real-time overview of your practice metrics.</p>
                 </div>
-                <div className="bg-teal-50 text-teal-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                <div className="dashboard-calculations-status bg-teal-50 text-teal-700 border border-transparent px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
                     <span>Calculations Active</span>
                 </div>
