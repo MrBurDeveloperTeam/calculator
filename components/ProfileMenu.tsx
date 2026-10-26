@@ -369,19 +369,11 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user, profile, onSignOut, tri
               {/* Settings */}
               <button
                 type="button"
-                disabled={isPending}
-                onClick={async () => {
-                  const res = await createAppLink({
-                    app: 'snabbb',
-                    email: user?.email,
-                    name: odooSessionName || user?.user_metadata.name,
-                  });
-
-                  if (res.result?.supabase_user_id) {
-                    window.location.assign('https://app.snabbb.com/profile-settings');
-                  }
+                onClick={() => {
+                  setIsOpen(false);
+                  window.location.assign('https://app.snabbb.com/profile-settings');
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left disabled:opacity-60"
+                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--app-surface-muted)] rounded-2xl transition-all group text-left"
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--app-text)] leading-tight">Settings</p>
