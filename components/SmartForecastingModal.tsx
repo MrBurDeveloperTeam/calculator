@@ -471,7 +471,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
             <div className="roi-header bg-white border-b border-gray-200 p-5 flex items-start gap-3 shrink-0">
                {/* Title area */}
-               <div className="flex min-w-0 flex-1 items-start gap-3 pr-3">
+               <div className="roi-header-title flex min-w-0 flex-1 items-start gap-3 pr-3">
                   <div className="roi-header-icon shrink-0 bg-[#8BB3AE] p-2 rounded-md text-white shadow-sm">
                      <Wand2 className="w-5 h-5" />
                   </div>
@@ -489,7 +489,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                </div>
 
                {/* Header actions */}
-               <div className="ml-auto flex shrink-0 items-start gap-2">
+               <div className="roi-header-actions ml-auto flex shrink-0 items-start gap-2">
                   <button
                      onClick={() => setShowSaveModal(true)}
                      className="roi-save-button flex shrink-0 items-center gap-2 rounded-sm border border-teal-200 bg-teal-50 px-3 sm:px-4 py-2 text-sm font-bold text-teal-600 transition-colors hover:bg-teal-100"
@@ -508,7 +508,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                </div>
             </div>
 
-            <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-gray-50">
+            <div className="roi-body flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-gray-50">
                {/* Left Panel - Inputs */}
                <div className="roi-input-panel lg:col-span-4 bg-white border-r border-gray-200 p-6 overflow-y-auto flex flex-col gap-6 shadow-sm z-10">
                   {/* 1. Timeframe */}
@@ -647,7 +647,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* NET PROFIT CHART */}
                         <div className="flex flex-col">
-                           <div className="flex justify-between items-end mb-2 h-10">
+                           <div className="roi-metric-heading flex justify-between items-end mb-2 h-10">
                               <div className="flex flex-col justify-end">
                                  <span className="roi-result-label text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
                                     <BarChart3 className="w-3 h-3" /> Net Profit
@@ -691,7 +691,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
 
                         {/* TIME USED CHART */}
                         <div className="flex flex-col">
-                           <div className="flex justify-between items-end mb-2 h-10">
+                           <div className="roi-metric-heading flex justify-between items-end mb-2 h-10">
                               <div className="flex flex-col justify-end">
                                  <span className="roi-result-label text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
                                     <Clock className="w-3 h-3" /> Time Used
@@ -749,7 +749,7 @@ const SmartForecastingModal: React.FC<SmartForecastingModalProps> = ({ isOpen, o
                         <div className="w-24 text-center">Qty</div>
                      </div>
 
-                     <div className="roi-procedure-body divide-y divide-gray-200 bg-white">
+                     <div className={`roi-procedure-body divide-y divide-gray-200 bg-white ${savedProcedures.length > 0 ? 'roi-procedure-body-populated' : ''}`}>
                         {savedProcedures.length === 0 ? (
                            <div className="p-12 text-center text-gray-400">No procedures in library.</div>
                         ) : (

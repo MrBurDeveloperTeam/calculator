@@ -1002,6 +1002,89 @@ body {
   color: #d3fff1 !important;
 }
 
+/* Mobile uses one scroll area so the results and plan summary remain reachable. */
+@media (max-width: 1023px) {
+  .roi-simulator .roi-shell {
+    height: calc(100vh - 2rem);
+    height: calc(100dvh - 2rem);
+    max-height: calc(100dvh - 2rem);
+  }
+
+  .roi-simulator .roi-body {
+    display: block;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: max(7rem, env(safe-area-inset-bottom));
+  }
+
+  .roi-simulator .roi-input-panel,
+  .roi-simulator .roi-results,
+  .roi-simulator .roi-procedure-list {
+    overflow: visible;
+  }
+
+  .roi-simulator .roi-input-panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--app-border);
+    box-shadow: none;
+  }
+
+  .roi-simulator .roi-procedure-list {
+    overflow-x: auto;
+  }
+
+  .roi-simulator .roi-table-header,
+  .roi-simulator .roi-procedure-body-populated {
+    min-width: 34rem;
+  }
+
+  .roi-simulator .roi-table-header {
+    position: static;
+  }
+
+  .roi-simulator .roi-summary {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 639px) {
+  .roi-simulator .roi-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .roi-simulator .roi-header-title {
+    width: 100%;
+    flex: none;
+    padding-right: 0;
+  }
+
+  .roi-simulator .roi-header-actions {
+    width: 100%;
+    margin-left: 0;
+    align-items: center;
+  }
+
+  .roi-simulator .roi-save-button {
+    flex: 1;
+    min-height: 2.75rem;
+    justify-content: center;
+  }
+
+  .roi-simulator .roi-metric-heading {
+    height: auto;
+    min-height: 2.5rem;
+    gap: 0.5rem;
+  }
+
+  .roi-simulator .roi-net-profit-value {
+    overflow-wrap: anywhere;
+  }
+}
+
 /* Staff Costs: readable light cards in dark mode */
 :root[data-theme="dark"]
   .staff-cost-page
