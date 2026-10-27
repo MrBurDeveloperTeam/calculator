@@ -2139,7 +2139,9 @@ export const OwnerCalculator = () => {
           <h4 className="font-bold text-slate-700 text-sm flex items-center gap-2">
             Compensation Structure
           </h4>
+          <p className="mt-1 text-xs text-slate-500 sm:hidden">Swipe left or right to view all amounts.</p>
         </div>
+        <div className="owner-comp-table-scroll overflow-x-auto" role="region" aria-label="Compensation structure amounts" tabIndex={0}>
         <table className="w-full text-sm text-left">
           <thead className="bg-white text-slate-500 border-b border-slate-100">
             <tr>
@@ -2188,6 +2190,7 @@ export const OwnerCalculator = () => {
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </CalculatorCard>
   );
