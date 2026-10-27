@@ -785,51 +785,221 @@ body {
   color: #2563eb !important;
 }
 
-/* ROI Simulator: selected Strategy Engine option */
-:root[data-theme="dark"]
-  .roi-strategy-engine
-  .roi-strategy-option-selected {
-  background-color: #eef2ff !important;
-  border-color: #818cf8 !important;
+/* ROI simulator keeps its financial states legible within the app dark theme. */
+:root[data-theme="dark"] .roi-simulator {
+  --roi-surface: #1b232c;
+  --roi-surface-raised: #222d36;
+  --roi-canvas: #121a22;
+  --roi-border: #34454e;
+  --roi-text: #eef6f5;
+  --roi-muted: #a8babd;
+  --roi-teal: #71d7c6;
+  --roi-teal-deep: #173934;
+  --roi-danger: #ff8b99;
 }
 
-:root[data-theme="dark"]
-  .roi-strategy-engine
-  .roi-strategy-option-selected
-  .roi-strategy-title {
-  color: #1e1b4b !important;
-  opacity: 1 !important;
+:root[data-theme="dark"] .roi-simulator .roi-shell,
+:root[data-theme="dark"] .roi-simulator .roi-header,
+:root[data-theme="dark"] .roi-simulator .roi-input-panel,
+:root[data-theme="dark"] .roi-simulator .roi-metrics,
+:root[data-theme="dark"] .roi-simulator .roi-procedure-body {
+  background-color: var(--roi-surface) !important;
 }
 
-:root[data-theme="dark"]
-  .roi-strategy-engine
-  .roi-strategy-option-selected
-  .roi-strategy-description {
-  color: #475569 !important;
-  opacity: 1 !important;
+:root[data-theme="dark"] .roi-simulator .roi-results,
+:root[data-theme="dark"] .roi-simulator .roi-procedure-list {
+  background-color: var(--roi-canvas) !important;
 }
 
-:root[data-theme="dark"]
-  .roi-strategy-engine
-  .roi-strategy-option-selected
-  .roi-strategy-icon {
-  background-color: #c7d2fe !important;
-  color: #4f46e5 !important;
+:root[data-theme="dark"] .roi-simulator .roi-header {
+  background-color: var(--roi-surface-raised) !important;
 }
 
-/* Unselected Strategy Engine options */
-:root[data-theme="dark"]
-  .roi-strategy-engine
-  .roi-strategy-option:not(.roi-strategy-option-selected)
-  .roi-strategy-title {
-  color: var(--app-text) !important;
+:root[data-theme="dark"] .roi-simulator .roi-header-icon {
+  background-color: #326e67 !important;
+  color: #eafffa !important;
 }
 
-:root[data-theme="dark"]
-  .roi-strategy-engine
-  .roi-strategy-option:not(.roi-strategy-option-selected)
-  .roi-strategy-description {
-  color: var(--app-text-muted) !important;
+:root[data-theme="dark"] .roi-simulator .roi-header,
+:root[data-theme="dark"] .roi-simulator .roi-input-panel,
+:root[data-theme="dark"] .roi-simulator .roi-metrics,
+:root[data-theme="dark"] .roi-simulator .roi-table-header,
+:root[data-theme="dark"] .roi-simulator .roi-summary,
+:root[data-theme="dark"] .roi-simulator .roi-procedure-body > * {
+  border-color: var(--roi-border) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-save-button {
+  background-color: var(--roi-teal-deep) !important;
+  border-color: #397a70 !important;
+  color: #bdf2e6 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-save-button:hover,
+:root[data-theme="dark"] .roi-simulator .roi-close-button:hover {
+  background-color: #2b4b48 !important;
+  color: #f0fffb !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-capacity-note {
+  background-color: #193630 !important;
+  border-color: #34766a !important;
+  color: #b6ebdd !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-input-panel input,
+:root[data-theme="dark"] .roi-simulator .roi-input-panel select,
+:root[data-theme="dark"] .roi-simulator .roi-procedure-row input {
+  background-color: var(--roi-canvas) !important;
+  border-color: #587078 !important;
+  color: var(--roi-text) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-procedure-row .roi-active-qty {
+  background-color: #1b3935 !important;
+  border-color: #52b6a4 !important;
+  color: #c9f5ea !important;
+}
+
+:root[data-theme="dark"] .roi-simulator input:focus-visible,
+:root[data-theme="dark"] .roi-simulator select:focus-visible,
+:root[data-theme="dark"] .roi-simulator button:focus-visible {
+  outline: 2px solid var(--roi-teal) !important;
+  outline-offset: 2px;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-label,
+:root[data-theme="dark"] .roi-simulator .roi-result-label {
+  color: #c4e9e1 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-option {
+  background-color: #1c292c !important;
+  border-color: #3d5558 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-option:hover {
+  border-color: var(--roi-teal) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-option-selected {
+  background-color: var(--roi-teal-deep) !important;
+  border-color: var(--roi-teal) !important;
+  box-shadow: inset 3px 0 0 var(--roi-teal) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-title {
+  color: var(--roi-text) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-description {
+  color: var(--roi-muted) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-option-selected .roi-strategy-description {
+  color: #b8e2d8 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-icon {
+  background-color: #2d4041 !important;
+  color: #a2d8cf !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-strategy-option-selected .roi-strategy-icon {
+  background-color: #2c6157 !important;
+  color: #d3fff3 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-generate-button {
+  background-color: #3b897c !important;
+  color: #f5fffc !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-generate-button:hover {
+  background-color: #4c9d8e !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-generate-button:disabled {
+  background-color: #344b49 !important;
+  color: #a8babd !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-result-subtext,
+:root[data-theme="dark"] .roi-simulator .roi-result-denominator {
+  color: var(--roi-muted) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-net-profit-value {
+  color: var(--roi-text) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-net-profit-met,
+:root[data-theme="dark"] .roi-simulator .roi-time-value {
+  color: var(--roi-teal) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-time-exceeded,
+:root[data-theme="dark"] .roi-simulator .roi-capacity-warning > svg {
+  color: var(--roi-danger) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-progress-track {
+  background-color: #34444d !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-profit-progress {
+  background-color: #8ba9ab !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-progress-met,
+:root[data-theme="dark"] .roi-simulator .roi-time-progress {
+  background-color: #4cc6ae !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-progress-exceeded {
+  background-color: var(--roi-danger) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-capacity-warning {
+  background-color: #3c242e !important;
+  border-color: #98525f !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-capacity-title {
+  color: #ffd7dc !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-capacity-text {
+  color: #ffc1ca !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-table-header {
+  background-color: var(--roi-surface-raised) !important;
+  color: #c5d6d9 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-procedure-row:hover {
+  background-color: #26353d !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-summary {
+  background-color: var(--roi-surface-raised) !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-summary-success {
+  background-color: #1a3b34 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-summary .bg-gray-200 {
+  background-color: #34484e !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-summary-success .bg-emerald-200 {
+  background-color: #2d7667 !important;
+}
+
+:root[data-theme="dark"] .roi-simulator .roi-summary-success .text-emerald-800 {
+  color: #d3fff1 !important;
 }
 
 /* Staff Costs: readable light cards in dark mode */
