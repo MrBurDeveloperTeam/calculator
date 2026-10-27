@@ -155,6 +155,8 @@ const ResultVisuals: React.FC<ResultVisualsProps> = ({
           }`}
         >
           <button
+            type="button"
+            aria-expanded={isTooltipOpen}
             onClick={() => setIsTooltipOpen(!isTooltipOpen)}
             className="result-tooltip-trigger w-full p-3 flex items-center justify-between text-blue-800 hover:bg-blue-100 transition-colors"
           >

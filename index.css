@@ -680,24 +680,25 @@ body {
   color: #e1faf5 !important;
 }
 
-/* ResultVisuals educational tooltip: readable on light blue background in dark mode */
+/* ResultVisuals explanation panel follows the dark result-card palette. */
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-panel {
-  background-color: #eff6ff !important;
-  border-color: #bfdbfe !important;
+  background-color: #1b2c32 !important;
+  border-color: #36535a !important;
+  box-shadow: inset 3px 0 0 #52bda9;
 }
 
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-trigger {
-  color: #1e3a8a !important;
+  color: #e5f5f1 !important;
 }
 
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-label {
-  color: #1e3a8a !important;
+  color: #e5f5f1 !important;
   opacity: 1 !important;
 }
 
@@ -707,26 +708,34 @@ body {
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-chevron {
-  color: #2563eb !important;
+  color: #80ddca !important;
   opacity: 1 !important;
 }
 
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-trigger:hover {
-  background-color: #dbeafe !important;
+  background-color: #294149 !important;
+}
+
+:root[data-theme="dark"]
+  .result-visuals
+  .result-tooltip-trigger:focus-visible {
+  outline: 2px solid #80ddca;
+  outline-offset: -3px;
+  border-radius: 0.375rem;
 }
 
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-content {
-  color: #1d4ed8 !important;
+  color: #bed5d6 !important;
 }
 
 :root[data-theme="dark"]
   .result-visuals
   .result-tooltip-title {
-  color: #1e3a8a !important;
+  color: #a3e9d8 !important;
 }
 
 /* Fixed Overhead: readable light cards in dark mode */
