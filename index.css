@@ -1366,6 +1366,28 @@ body {
   box-shadow: none !important;
 }
 
+/* The compensation table scrolls sideways on phones without wrapping amounts. */
+.owner-comp-table-scroll {
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.owner-comp-table-scroll:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: -2px;
+}
+
+@media (max-width: 639px) {
+  .owner-comp-table-scroll table {
+    min-width: 36rem;
+  }
+
+  .owner-comp-table-scroll th:not(:first-child),
+  .owner-comp-table-scroll td:not(:first-child) {
+    white-space: nowrap;
+  }
+}
+
 /* Owner Compensation risk-buffer row */
 :root[data-theme="dark"]
   .owner-comp-page
