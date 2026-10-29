@@ -104,7 +104,7 @@ const LandingPage: React.FC = () => {
     <main className="landing-page" id="top">
       <nav className="landing-nav">
         <a className="landing-brand" href={SNABBB_APP_URL} aria-label="Go to Snabbb app">
-          <img src="/Snabbb (Teal).png" alt="Snabbb" />
+          <img src="/Snabbb (Teal).webp" alt="Snabbb" />
           <span>Calculator</span>
         </a>
 
@@ -372,7 +372,7 @@ const LandingPage: React.FC = () => {
 
       <footer className="landing-footer">
         <a className="landing-brand" href={SNABBB_APP_URL} aria-label="Go to Snabbb app">
-          <img src="/Snabbb (Teal).png" alt="Snabbb" />
+          <img src="/Snabbb (Teal).webp" alt="Snabbb" />
           <span>Calculator</span>
         </a>
 

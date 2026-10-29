@@ -23,7 +23,7 @@ export default function AuthShell({ children, centered = false }: AuthShellProps
 export function AuthLogo() {
   return (
     <a href="https://app.snabbb.com/" className="mb-5 block w-fit transition-opacity hover:opacity-80" title="Go to Snabbb Home">
-      <img src="/Snabbb (Teal).png" alt="Snabbb" className="h-7 w-auto object-contain" />
+      <img src="/Snabbb (Teal).webp" alt="Snabbb" className="h-7 w-auto object-contain" />
     </a>
   );
 }
